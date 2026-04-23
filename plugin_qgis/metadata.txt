@@ -1,0 +1,18 @@
+[general]
+name=Climate Alert - Senegal
+qgisMinimumVersion=3.16
+description=Simulation des risques climatiques au Sénégal (2026-2046) pour prévention pertes agricoles
+version=1.0.0
+author=Yves-san
+email=yvesmalou78@gmail.com
+about=Plugin QGIS interactif pour simuler l'évolution des risques climatiques (inondations, sécheresses, érosion) au Sénégal sur 20 ans. Inclut scénarios optimiste/moyen/pessimiste et recommandations agricoles.
+homepage=https://github.com/Yves-san/qgis-climate-alert-senegal
+tracker=https://github.com/Yves-san/qgis-climate-alert-senegal/issues
+repository=https://github.com/Yves-san/qgis-climate-alert-senegal
+tags=climate,alert,senegal,agriculture,risk,simulation
+category=Analysis
+icon=resources/icon.png
+experimental=False
+deprecated=False
+changelog=
+    1.0.0 - Initial release with climate risk simulation for Senegal
