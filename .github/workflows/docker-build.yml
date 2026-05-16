@@ -1,0 +1,22 @@
+name: Docker Build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API image
+        run: docker build -f docker/Dockerfile.api -t senegal-climate-api:latest .
+      - name: Build Dashboard image
+        run: docker build -f docker/Dockerfile.dashboard -t senegal-climate-dashboard:latest .
+      - name: Smoke test API
+        run: |
+          docker run -d --name api-test -p 8000:8000 senegal-climate-api:latest
+          sleep 10
+          curl -f http://localhost:8000/ || exit 1
+          docker stop api-test

@@ -1,0 +1,59 @@
+app:
+  name: "Senegal Climate Alert System"
+  version: "2.0.0"
+  env: development
+  debug: true
+
+database:
+  path: "data/senegal_climate_2025_2055.db"
+  pool_size: 10
+  echo: false
+
+climate:
+  start_year: 2025
+  end_year: 2055
+  scenarios:
+    - SSP1-1.9
+    - SSP2-4.5
+    - SSP5-8.5
+  default_scenario: SSP2-4.5
+  resolutions:
+    - daily
+    - monthly
+    - annual
+
+cmip6_models:
+  - MPI-ESM1-2-LR
+  - IPSL-CM6A-LR
+  - HadGEM3-GC31-LL
+  - MIROC6
+  - NorESM2-MM
+
+risk_thresholds:
+  temperature:
+    low: 28
+    medium: 32
+    high: 36
+    critical: 40
+  drought_index:
+    low: 0.25
+    medium: 0.50
+    high: 0.75
+    critical: 0.90
+  precipitation_min_mm:
+    low: 5
+    medium: 2
+    high: 1
+    critical: 0
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  rate_limit: "100/minute"
+
+logging:
+  level: INFO
+  format: "{time} | {level} | {name} | {message}"
+  file: "logs/app.log"
+  rotation: "10 MB"

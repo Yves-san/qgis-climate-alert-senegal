@@ -1,0 +1,787 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "DK001",
+        "name": "Dakar",
+        "region": "Dakar",
+        "population": 1146000,
+        "crops": "Commerce, Pêche"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -17.0407,
+          14.6928
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "DK002",
+        "name": "Pikine",
+        "region": "Dakar",
+        "population": 900000,
+        "crops": "Arachide, Maïs"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -17.15,
+          14.7667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "DK003",
+        "name": "Guédiawaye",
+        "region": "Dakar",
+        "population": 600000,
+        "crops": "Légumes, Maraîchage"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -17.285,
+          14.755
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "DK004",
+        "name": "Rufisque",
+        "region": "Dakar",
+        "population": 250000,
+        "crops": "Poisson, Sel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -17.2667,
+          14.7167
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "DK005",
+        "name": "Bargny",
+        "region": "Dakar",
+        "population": 60000,
+        "crops": "Pêche, Sel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -17.2311,
+          14.6942
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TH001",
+        "name": "Thiès",
+        "region": "Thiès",
+        "population": 320000,
+        "crops": "Arachide, Tomate"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.9203,
+          14.7861
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TH002",
+        "name": "Mbour",
+        "region": "Thiès",
+        "population": 250000,
+        "crops": "Pêche, Tomate"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.725,
+          14.3917
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TH003",
+        "name": "Tivaouane",
+        "region": "Thiès",
+        "population": 80000,
+        "crops": "Arachide"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.8333,
+          14.95
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TH004",
+        "name": "Mékhe",
+        "region": "Thiès",
+        "population": 35000,
+        "crops": "Maïs, Mil"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.4167,
+          14.8833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TH005",
+        "name": "Khombole",
+        "region": "Thiès",
+        "population": 28000,
+        "crops": "Arachide"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.7,
+          14.75
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SL001",
+        "name": "Saint-Louis",
+        "region": "Saint-Louis",
+        "population": 280000,
+        "crops": "Riz, Légumes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.4833,
+          16.0167
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SL002",
+        "name": "Podor",
+        "region": "Saint-Louis",
+        "population": 60000,
+        "crops": "Mil, Riz"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -15.2,
+          16.65
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SL003",
+        "name": "Dagana",
+        "region": "Saint-Louis",
+        "population": 45000,
+        "crops": "Riz"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -15.7667,
+          16.4
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SL004",
+        "name": "Richard-Toll",
+        "region": "Saint-Louis",
+        "population": 85000,
+        "crops": "Canne à sucre, Riz"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -15.7022,
+          16.4628
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "KL001",
+        "name": "Kaolack",
+        "region": "Kaolack",
+        "population": 236000,
+        "crops": "Arachide, Mil"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.0167,
+          13.9667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "KL002",
+        "name": "Kaffrine",
+        "region": "Kaolack",
+        "population": 120000,
+        "crops": "Arachide, Mil"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -15.5506,
+          14.1056
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "KL003",
+        "name": "Nioro du Rip",
+        "region": "Kaolack",
+        "population": 50000,
+        "crops": "Arachide, Coton"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -15.7833,
+          13.75
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "ZG001",
+        "name": "Ziguinchor",
+        "region": "Ziguinchor",
+        "population": 290000,
+        "crops": "Riz, Anacarde"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.2719,
+          12.5589
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "ZG002",
+        "name": "Bignona",
+        "region": "Ziguinchor",
+        "population": 80000,
+        "crops": "Riz, Anacarde"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.2244,
+          12.8101
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "ZG003",
+        "name": "Oussouye",
+        "region": "Ziguinchor",
+        "population": 50000,
+        "crops": "Riz, Pêche"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.5464,
+          12.4844
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TC001",
+        "name": "Tambacounda",
+        "region": "Tambacounda",
+        "population": 280000,
+        "crops": "Mil, Arachide, Élevage"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -13.7731,
+          13.7719
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TC002",
+        "name": "Bakel",
+        "region": "Tambacounda",
+        "population": 50000,
+        "crops": "Mil, Riz"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -12.4667,
+          14.9
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TC003",
+        "name": "Goudiry",
+        "region": "Tambacounda",
+        "population": 35000,
+        "crops": "Mil, Sorgho"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -12.7333,
+          14.1833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "TC004",
+        "name": "Koumpentoum",
+        "region": "Tambacounda",
+        "population": 42000,
+        "crops": "Arachide, Mil"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -14.55,
+          13.9833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "LG001",
+        "name": "Louga",
+        "region": "Louga",
+        "population": 250000,
+        "crops": "Arachide, Mil"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.2333,
+          15.6167
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "LG002",
+        "name": "Linguère",
+        "region": "Louga",
+        "population": 45000,
+        "crops": "Mil, Élevage"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -15.1167,
+          15.3833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "LG003",
+        "name": "Kébémer",
+        "region": "Louga",
+        "population": 65000,
+        "crops": "Arachide, Mil"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.4489,
+          15.3617
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "MT001",
+        "name": "Matam",
+        "region": "Matam",
+        "population": 380000,
+        "crops": "Riz, Élevage"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -13.255,
+          15.6558
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "MT002",
+        "name": "Kanel",
+        "region": "Matam",
+        "population": 80000,
+        "crops": "Riz"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -13.1747,
+          15.4844
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "MT003",
+        "name": "Ranérou",
+        "region": "Matam",
+        "population": 40000,
+        "crops": "Mil, Élevage"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -13.9625,
+          15.2972
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "KD001",
+        "name": "Kolda",
+        "region": "Kolda",
+        "population": 400000,
+        "crops": "Arachide, Mil, Coton"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -14.9408,
+          12.8978
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "KD002",
+        "name": "Vélingara",
+        "region": "Kolda",
+        "population": 140000,
+        "crops": "Arachide, Mil"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -14.1167,
+          13.15
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "KD003",
+        "name": "Médina Yoro Foulah",
+        "region": "Kolda",
+        "population": 85000,
+        "crops": "Mil, Arachide"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -14.5,
+          13.05
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SD001",
+        "name": "Sédhiou",
+        "region": "Sédhiou",
+        "population": 230000,
+        "crops": "Arachide, Riz"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -15.5572,
+          12.7072
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SD002",
+        "name": "Goudomp",
+        "region": "Sédhiou",
+        "population": 65000,
+        "crops": "Arachide, Mil"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -15.8672,
+          12.5783
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SD003",
+        "name": "Bounkiling",
+        "region": "Sédhiou",
+        "population": 55000,
+        "crops": "Riz, Anacarde"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -15.6833,
+          13.05
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "KG001",
+        "name": "Kédougou",
+        "region": "Kédougou",
+        "population": 200000,
+        "crops": "Or, Millet, Maïs"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -12.1747,
+          12.5553
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "KG002",
+        "name": "Saraya",
+        "region": "Kédougou",
+        "population": 30000,
+        "crops": "Mil, Or"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -11.75,
+          12.8333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "KG003",
+        "name": "Salékata",
+        "region": "Kédougou",
+        "population": 25000,
+        "crops": "Mil, Igname"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -12.7667,
+          12.6833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "FK001",
+        "name": "Fatick",
+        "region": "Fatick",
+        "population": 150000,
+        "crops": "Arachide, Riz"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.4122,
+          14.3392
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "FK002",
+        "name": "Gossas",
+        "region": "Fatick",
+        "population": 50000,
+        "crops": "Mil"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.0564,
+          14.5197
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "FK003",
+        "name": "Foundiougne",
+        "region": "Fatick",
+        "population": 40000,
+        "crops": "Riz, Pêche"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.4667,
+          14.1333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "FK004",
+        "name": "Sokone",
+        "region": "Fatick",
+        "population": 35000,
+        "crops": "Arachide, Riz"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.3667,
+          13.8833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "DB001",
+        "name": "Diourbel",
+        "region": "Diourbel",
+        "population": 650000,
+        "crops": "Arachide, Mil"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.23,
+          14.6553
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "DB002",
+        "name": "Bambey",
+        "region": "Diourbel",
+        "population": 100000,
+        "crops": "Arachide"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -16.45,
+          14.7
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "DB003",
+        "name": "Mbacké",
+        "region": "Diourbel",
+        "population": 180000,
+        "crops": "Arachide, Mil"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -15.9103,
+          14.7947
+        ]
+      }
+    }
+  ]
+}

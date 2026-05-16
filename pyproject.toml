@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "senegal-climate-alert"
+version = "2.0.0"
+description = "Climate alert system for Senegal 2025-2055"
+authors = [{name = "YvesKingsman"}]
+license = {text = "MIT"}
+requires-python = ">=3.9"
+dependencies = [
+    "sqlalchemy>=2.0",
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "matplotlib>=3.7",
+    "folium>=0.14",
+    "scipy>=1.11",
+    "geopandas>=0.13",
+    "shapely>=2.0",
+    "fastapi>=0.104",
+    "uvicorn>=0.24",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I"]
