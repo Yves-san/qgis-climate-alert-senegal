@@ -39,7 +39,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Connexion SQLite ──────────────────────────────────────────────────────────
-DB_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "demo_climate.db")
+DB_PATH = os.path.join(os.path.dirname(__file__), "data", "demo_climate.db")
 
 @st.cache_resource
 def get_conn():
