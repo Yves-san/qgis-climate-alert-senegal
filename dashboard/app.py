@@ -451,9 +451,8 @@ elif page == "🌱 Sols & Calendrier Cultural":
     st.dataframe(pd.DataFrame(cal_rows),use_container_width=True,height=400)
     st.markdown('---')
     afficher_calendrier_gantt(selected_commune)
-    st.markdown("### 🪨 Types de sols toutes communes")
-    sol_rows = [{"Commune":c,"Type de sol":s} for c,s in SOLS.items()]
-    st.dataframe(pd.DataFrame(sol_rows),use_container_width=True,height=400)
+    st.markdown("### 🪨 Type de sol — " + selected_commune)
+    st.markdown(f'<div class="info-card">🌍 <b>{selected_commune}</b> ({region})<br><br>{sol}</div>', unsafe_allow_html=True)
 
 elif page == "🗺️ Carte Interactive":
     st.markdown("# 🗺️ Carte Interactive")
