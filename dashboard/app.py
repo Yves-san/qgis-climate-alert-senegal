@@ -169,6 +169,255 @@ CALENDRIER = {
     'Oussouye':{'hivernage':'Mai–Nov','semis':'Mai–Juin','recolte':'Nov–Déc','cultures':'Riz de mangrove','debut_pluies':'10–25 Mai'},
 }
 
+def generer_conseil_detaille(commune, region, sol, cal, df_climate=None, scenario="SSP2-4.5"):
+    """Génère un conseil agricole approfondi et contextualisé par commune"""
+    
+    # Données climatiques actuelles et futures
+    pluie_actuelle = {
+        'Dakar':400,'Pikine':390,'Guediawaye':385,'Rufisque':420,'Bargny':410,
+        'Diourbel':520,'Bambey':510,'Mbacké':500,
+        'Fatick':650,'Gossas':560,'Foundiougne':700,'Sokone':620,
+        'Kaolack':600,'Kaffrine':580,'Nioro du Rip':620,
+        'Kolda':900,'Vélingara':850,'Médina Yoro Foulah':880,
+        'Kédougou':1300,'Saraya':1200,'Salékata':1250,
+        'Louga':280,'Linguère':220,'Kébémer':300,
+        'Matam':300,'Kanel':280,'Ranérou':260,
+        'Saint-Louis':350,'Podor':250,'Dagana':280,'Richard-Toll':270,
+        'Sédhiou':1100,'Goudomp':1150,'Bounkiling':1050,
+        'Tambacounda':700,'Bakel':450,'Goudiry':600,'Koumpentoum':750,
+        'Thiès':500,'Mbour':550,'Tivaouane':480,'Mékhe':460,'Khombole':490,
+        'Ziguinchor':1200,'Bignona':1150,'Oussouye':1300,
+    }
+    
+    temp_actuelle = {
+        'Dakar':29.5,'Pikine':30.0,'Guediawaye':30.0,'Rufisque':30.2,'Bargny':30.1,
+        'Diourbel':31.5,'Bambey':31.3,'Mbacké':31.8,
+        'Fatick':31.0,'Gossas':31.0,'Foundiougne':30.8,'Sokone':31.2,
+        'Kaolack':31.8,'Kaffrine':32.0,'Nioro du Rip':31.5,
+        'Kolda':31.5,'Vélingara':32.0,'Médina Yoro Foulah':31.8,
+        'Kédougou':30.5,'Saraya':31.0,'Salékata':30.8,
+        'Louga':31.2,'Linguère':32.0,'Kébémer':31.5,
+        'Matam':33.5,'Kanel':33.8,'Ranérou':33.0,
+        'Saint-Louis':30.8,'Podor':32.5,'Dagana':32.0,'Richard-Toll':32.2,
+        'Sédhiou':31.0,'Goudomp':30.9,'Bounkiling':31.2,
+        'Tambacounda':33.1,'Bakel':34.0,'Goudiry':33.5,'Koumpentoum':33.0,
+        'Thiès':30.5,'Mbour':30.3,'Tivaouane':30.8,'Mékhe':31.0,'Khombole':30.7,
+        'Ziguinchor':30.2,'Bignona':30.5,'Oussouye':30.0,
+    }
+    
+    pluie = pluie_actuelle.get(commune, 500)
+    temp  = temp_actuelle.get(commune, 31.0)
+    debut = cal.get('debut_pluies', 'Juillet') if cal else 'Juillet'
+    cultures = cal.get('cultures', 'Mil, Arachide') if cal else 'Mil, Arachide'
+    hivernage = cal.get('hivernage', 'Juil-Oct') if cal else 'Juil-Oct'
+    
+    # Projections à 30 ans selon scénario
+    taux = {'SSP1-1.9':0.03,'SSP2-4.5':0.055,'SSP5-8.5':0.088}
+    pluie_rate = {'SSP1-1.9':0.5,'SSP2-4.5':1.0,'SSP5-8.5':1.8}
+    
+    rate = taux.get(scenario, 0.055)
+    prate = pluie_rate.get(scenario, 1.0)
+    
+    temp_2055   = round(temp + rate * 30, 1)
+    pluie_2055  = round(max(0, pluie - pluie * 0.008 * 30 * prate))
+    deficit     = pluie - pluie_2055
+    hausse_temp = round(temp_2055 - temp, 1)
+    
+    # Catégorie climatique
+    if pluie >= 900:
+        zone = "zone humide (Casamance/Guinéenne)"
+        zone_conseil = "très favorable à l'agriculture diversifiée"
+    elif pluie >= 600:
+        zone = "zone soudano-sahélienne"
+        zone_conseil = "favorable mais sensible aux variations pluviométriques"
+    elif pluie >= 350:
+        zone = "zone sahélo-soudanienne"
+        zone_conseil = "à risque modéré — adaptation nécessaire"
+    else:
+        zone = "zone sahélienne sèche"
+        zone_conseil = "à risque élevé — pratiques conservatoires essentielles"
+
+    texte = f"""
+**📍 Situation actuelle de {commune} ({region})**
+
+{commune} est une commune de {region}, située en **{zone}**, {zone_conseil}. 
+Le sol dominant est de type **{sol}**, ce qui conditionne directement les types de cultures possibles, 
+la capacité de rétention d'eau et la résistance aux sécheresses.
+
+Actuellement, la commune reçoit en moyenne **{pluie} mm de pluie par an**, avec des températures 
+moyennes autour de **{temp}°C**. La saison des pluies (hivernage) s'étend de **{hivernage}**, 
+avec un début généralement entre le **{debut}**. Les cultures principales sont : **{cultures}**.
+
+---
+
+**⚠️ Causes et risques climatiques projetés (2025–2055, scénario {scenario})**
+
+Sur les 30 prochaines années, le réchauffement climatique va progressivement modifier les conditions 
+agricoles de {commune}. Voici pourquoi :
+
+- 🌡️ **Hausse de température de +{hausse_temp}°C** : Les températures passeront de {temp}°C à environ 
+  {temp_2055}°C d'ici 2055. Cette hausse provoque une **évapotranspiration accrue** — les plantes 
+  perdent plus d'eau, les sols s'assèchent plus vite, et les besoins en eau des cultures augmentent. 
+  Au-delà de 38°C, la plupart des cultures céréalières subissent un **stress thermique** qui réduit 
+  leur rendement de 20 à 50%.
+
+- 🌧️ **Déficit pluviométrique de -{deficit} mm** : Les précipitations devraient passer de {pluie} mm 
+  à environ {pluie_2055} mm/an, soit une réduction de **{round((deficit/pluie)*100) if pluie>0 else 0}%**. 
+  Cela signifie que la saison agricole sera plus courte et les semis plus risqués. Les années de 
+  mauvaise pluviométrie seront plus fréquentes et plus sévères.
+
+- 🏜️ **Dégradation du sol** : Le type de sol de {commune} ({sol}) est particulièrement sensible 
+  à ces changements. Sous l'effet de la chaleur et du déficit hydrique, la matière organique du sol 
+  diminue, réduisant sa fertilité naturelle. Les risques d'érosion éolienne et hydrique augmentent.
+
+---
+
+**💡 Conséquences sur l'agriculture locale**
+
+Sans adaptation, les agriculteurs de {commune} risquent de voir :
+- Une **réduction des rendements** de 15 à 40% d'ici 2040 pour les cultures traditionnelles
+- Des **pertes de récoltes** lors des années de sécheresse intense (SPEI < -1.5)
+- Une **insécurité alimentaire** accrue pour les ménages ruraux
+- Un **appauvrissement des sols** progressif rendant certaines parcelles non cultivables
+- Des **conflits agriculteurs-éleveurs** intensifiés par la raréfaction des ressources
+
+---
+
+**✅ Solutions et recommandations adaptées à {commune}**
+
+Face à ces défis, voici les actions concrètes recommandées :
+
+**1. Adapter les variétés cultivées**
+Passer progressivement aux variétés améliorées résistantes à la sécheresse et à la chaleur. 
+Pour {commune}, privilégier les variétés de **{cultures.split(",")[0].strip()}** à cycle court 
+(moins de 90 jours) qui permettent de terminer la culture avant la fin de la saison des pluies.
+
+**2. Gérer l'eau de façon optimale**
+- Construire des **demi-lunes et des zaï** pour capter et retenir l'eau de pluie
+- Installer des **cordons pierreux** perpendiculaires à la pente pour réduire le ruissellement
+- Développer des **mares artificielles** et des retenues d'eau pour l'irrigation d'appoint
+- Pratiquer le **paillage** (mulching) pour limiter l'évaporation du sol
+
+**3. Protéger et améliorer le sol**
+Le sol de type **{sol}** nécessite un apport régulier en matière organique. 
+Apporter du compost, pratiquer la **rotation des cultures** et intégrer des légumineuses 
+(niébé, arachide) qui fixent l'azote naturellement dans le sol.
+
+**4. Diversifier les sources de revenus**
+Ne pas dépendre d'une seule culture. Intégrer l'**arboriculture fruitière** (manguiers, anacardiers) 
+qui résistent mieux à la sécheresse une fois établis, et l'**élevage** comme filet de sécurité.
+
+**5. Anticiper le calendrier cultural**
+Avec le réchauffement, surveiller attentivement les premières pluies utiles (>20mm en 24h). 
+Le début des pluies à {commune} se situe autour du **{debut}** mais peut varier de 2 à 3 semaines 
+selon les années. Avoir les semences prêtes à l'avance est crucial.
+
+**6. Se regrouper et mutualiser**
+Former des **groupements d'intérêt économique** pour accéder aux semences certifiées, 
+aux équipements d'irrigation et aux marchés. La solidarité communautaire est essentielle 
+pour faire face aux années difficiles.
+"""
+    return texte
+
+
+SOLS = {
+    'Dakar':'Sol sableux (Deck-Dior) · faible rétention hydrique',
+    'Pikine':'Sol sableux dégradé · urbanisation intense',
+    'Guediawaye':'Sol sableux · nappe phréatique affleurante',
+    'Rufisque':'Sol ferrugineux tropical · bon drainage',
+    'Bargny':'Sol salin · mangrove dégradée',
+    'Diourbel':'Sol ferrugineux (Dior) · arachide',
+    'Bambey':'Sol Dior sableux · très cultivé',
+    'Mbacké':'Sol Dior et Deck · polyculture',
+    'Fatick':'Sol sulfaté acide · tannes · mangrove',
+    'Gossas':'Sol ferrugineux · mil dominant',
+    'Foundiougne':'Sol alluvial · riziculture de mangrove',
+    'Sokone':'Sol hydromorphe · sel',
+    'Kaolack':'Sol argileux (Deck) · bassin arachidier',
+    'Kaffrine':'Sol Dior et Deck · transition sahélienne',
+    'Nioro du Rip':'Sol ferrugineux lessivé · coton',
+    'Kolda':'Sol ferralitique · forêt dégradée',
+    'Vélingara':'Sol ferrugineux · savane arbustive',
+    'Médina Yoro Foulah':'Sol latéritique · cuirasse ferrugineuse',
+    'Kédougou':'Sol ferralitique rouge · or et cultures',
+    'Saraya':'Sol latéritique · or alluvionnaire',
+    'Salékata':'Sol ferralitique · igname et mil',
+    'Louga':'Sol Dior sableux · déficit pluviométrique',
+    'Linguère':'Sol sableux sahélien · élevage',
+    'Kébémer':'Sol Dior · arachide et mil',
+    'Matam':'Sol alluvial (Walo) · riz irrigué',
+    'Kanel':'Sol alluvial · décrue et irrigation',
+    'Ranérou':'Sol sableux sahélien · élevage extensif',
+    'Saint-Louis':'Sol alluvial delta · riz irrigué',
+    'Podor':'Sol Walo · culture de décrue',
+    'Dagana':'Sol argileux lourd · riziculture irriguée',
+    'Richard-Toll':'Sol argileux · canne à sucre',
+    'Sédhiou':'Sol ferralitique · anacarde',
+    'Goudomp':'Sol hydromorphe · riziculture',
+    'Bounkiling':'Sol ferralitique · anacarde et riz',
+    'Tambacounda':'Sol ferrugineux tropical · savane',
+    'Bakel':'Sol sableux sahélien · mil et riz de décrue',
+    'Goudiry':'Sol ferrugineux · sorgho',
+    'Koumpentoum':'Sol ferrugineux · arachide',
+    'Thiès':'Sol ferrugineux rouge · phosphate',
+    'Mbour':'Sol sableux côtier · maraîchage',
+    'Tivaouane':'Sol Dior · arachide',
+    'Mékhe':'Sol ferrugineux · maïs',
+    'Khombole':'Sol Dior · arachide',
+    'Ziguinchor':'Sol ferralitique · riz et anacarde',
+    'Bignona':'Sol ferralitique · anacarde',
+    'Oussouye':'Sol hydromorphe · riziculture de mangrove',
+}
+
+CALENDRIER = {
+    'Dakar':{'hivernage':'Juil–Oct','semis':'Juin–Juil','recolte':'Oct–Nov','cultures':'Maraîchage, Niébé','debut_pluies':'20 Juin – 5 Juil'},
+    'Pikine':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct','cultures':'Arachide, Maïs','debut_pluies':'1–10 Juil'},
+    'Guediawaye':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct','cultures':'Légumes, Maraîchage','debut_pluies':'1–10 Juil'},
+    'Rufisque':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Maïs, Niébé','debut_pluies':'5–15 Juil'},
+    'Bargny':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct','cultures':'Maraîchage','debut_pluies':'5–15 Juil'},
+    'Diourbel':{'hivernage':'Juil–Oct','semis':'1–15 Juil','recolte':'Oct–Nov','cultures':'Arachide, Mil','debut_pluies':'1–15 Juil'},
+    'Bambey':{'hivernage':'Juil–Oct','semis':'1–10 Juil','recolte':'Oct–Nov','cultures':'Arachide','debut_pluies':'1–10 Juil'},
+    'Mbacké':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Arachide, Mil','debut_pluies':'5–15 Juil'},
+    'Fatick':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Nov','cultures':'Arachide, Riz','debut_pluies':'25 Juin – 10 Juil'},
+    'Gossas':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct','cultures':'Mil','debut_pluies':'5–15 Juil'},
+    'Foundiougne':{'hivernage':'Juin–Nov','semis':'Juin–Juil','recolte':'Nov–Déc','cultures':'Riz de mangrove','debut_pluies':'15–30 Juin'},
+    'Sokone':{'hivernage':'Juin–Nov','semis':'Juil','recolte':'Nov','cultures':'Arachide, Riz','debut_pluies':'20 Juin – 5 Juil'},
+    'Kaolack':{'hivernage':'Juil–Oct','semis':'1–15 Juil','recolte':'Oct–Nov','cultures':'Arachide, Mil','debut_pluies':'1–10 Juil'},
+    'Kaffrine':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Arachide, Mil','debut_pluies':'5–15 Juil'},
+    'Nioro du Rip':{'hivernage':'Juin–Nov','semis':'Juin–Juil','recolte':'Oct–Nov','cultures':'Arachide, Coton','debut_pluies':'20 Juin – 5 Juil'},
+    'Kolda':{'hivernage':'Mai–Nov','semis':'Mai–Juin','recolte':'Nov–Déc','cultures':'Arachide, Mil, Coton','debut_pluies':'25 Mai – 10 Juin'},
+    'Vélingara':{'hivernage':'Mai–Nov','semis':'Juin','recolte':'Nov','cultures':'Arachide, Mil','debut_pluies':'1–15 Juin'},
+    'Médina Yoro Foulah':{'hivernage':'Mai–Nov','semis':'Juin','recolte':'Nov','cultures':'Mil, Arachide','debut_pluies':'1–15 Juin'},
+    'Kédougou':{'hivernage':'Avr–Nov','semis':'Avr–Mai','recolte':'Nov–Déc','cultures':'Maïs, Mil, Igname','debut_pluies':'20 Avr – 10 Mai'},
+    'Saraya':{'hivernage':'Avr–Nov','semis':'Mai','recolte':'Nov','cultures':'Mil, Igname','debut_pluies':'1–15 Mai'},
+    'Salékata':{'hivernage':'Avr–Nov','semis':'Mai','recolte':'Nov','cultures':'Mil, Igname','debut_pluies':'1–15 Mai'},
+    'Louga':{'hivernage':'Juil–Sep','semis':'15–31 Juil','recolte':'Sep–Oct','cultures':'Arachide, Mil','debut_pluies':'15–31 Juil'},
+    'Linguère':{'hivernage':'Juil–Sep','semis':'20–31 Juil','recolte':'Sep–Oct','cultures':'Mil, Niébé','debut_pluies':'20–31 Juil'},
+    'Kébémer':{'hivernage':'Juil–Oct','semis':'10–20 Juil','recolte':'Oct','cultures':'Arachide, Mil','debut_pluies':'10–20 Juil'},
+    'Matam':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Riz irrigué, Sorgho','debut_pluies':'1–15 Juil'},
+    'Kanel':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Nov','cultures':'Riz, Mil','debut_pluies':'5–15 Juil'},
+    'Ranérou':{'hivernage':'Juil–Sep','semis':'15–31 Juil','recolte':'Sep–Oct','cultures':'Mil, Niébé','debut_pluies':'15–31 Juil'},
+    'Saint-Louis':{'hivernage':'Juil–Oct','semis':'Juil (irrigué toute année)','recolte':'Oct–Nov','cultures':'Riz irrigué, Légumes','debut_pluies':'1–15 Juil'},
+    'Podor':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Mil, Riz de décrue','debut_pluies':'5–20 Juil'},
+    'Dagana':{'hivernage':'Juil–Oct','semis':'Juin (irrigué)','recolte':'Nov','cultures':'Riz irrigué','debut_pluies':'1–15 Juil'},
+    'Richard-Toll':{'hivernage':'Toute année','semis':'Continu','recolte':'Continu','cultures':'Canne à sucre, Riz','debut_pluies':'1–10 Juil'},
+    'Sédhiou':{'hivernage':'Mai–Nov','semis':'Mai–Juin','recolte':'Nov–Déc','cultures':'Arachide, Riz, Anacarde','debut_pluies':'20 Mai – 5 Juin'},
+    'Goudomp':{'hivernage':'Mai–Nov','semis':'Mai–Juin','recolte':'Nov','cultures':'Arachide, Mil','debut_pluies':'25 Mai – 10 Juin'},
+    'Bounkiling':{'hivernage':'Mai–Nov','semis':'Juin','recolte':'Nov–Déc','cultures':'Riz, Anacarde','debut_pluies':'1–15 Juin'},
+    'Tambacounda':{'hivernage':'Juin–Oct','semis':'Juin–Juil','recolte':'Oct–Nov','cultures':'Mil, Arachide, Sorgho','debut_pluies':'10–25 Juin'},
+    'Bakel':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct','cultures':'Mil, Riz de décrue','debut_pluies':'5–20 Juil'},
+    'Goudiry':{'hivernage':'Juin–Oct','semis':'Juin–Juil','recolte':'Oct–Nov','cultures':'Mil, Sorgho','debut_pluies':'15–30 Juin'},
+    'Koumpentoum':{'hivernage':'Juin–Oct','semis':'Juin–Juil','recolte':'Oct–Nov','cultures':'Arachide, Mil','debut_pluies':'15–30 Juin'},
+    'Thiès':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Arachide, Tomate','debut_pluies':'1–10 Juil'},
+    'Mbour':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Tomate, Maraîchage','debut_pluies':'1–10 Juil'},
+    'Tivaouane':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Arachide','debut_pluies':'5–15 Juil'},
+    'Mékhe':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct','cultures':'Maïs, Mil','debut_pluies':'5–15 Juil'},
+    'Khombole':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Arachide','debut_pluies':'5–15 Juil'},
+    'Ziguinchor':{'hivernage':'Mai–Nov','semis':'Mai–Juin','recolte':'Nov–Déc','cultures':'Riz, Anacarde','debut_pluies':'15–31 Mai'},
+    'Bignona':{'hivernage':'Mai–Nov','semis':'Mai–Juin','recolte':'Nov–Déc','cultures':'Riz, Anacarde','debut_pluies':'15–31 Mai'},
+    'Oussouye':{'hivernage':'Mai–Nov','semis':'Mai–Juin','recolte':'Nov–Déc','cultures':'Riz de mangrove','debut_pluies':'10–25 Mai'},
+}
+
 CONSEILS = {
     'Dakar':'Maraîchage urbain. Récupération eaux de pluie. Éviter cultures céréalières en zone dense.',
     'Pikine':'Cultures courte durée (45-60j). Variétés arachide résistantes sécheresse. Compostage.',
