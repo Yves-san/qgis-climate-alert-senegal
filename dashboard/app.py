@@ -446,9 +446,7 @@ elif page == "🌱 Sols & Calendrier Cultural":
 🌿 <b>Cultures :</b> {cal.get('cultures','N/A')}
 </div>""",unsafe_allow_html=True)
     st.markdown("---")
-    st.markdown("### 📊 Calendrier toutes communes")
-    cal_rows = [{"Commune":c,"Début pluies":v.get("debut_pluies","N/A"),"Hivernage":v.get("hivernage","N/A"),"Semis":v.get("semis","N/A"),"Récolte":v.get("recolte","N/A"),"Cultures":v.get("cultures","N/A")} for c,v in CALENDRIER.items()]
-    st.dataframe(pd.DataFrame(cal_rows),use_container_width=True,height=400)
+
     st.markdown('---')
     afficher_calendrier_gantt(selected_commune)
     st.markdown("### 🪨 Type de sol — " + selected_commune)
