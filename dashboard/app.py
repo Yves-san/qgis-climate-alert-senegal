@@ -1,7 +1,6 @@
 """
-Senegal Climate Alert — Streamlit Dashboard Standalone
-Lit directement la base SQLite sans API
-Run: streamlit run dashboard/app.py
+Senegal Climate Alert — Dashboard Complet 9 pages
+46 communes · Sols · Calendrier · Précipitations · Conseils · Export
 """
 import streamlit as st
 import pandas as pd
@@ -10,7 +9,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import os
 
-# ── Config ────────────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="🌍 Sénégal Climate Alert",
     page_icon="🌦️",
@@ -22,23 +20,18 @@ st.markdown("""
 <style>
     [data-testid="stAppViewContainer"] { background: #0a0f1e; }
     [data-testid="stSidebar"] { background: #0d1527; border-right: 1px solid #1e3a5f; }
-    .metric-card {
-        background: linear-gradient(135deg, #1a2744 0%, #0d1e3d 100%);
-        border: 1px solid #2a4a7f; border-radius: 12px;
-        padding: 20px; text-align: center; margin: 8px 0;
-    }
-    .metric-value { font-size: 2rem; font-weight: 700; color: #4db8ff; }
-    .metric-label { font-size: 0.85rem; color: #8ab4d4; margin-top: 4px; }
-    .alert-critical { background: #2d0a0a; border-left: 4px solid #ff4444; padding: 12px; border-radius: 6px; margin: 6px 0; }
-    .alert-high     { background: #2d1a0a; border-left: 4px solid #ff8c00; padding: 12px; border-radius: 6px; margin: 6px 0; }
-    .alert-medium   { background: #2d2a0a; border-left: 4px solid #ffd700; padding: 12px; border-radius: 6px; margin: 6px 0; }
-    .alert-low      { background: #0a2d1a; border-left: 4px solid #44ff88; padding: 12px; border-radius: 6px; margin: 6px 0; }
-    h1, h2, h3 { color: #e8f4fd !important; }
-    .stSelectbox label, .stSlider label, .stRadio label { color: #8ab4d4 !important; }
+    .metric-card { background: linear-gradient(135deg,#1a2744,#0d1e3d); border:1px solid #2a4a7f; border-radius:12px; padding:20px; text-align:center; margin:8px 0; }
+    .metric-value { font-size:2rem; font-weight:700; color:#4db8ff; }
+    .metric-label { font-size:0.85rem; color:#8ab4d4; margin-top:4px; }
+    .alert-critical { background:#2d0a0a; border-left:4px solid #ff4444; padding:12px; border-radius:6px; margin:6px 0; }
+    .alert-high     { background:#2d1a0a; border-left:4px solid #ff8c00; padding:12px; border-radius:6px; margin:6px 0; }
+    .alert-medium   { background:#2d2a0a; border-left:4px solid #ffd700; padding:12px; border-radius:6px; margin:6px 0; }
+    .alert-low      { background:#0a2d1a; border-left:4px solid #44ff88; padding:12px; border-radius:6px; margin:6px 0; }
+    .info-card { background:#0d1e3d; border:1px solid #2a4a7f; border-radius:8px; padding:12px; margin:6px 0; }
+    h1,h2,h3 { color:#e8f4fd !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Connexion SQLite ──────────────────────────────────────────────────────────
 DB_PATH = os.path.join(os.path.dirname(__file__), "demo_climate.db")
 
 @st.cache_resource
@@ -47,402 +40,429 @@ def get_conn():
 
 @st.cache_data(ttl=300)
 def get_communes():
-    conn = get_conn()
-    df = pd.read_sql("SELECT DISTINCT commune_name, region, latitude, longitude FROM commune_climate_data ORDER BY commune_name", conn)
-    return df
+    return pd.read_sql("SELECT DISTINCT commune_name,region,latitude,longitude FROM commune_climate_data ORDER BY region,commune_name", get_conn())
 
 @st.cache_data(ttl=300)
 def get_scenarios():
-    conn = get_conn()
-    df = pd.read_sql("SELECT DISTINCT scenario FROM commune_climate_data WHERE scenario IS NOT NULL", conn)
+    df = pd.read_sql("SELECT DISTINCT scenario FROM commune_climate_data WHERE scenario IS NOT NULL", get_conn())
     return df["scenario"].tolist()
 
 @st.cache_data(ttl=60)
 def get_annual(commune, scenario):
-    conn = get_conn()
-    q = """
-        SELECT year, AVG(temp_annual_mean) as temp_mean,
-               AVG(temp_annual_max) as temp_max,
-               AVG(temp_annual_min) as temp_min,
-               SUM(precip_annual_total) as precip_total,
-               AVG(humidity_annual_mean) as humidity,
-               AVG(drought_index) as drought,
-               AVG(spi_index) as spi,
-               AVG(heat_stress) as heat_stress,
-               AVG(risk_level = 'high') * 100 as pct_high_risk
+    return pd.read_sql("""
+        SELECT year,
+            AVG(temp_annual_mean) as temp_mean, AVG(temp_annual_max) as temp_max, AVG(temp_annual_min) as temp_min,
+            SUM(precip_annual_total) as precip_total, AVG(humidity_annual_mean) as humidity,
+            AVG(drought_index) as drought, AVG(spi_index) as spi, AVG(heat_stress) as heat_stress, risk_level
         FROM commune_climate_data
-        WHERE commune_name = ? AND scenario = ? AND resolution = 'annual' AND year IS NOT NULL
+        WHERE commune_name=? AND scenario=? AND resolution='annual' AND year IS NOT NULL
         GROUP BY year ORDER BY year
-    """
-    return pd.read_sql(q, conn, params=[commune, scenario])
-
-@st.cache_data(ttl=60)
-def get_monthly(commune, scenario):
-    conn = get_conn()
-    q = """
-        SELECT year_month,
-               AVG(temp_monthly_mean) as temp_mean,
-               AVG(temp_monthly_max) as temp_max,
-               SUM(precip_monthly_total) as precip_total,
-               AVG(humidity_monthly_mean) as humidity
-        FROM commune_climate_data
-        WHERE commune_name = ? AND scenario = ? AND resolution = 'monthly' AND year_month IS NOT NULL
-        GROUP BY year_month ORDER BY year_month
-    """
-    return pd.read_sql(q, conn, params=[commune, scenario])
-
-@st.cache_data(ttl=60)
-def get_daily(commune, scenario, year):
-    conn = get_conn()
-    q = """
-        SELECT date_daily, temp_daily, precip_daily, humidity_daily, wind_speed_daily
-        FROM commune_climate_data
-        WHERE commune_name = ? AND scenario = ? AND resolution = 'daily'
-        AND strftime('%Y', date_daily) = ?
-        ORDER BY date_daily
-    """
-    return pd.read_sql(q, conn, params=[commune, scenario, str(year)])
+    """, get_conn(), params=[commune, scenario])
 
 @st.cache_data(ttl=300)
-def get_all_regions_annual(scenario, year):
-    conn = get_conn()
-    q = """
-        SELECT commune_name, region, latitude, longitude,
-               AVG(temp_annual_mean) as temp_mean,
-               SUM(precip_annual_total) as precip_total,
-               AVG(drought_index) as drought,
-               AVG(heat_stress) as heat_stress,
-               risk_level
+def get_all_map(scenario, year):
+    return pd.read_sql("""
+        SELECT commune_name,region,latitude,longitude,
+            AVG(temp_annual_mean) as temp_mean, AVG(temp_annual_max) as temp_max,
+            SUM(precip_annual_total) as precip_total, AVG(drought_index) as drought,
+            AVG(heat_stress) as heat_stress
         FROM commune_climate_data
-        WHERE scenario = ? AND year = ? AND resolution = 'annual'
+        WHERE scenario=? AND year=? AND resolution='annual'
         GROUP BY commune_name
-    """
-    return pd.read_sql(q, conn, params=[scenario, year])
+    """, get_conn(), params=[scenario, year])
 
-LAYOUT = dict(paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527",
-              font_color="#e8f4fd", margin=dict(t=40, b=20, l=10, r=10))
+SOLS = {
+    'Dakar':'Sol sableux (Deck-Dior) · faible rétention hydrique',
+    'Pikine':'Sol sableux dégradé · urbanisation intense',
+    'Guediawaye':'Sol sableux · nappe phréatique affleurante',
+    'Rufisque':'Sol ferrugineux tropical · bon drainage',
+    'Bargny':'Sol salin · mangrove dégradée',
+    'Diourbel':'Sol ferrugineux (Dior) · arachide',
+    'Bambey':'Sol Dior sableux · très cultivé',
+    'Mbacké':'Sol Dior et Deck · polyculture',
+    'Fatick':'Sol sulfaté acide · tannes · mangrove',
+    'Gossas':'Sol ferrugineux · mil dominant',
+    'Foundiougne':'Sol alluvial · riziculture de mangrove',
+    'Sokone':'Sol hydromorphe · sel',
+    'Kaolack':'Sol argileux (Deck) · bassin arachidier',
+    'Kaffrine':'Sol Dior et Deck · transition sahélienne',
+    'Nioro du Rip':'Sol ferrugineux lessivé · coton',
+    'Kolda':'Sol ferralitique · forêt dégradée',
+    'Vélingara':'Sol ferrugineux · savane arbustive',
+    'Médina Yoro Foulah':'Sol latéritique · cuirasse ferrugineuse',
+    'Kédougou':'Sol ferralitique rouge · or et cultures',
+    'Saraya':'Sol latéritique · or alluvionnaire',
+    'Salékata':'Sol ferralitique · igname et mil',
+    'Louga':'Sol Dior sableux · déficit pluviométrique',
+    'Linguère':'Sol sableux sahélien · élevage',
+    'Kébémer':'Sol Dior · arachide et mil',
+    'Matam':'Sol alluvial (Walo) · riz irrigué',
+    'Kanel':'Sol alluvial · décrue et irrigation',
+    'Ranérou':'Sol sableux sahélien · élevage extensif',
+    'Saint-Louis':'Sol alluvial delta · riz irrigué',
+    'Podor':'Sol Walo · culture de décrue',
+    'Dagana':'Sol argileux lourd · riziculture irriguée',
+    'Richard-Toll':'Sol argileux · canne à sucre',
+    'Sédhiou':'Sol ferralitique · anacarde',
+    'Goudomp':'Sol hydromorphe · riziculture',
+    'Bounkiling':'Sol ferralitique · anacarde et riz',
+    'Tambacounda':'Sol ferrugineux tropical · savane',
+    'Bakel':'Sol sableux sahélien · mil et riz de décrue',
+    'Goudiry':'Sol ferrugineux · sorgho',
+    'Koumpentoum':'Sol ferrugineux · arachide',
+    'Thiès':'Sol ferrugineux rouge · phosphate',
+    'Mbour':'Sol sableux côtier · maraîchage',
+    'Tivaouane':'Sol Dior · arachide',
+    'Mékhe':'Sol ferrugineux · maïs',
+    'Khombole':'Sol Dior · arachide',
+    'Ziguinchor':'Sol ferralitique · riz et anacarde',
+    'Bignona':'Sol ferralitique · anacarde',
+    'Oussouye':'Sol hydromorphe · riziculture de mangrove',
+}
 
-# ── Sidebar ───────────────────────────────────────────────────────────────────
+CALENDRIER = {
+    'Dakar':{'hivernage':'Juil–Oct','semis':'Juin–Juil','recolte':'Oct–Nov','cultures':'Maraîchage, Niébé','debut_pluies':'20 Juin – 5 Juil'},
+    'Pikine':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct','cultures':'Arachide, Maïs','debut_pluies':'1–10 Juil'},
+    'Guediawaye':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct','cultures':'Légumes, Maraîchage','debut_pluies':'1–10 Juil'},
+    'Rufisque':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Maïs, Niébé','debut_pluies':'5–15 Juil'},
+    'Bargny':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct','cultures':'Maraîchage','debut_pluies':'5–15 Juil'},
+    'Diourbel':{'hivernage':'Juil–Oct','semis':'1–15 Juil','recolte':'Oct–Nov','cultures':'Arachide, Mil','debut_pluies':'1–15 Juil'},
+    'Bambey':{'hivernage':'Juil–Oct','semis':'1–10 Juil','recolte':'Oct–Nov','cultures':'Arachide','debut_pluies':'1–10 Juil'},
+    'Mbacké':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Arachide, Mil','debut_pluies':'5–15 Juil'},
+    'Fatick':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Nov','cultures':'Arachide, Riz','debut_pluies':'25 Juin – 10 Juil'},
+    'Gossas':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct','cultures':'Mil','debut_pluies':'5–15 Juil'},
+    'Foundiougne':{'hivernage':'Juin–Nov','semis':'Juin–Juil','recolte':'Nov–Déc','cultures':'Riz de mangrove','debut_pluies':'15–30 Juin'},
+    'Sokone':{'hivernage':'Juin–Nov','semis':'Juil','recolte':'Nov','cultures':'Arachide, Riz','debut_pluies':'20 Juin – 5 Juil'},
+    'Kaolack':{'hivernage':'Juil–Oct','semis':'1–15 Juil','recolte':'Oct–Nov','cultures':'Arachide, Mil','debut_pluies':'1–10 Juil'},
+    'Kaffrine':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Arachide, Mil','debut_pluies':'5–15 Juil'},
+    'Nioro du Rip':{'hivernage':'Juin–Nov','semis':'Juin–Juil','recolte':'Oct–Nov','cultures':'Arachide, Coton','debut_pluies':'20 Juin – 5 Juil'},
+    'Kolda':{'hivernage':'Mai–Nov','semis':'Mai–Juin','recolte':'Nov–Déc','cultures':'Arachide, Mil, Coton','debut_pluies':'25 Mai – 10 Juin'},
+    'Vélingara':{'hivernage':'Mai–Nov','semis':'Juin','recolte':'Nov','cultures':'Arachide, Mil','debut_pluies':'1–15 Juin'},
+    'Médina Yoro Foulah':{'hivernage':'Mai–Nov','semis':'Juin','recolte':'Nov','cultures':'Mil, Arachide','debut_pluies':'1–15 Juin'},
+    'Kédougou':{'hivernage':'Avr–Nov','semis':'Avr–Mai','recolte':'Nov–Déc','cultures':'Maïs, Mil, Igname','debut_pluies':'20 Avr – 10 Mai'},
+    'Saraya':{'hivernage':'Avr–Nov','semis':'Mai','recolte':'Nov','cultures':'Mil, Igname','debut_pluies':'1–15 Mai'},
+    'Salékata':{'hivernage':'Avr–Nov','semis':'Mai','recolte':'Nov','cultures':'Mil, Igname','debut_pluies':'1–15 Mai'},
+    'Louga':{'hivernage':'Juil–Sep','semis':'15–31 Juil','recolte':'Sep–Oct','cultures':'Arachide, Mil','debut_pluies':'15–31 Juil'},
+    'Linguère':{'hivernage':'Juil–Sep','semis':'20–31 Juil','recolte':'Sep–Oct','cultures':'Mil, Niébé','debut_pluies':'20–31 Juil'},
+    'Kébémer':{'hivernage':'Juil–Oct','semis':'10–20 Juil','recolte':'Oct','cultures':'Arachide, Mil','debut_pluies':'10–20 Juil'},
+    'Matam':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Riz irrigué, Sorgho','debut_pluies':'1–15 Juil'},
+    'Kanel':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Nov','cultures':'Riz, Mil','debut_pluies':'5–15 Juil'},
+    'Ranérou':{'hivernage':'Juil–Sep','semis':'15–31 Juil','recolte':'Sep–Oct','cultures':'Mil, Niébé','debut_pluies':'15–31 Juil'},
+    'Saint-Louis':{'hivernage':'Juil–Oct','semis':'Juil (irrigué toute année)','recolte':'Oct–Nov','cultures':'Riz irrigué, Légumes','debut_pluies':'1–15 Juil'},
+    'Podor':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Mil, Riz de décrue','debut_pluies':'5–20 Juil'},
+    'Dagana':{'hivernage':'Juil–Oct','semis':'Juin (irrigué)','recolte':'Nov','cultures':'Riz irrigué','debut_pluies':'1–15 Juil'},
+    'Richard-Toll':{'hivernage':'Toute année','semis':'Continu','recolte':'Continu','cultures':'Canne à sucre, Riz','debut_pluies':'1–10 Juil'},
+    'Sédhiou':{'hivernage':'Mai–Nov','semis':'Mai–Juin','recolte':'Nov–Déc','cultures':'Arachide, Riz, Anacarde','debut_pluies':'20 Mai – 5 Juin'},
+    'Goudomp':{'hivernage':'Mai–Nov','semis':'Mai–Juin','recolte':'Nov','cultures':'Arachide, Mil','debut_pluies':'25 Mai – 10 Juin'},
+    'Bounkiling':{'hivernage':'Mai–Nov','semis':'Juin','recolte':'Nov–Déc','cultures':'Riz, Anacarde','debut_pluies':'1–15 Juin'},
+    'Tambacounda':{'hivernage':'Juin–Oct','semis':'Juin–Juil','recolte':'Oct–Nov','cultures':'Mil, Arachide, Sorgho','debut_pluies':'10–25 Juin'},
+    'Bakel':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct','cultures':'Mil, Riz de décrue','debut_pluies':'5–20 Juil'},
+    'Goudiry':{'hivernage':'Juin–Oct','semis':'Juin–Juil','recolte':'Oct–Nov','cultures':'Mil, Sorgho','debut_pluies':'15–30 Juin'},
+    'Koumpentoum':{'hivernage':'Juin–Oct','semis':'Juin–Juil','recolte':'Oct–Nov','cultures':'Arachide, Mil','debut_pluies':'15–30 Juin'},
+    'Thiès':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Arachide, Tomate','debut_pluies':'1–10 Juil'},
+    'Mbour':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Tomate, Maraîchage','debut_pluies':'1–10 Juil'},
+    'Tivaouane':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Arachide','debut_pluies':'5–15 Juil'},
+    'Mékhe':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct','cultures':'Maïs, Mil','debut_pluies':'5–15 Juil'},
+    'Khombole':{'hivernage':'Juil–Oct','semis':'Juil','recolte':'Oct–Nov','cultures':'Arachide','debut_pluies':'5–15 Juil'},
+    'Ziguinchor':{'hivernage':'Mai–Nov','semis':'Mai–Juin','recolte':'Nov–Déc','cultures':'Riz, Anacarde','debut_pluies':'15–31 Mai'},
+    'Bignona':{'hivernage':'Mai–Nov','semis':'Mai–Juin','recolte':'Nov–Déc','cultures':'Riz, Anacarde','debut_pluies':'15–31 Mai'},
+    'Oussouye':{'hivernage':'Mai–Nov','semis':'Mai–Juin','recolte':'Nov–Déc','cultures':'Riz de mangrove','debut_pluies':'10–25 Mai'},
+}
+
+CONSEILS = {
+    'Dakar':'Maraîchage urbain. Récupération eaux de pluie. Éviter cultures céréalières en zone dense.',
+    'Pikine':'Cultures courte durée (45-60j). Variétés arachide résistantes sécheresse. Compostage.',
+    'Guediawaye':'Maraîchage péri-urbain. Irrigation goutte-à-goutte. Légumes cycle court.',
+    'Rufisque':'Associer maraîchage et céréales. Protéger sols contre érosion éolienne.',
+    'Bargny':'Éviter cultures en zones salines. Pêche prioritaire. Reboisement mangrove.',
+    'Diourbel':'Rotation arachide-mil obligatoire. Variétés 75-90j (55-437, Fleur 11). Demi-lunes.',
+    'Bambey':'Spécialisation arachide. Semis dès 1ère pluie utile >20mm. Engrais organique zaï.',
+    'Mbacké':'Arachide + niébé en association. Jachère courte. Cordons pierreux.',
+    'Fatick':'Aménagement tannes pour riz. Variétés tolérantes salinité. Mangrove à protéger.',
+    'Gossas':'Mil souna prioritaire. Semis groupés. Banques céréalières villageoises.',
+    'Foundiougne':'Riziculture de mangrove. Diguettes anti-sel. Riz flottant en zones inondées.',
+    'Sokone':'Diversification riz-arachide. Protection berges. Aquaculture en complément.',
+    'Kaolack':'Rotation arachide-sorgho. Stockage semences certifiées. Sol Deck bien géré.',
+    'Kaffrine':'Adapter calendrier aux variations pluviométriques. Assurance agricole recommandée.',
+    'Nioro du Rip':'Coton + arachide en rotation. Maintenir couverture végétale. Lutte anti-érosion.',
+    'Kolda':'Diversifier (maïs, soja, anacarde). Forêts communautaires. Apiculture.',
+    'Vélingara':'Arachide précoce + vivrier. Bas-fonds pour riz. Vergers anacarde.',
+    'Médina Yoro Foulah':'Sol difficile : engrais verts, jachère améliorée. Sorgho adapté.',
+    'Kédougou':'Maïs hybride + igname. Protection forêts galeries. Ruchers. Zone très humide.',
+    'Saraya':'Diversifier or et agriculture. Mil rustique. Agroforesterie parkia-faidherbia.',
+    'Salékata':'Igname + mil en association. Éviter brûlis. Banques semences locales.',
+    'Louga':'Mil souna 55 jours obligatoire. Zaï + demi-lunes. Réservoirs collinaires.',
+    'Linguère':'Élevage prioritaire. Mil uniquement en années humides. Embouche bovine.',
+    'Kébémer':'Arachide hâtive 75j. Régénération naturelle assistée. Fixation dunes.',
+    'Matam':'Riz irrigué SAED. Double culture possible. Maraîchage contre-saison.',
+    'Kanel':'Décrue + irrigation. Riz + sorgho. Diguettes de retenue. Banques fourragères.',
+    'Ranérou':'Élevage dominant. Mil en hivernage court. Puits pastoraux. RNA.',
+    'Saint-Louis':'Riz irrigué 2 campagnes/an. Tomate industrielle. Oignon. Delta fertile.',
+    'Podor':'Culture de décrue walo. Riz périmètre irrigué. Mil en zone diéri.',
+    'Dagana':'Riziculture irriguée intensive. Canne à sucre. Mécanisation possible.',
+    'Richard-Toll':'Canne à sucre industrielle. Riz irrigué 2 cycles. Drainage essentiel.',
+    'Sédhiou':'Anacarde en expansion. Riz + arachide. Transformation locale anacarde.',
+    'Goudomp':'Arachide + mil. Bas-fonds rizicoles. Agroforesterie recommandée.',
+    'Bounkiling':'Anacarde prioritaire. Riz pluvial. Forêts communautaires à préserver.',
+    'Tambacounda':'Mil + sorgho résistants. Arachide en rotation. Élevage intégré. Embouche.',
+    'Bakel':'Mil souna court. Décrue. Gomme arabique. Élevage. Zone sahélienne difficile.',
+    'Goudiry':'Sorgho adapté sols lourds. Niébé fourrager. Élevage bovin extensif.',
+    'Koumpentoum':'Arachide + niébé. Rotation avec sorgho. Warrantage agricole.',
+    'Thiès':'Arachide + tomate industrielle. Phosphate naturel comme engrais local.',
+    'Mbour':'Maraîchage tomate-oignon-chou. Irrigation puits. Agrotourisme.',
+    'Tivaouane':'Arachide dominante. Semis sous pluie. Neem comme brise-vent.',
+    'Mékhe':'Maïs + mil. Sols bien drainés. Mécanisation tracteur possible.',
+    'Khombole':'Arachide hâtive. Association niébé. Cordons pierreux anti-érosion.',
+    'Ziguinchor':'Riz + anacarde. Zone très favorable. Maraîchage contre-saison. Vergers.',
+    'Bignona':'Anacarde en forte expansion. Riz pluvial + bas-fonds. Huile de palme.',
+    'Oussouye':'Riz sacré de mangrove. Pratiques traditionnelles diola efficaces. Pêche.',
+}
+
+LAYOUT = dict(paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527", font_color="#e8f4fd", margin=dict(t=40,b=20,l=10,r=10))
+
 with st.sidebar:
     st.markdown("## 🌍 Navigation")
     page = st.radio("", [
         "📊 Aperçu",
         "🌡️ Température",
-        "🌧️ Précipitations & Sécheresse",
+        "🌧️ Précipitations",
+        "🏜️ Sécheresse",
+        "🌱 Sols & Calendrier Cultural",
         "🗺️ Carte Interactive",
+        "⚠️ Alertes & Conseils",
         "📉 Comparaison Scénarios",
-        "⚠️ Alertes & Risques",
         "💾 Export",
     ], label_visibility="collapsed")
-
     st.markdown("---")
     st.markdown("### ⚙️ Paramètres")
-
     communes_df = get_communes()
     commune_list = communes_df["commune_name"].tolist()
     selected_commune = st.selectbox("🏘️ Commune", commune_list)
-
-    scenarios = get_scenarios() or ["SSP2-4.5", "SSP1-1.9", "SSP5-8.5"]
+    scenarios = get_scenarios() or ["SSP1-1.9","SSP2-4.5","SSP5-8.5"]
     selected_scenario = st.selectbox("🌡️ Scénario", scenarios)
-
     st.markdown("---")
-    st.success("🟢 Base de données connectée")
-    conn = get_conn()
-    nb = pd.read_sql("SELECT COUNT(*) as n FROM commune_climate_data", conn).iloc[0]["n"]
-    st.caption(f"📦 {nb:,} enregistrements")
+    st.success("🟢 Base connectée")
+    nb = pd.read_sql("SELECT COUNT(*) as n FROM commune_climate_data", get_conn()).iloc[0]["n"]
+    st.caption(f"📦 {nb:,} enregistrements · 46 communes")
 
-# ── PAGE : Aperçu ─────────────────────────────────────────────────────────────
+def get_info(commune):
+    row = communes_df[communes_df["commune_name"]==commune]
+    region  = row["region"].values[0] if not row.empty else "N/A"
+    sol     = SOLS.get(commune, "Sol ferrugineux tropical")
+    cal     = CALENDRIER.get(commune, {})
+    conseil = CONSEILS.get(commune, "Adapter les cultures aux conditions locales.")
+    return region, sol, cal, conseil
+
+colors_sc = {"SSP1-1.9":"#44ff88","SSP2-4.5":"#ffd700","SSP5-8.5":"#ff4444"}
+
 if page == "📊 Aperçu":
-    st.markdown("# 🌍 Système d'Alerte Climatique — Sénégal 2025–2055")
-    st.caption("Données journalières · mensuelles · annuelles")
-
-    nb_communes = len(commune_list)
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.markdown(f'<div class="metric-card"><div class="metric-value">{nb_communes}</div><div class="metric-label">Communes</div></div>', unsafe_allow_html=True)
-    with col2:
-        st.markdown('<div class="metric-card"><div class="metric-value">2025–2055</div><div class="metric-label">Période (30 ans)</div></div>', unsafe_allow_html=True)
-    with col3:
-        st.markdown('<div class="metric-card"><div class="metric-value">3</div><div class="metric-label">Scénarios CMIP6</div></div>', unsafe_allow_html=True)
-    with col4:
-        st.markdown(f'<div class="metric-card"><div class="metric-value">{nb/1000:.0f}K</div><div class="metric-label">Enregistrements</div></div>', unsafe_allow_html=True)
-
+    region, sol, cal, conseil = get_info(selected_commune)
+    st.markdown(f"# 🌍 Système d'Alerte Climatique — Sénégal 2025–2055")
+    st.caption(f"Commune : **{selected_commune}** · Région : **{region}** · Scénario : **{selected_scenario}**")
+    c1,c2,c3,c4 = st.columns(4)
+    c1.markdown('<div class="metric-card"><div class="metric-value">46</div><div class="metric-label">Communes</div></div>', unsafe_allow_html=True)
+    c2.markdown('<div class="metric-card"><div class="metric-value">2025–2055</div><div class="metric-label">30 ans</div></div>', unsafe_allow_html=True)
+    c3.markdown('<div class="metric-card"><div class="metric-value">3</div><div class="metric-label">Scénarios CMIP6</div></div>', unsafe_allow_html=True)
+    c4.markdown(f'<div class="metric-card"><div class="metric-value">{nb//1000}K+</div><div class="metric-label">Enregistrements</div></div>', unsafe_allow_html=True)
     st.markdown("---")
-    st.markdown(f"### 📊 Aperçu annuel — {selected_commune} · {selected_scenario}")
-
     df = get_annual(selected_commune, selected_scenario)
     if not df.empty:
-        col1, col2 = st.columns(2)
-        with col1:
-            fig = px.line(df, x="year", y="temp_mean",
-                          title="🌡️ Température moyenne annuelle (°C)",
-                          color_discrete_sequence=["#ff6b6b"], template="plotly_dark")
-            fig.update_layout(**LAYOUT)
-            st.plotly_chart(fig, use_container_width=True)
-        with col2:
-            fig2 = px.bar(df, x="year", y="precip_total",
-                          title="🌧️ Précipitations annuelles (mm)",
-                          color_discrete_sequence=["#4db8ff"], template="plotly_dark")
-            fig2.update_layout(**LAYOUT)
-            st.plotly_chart(fig2, use_container_width=True)
+        c1,c2 = st.columns(2)
+        with c1:
+            fig = px.line(df,x="year",y="temp_mean",title="🌡️ Température moyenne (°C)",color_discrete_sequence=["#ff6b6b"],template="plotly_dark")
+            fig.update_layout(**LAYOUT); st.plotly_chart(fig,use_container_width=True)
+        with c2:
+            fig2 = px.bar(df,x="year",y="precip_total",title="🌧️ Précipitations (mm/an)",color_discrete_sequence=["#4db8ff"],template="plotly_dark")
+            fig2.update_layout(**LAYOUT); st.plotly_chart(fig2,use_container_width=True)
+    if cal:
+        st.info(f"💧 **Début des pluies :** {cal.get('debut_pluies','N/A')} · **Hivernage :** {cal.get('hivernage','N/A')} · **Cultures :** {cal.get('cultures','N/A')}")
+    st.markdown(f'<div class="info-card">💡 <b>Conseil :</b> {conseil}</div>', unsafe_allow_html=True)
 
-        col3, col4 = st.columns(2)
-        with col3:
-            if "drought" in df.columns and df["drought"].notna().any():
-                fig3 = px.line(df, x="year", y="drought",
-                               title="🏜️ Indice de sécheresse",
-                               color_discrete_sequence=["#ffd700"], template="plotly_dark")
-                fig3.update_layout(**LAYOUT)
-                st.plotly_chart(fig3, use_container_width=True)
-        with col4:
-            if "heat_stress" in df.columns and df["heat_stress"].notna().any():
-                fig4 = px.area(df, x="year", y="heat_stress",
-                               title="🔥 Stress thermique",
-                               color_discrete_sequence=["#ff4444"], template="plotly_dark")
-                fig4.update_layout(**LAYOUT)
-                st.plotly_chart(fig4, use_container_width=True)
-    else:
-        st.warning("Aucune donnée annuelle disponible pour cette commune.")
-
-# ── PAGE : Température ────────────────────────────────────────────────────────
 elif page == "🌡️ Température":
     st.markdown(f"# 🌡️ Température — {selected_commune}")
-
-    resolution = st.radio("Résolution", ["Annuelle", "Mensuelle", "Journalière"], horizontal=True)
-
-    if resolution == "Annuelle":
-        df = get_annual(selected_commune, selected_scenario)
-        if not df.empty:
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(x=df["year"], y=df["temp_max"], name="T° max", line=dict(color="#ff4444")))
-            fig.add_trace(go.Scatter(x=df["year"], y=df["temp_mean"], name="T° moyenne", line=dict(color="#ffd700")))
-            fig.add_trace(go.Scatter(x=df["year"], y=df["temp_min"], name="T° min", line=dict(color="#4db8ff")))
-            fig.update_layout(title="Évolution des températures 2025–2055",
-                              template="plotly_dark", **LAYOUT)
-            st.plotly_chart(fig, use_container_width=True)
-
-            col1, col2, col3 = st.columns(3)
-            col1.metric("T° min projetée", f"{df['temp_min'].min():.1f}°C")
-            col2.metric("T° moyenne", f"{df['temp_mean'].mean():.1f}°C")
-            col3.metric("T° max projetée", f"{df['temp_max'].max():.1f}°C")
-
-    elif resolution == "Mensuelle":
-        df = get_monthly(selected_commune, selected_scenario)
-        if not df.empty:
-            fig = px.line(df, x="year_month", y="temp_mean",
-                          title="Température mensuelle moyenne (°C)",
-                          color_discrete_sequence=["#ff6b6b"], template="plotly_dark")
-            fig.update_layout(**LAYOUT)
-            st.plotly_chart(fig, use_container_width=True)
-
-    else:
-        year = st.slider("Année", 2025, 2055, 2030)
-        df = get_daily(selected_commune, selected_scenario, year)
-        if not df.empty:
-            fig = px.line(df, x="date_daily", y="temp_daily",
-                          title=f"Température journalière {year}",
-                          color_discrete_sequence=["#ff6b6b"], template="plotly_dark")
-            fig.update_layout(**LAYOUT)
-            st.plotly_chart(fig, use_container_width=True)
-
-# ── PAGE : Précipitations & Sécheresse ───────────────────────────────────────
-elif page == "🌧️ Précipitations & Sécheresse":
-    st.markdown(f"# 🌧️ Précipitations & Sécheresse — {selected_commune}")
-
     df = get_annual(selected_commune, selected_scenario)
     if not df.empty:
-        col1, col2 = st.columns(2)
-        with col1:
-            fig = px.bar(df, x="year", y="precip_total",
-                         title="Précipitations annuelles (mm)",
-                         color="precip_total",
-                         color_continuous_scale=["#ff4444", "#ffd700", "#4db8ff"],
-                         template="plotly_dark")
-            fig.update_layout(**LAYOUT)
-            st.plotly_chart(fig, use_container_width=True)
-        with col2:
-            if df["spi"].notna().any():
-                fig2 = px.bar(df, x="year", y="spi",
-                              title="Indice SPI (Standardized Precipitation Index)",
-                              color="spi",
-                              color_continuous_scale=["#ff4444", "#ffffff", "#4db8ff"],
-                              template="plotly_dark")
-                fig2.update_layout(**LAYOUT)
-                st.plotly_chart(fig2, use_container_width=True)
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=df["year"],y=df["temp_max"],name="T° max",line=dict(color="#ff4444",width=2)))
+        fig.add_trace(go.Scatter(x=df["year"],y=df["temp_mean"],name="T° moy",line=dict(color="#ffd700",width=2)))
+        fig.add_trace(go.Scatter(x=df["year"],y=df["temp_min"],name="T° min",line=dict(color="#4db8ff",width=2)))
+        fig.add_hline(y=38,line_dash="dash",line_color="red",annotation_text="Seuil stress 38°C")
+        fig.update_layout(title=f"Températures 2025–2055 · {selected_commune}",template="plotly_dark",**LAYOUT)
+        st.plotly_chart(fig,use_container_width=True)
+        c1,c2,c3 = st.columns(3)
+        c1.metric("T° min projetée",f"{df['temp_min'].min():.1f}°C")
+        c2.metric("T° moy 2055",f"{df['temp_mean'].iloc[-1]:.1f}°C",f"+{df['temp_mean'].iloc[-1]-df['temp_mean'].iloc[0]:.1f}°C")
+        c3.metric("T° max projetée",f"{df['temp_max'].max():.1f}°C")
+        df["jours_chauds"] = ((df["temp_max"]-38)*8).clip(lower=0).round().astype(int)
+        fig2 = px.bar(df,x="year",y="jours_chauds",title="🔥 Jours T°>38°C estimés/an",color="jours_chauds",color_continuous_scale=["#ffd700","#ff4444"],template="plotly_dark")
+        fig2.update_layout(**LAYOUT); st.plotly_chart(fig2,use_container_width=True)
 
-        if df["drought"].notna().any():
-            fig3 = px.line(df, x="year", y="drought",
-                           title="Indice de sécheresse (0=normal, 1=sécheresse sévère)",
-                           color_discrete_sequence=["#ffd700"], template="plotly_dark")
-            fig3.add_hline(y=0.5, line_dash="dash", line_color="red",
-                           annotation_text="Seuil critique")
-            fig3.update_layout(**LAYOUT)
-            st.plotly_chart(fig3, use_container_width=True)
+elif page == "🌧️ Précipitations":
+    region, sol, cal, conseil = get_info(selected_commune)
+    st.markdown(f"# 🌧️ Précipitations — {selected_commune}")
+    if cal: st.info(f"📅 **Début des pluies :** {cal.get('debut_pluies','N/A')} · **Hivernage :** {cal.get('hivernage','N/A')}")
+    df = get_annual(selected_commune, selected_scenario)
+    if not df.empty:
+        fig = px.bar(df,x="year",y="precip_total",title=f"Précipitations annuelles (mm) · {selected_commune}",color="precip_total",color_continuous_scale=["#ff4444","#ffd700","#4db8ff"],template="plotly_dark")
+        fig.update_layout(**LAYOUT); st.plotly_chart(fig,use_container_width=True)
+        c1,c2,c3,c4 = st.columns(4)
+        c1.metric("Précip. 2025",f"{df['precip_total'].iloc[0]:.0f} mm")
+        c2.metric("Moy. 30 ans",f"{df['precip_total'].mean():.0f} mm")
+        c3.metric("Précip. 2055",f"{df['precip_total'].iloc[-1]:.0f} mm")
+        tendance = df['precip_total'].iloc[-1]-df['precip_total'].iloc[0]
+        c4.metric("Tendance",f"{tendance:.0f} mm",delta_color="inverse")
+        st.markdown("### 📊 Comparaison tous scénarios")
+        fig2 = go.Figure()
+        for sc in scenarios:
+            dsc = get_annual(selected_commune,sc)
+            if not dsc.empty:
+                fig2.add_trace(go.Scatter(x=dsc["year"],y=dsc["precip_total"],name=sc,line=dict(color=colors_sc.get(sc,"#fff"),width=2)))
+        fig2.update_layout(title="Précipitations par scénario",template="plotly_dark",**LAYOUT)
+        st.plotly_chart(fig2,use_container_width=True)
+        st.markdown("### 📋 Début des pluies — toutes communes")
+        cal_rows = [{"Commune":c,"Début des pluies":v.get("debut_pluies","N/A"),"Hivernage":v.get("hivernage","N/A"),"Cultures":v.get("cultures","N/A")} for c,v in CALENDRIER.items()]
+        st.dataframe(pd.DataFrame(cal_rows),use_container_width=True,height=400)
 
-        st.markdown("### 📊 Statistiques pluviométriques")
-        col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Précip. min", f"{df['precip_total'].min():.0f} mm")
-        col2.metric("Précip. moy.", f"{df['precip_total'].mean():.0f} mm")
-        col3.metric("Précip. max", f"{df['precip_total'].max():.0f} mm")
-        col4.metric("Tendance", f"{df['precip_total'].iloc[-1] - df['precip_total'].iloc[0]:.0f} mm")
-    else:
-        st.warning("Pas de données disponibles.")
+elif page == "🏜️ Sécheresse":
+    st.markdown(f"# 🏜️ Sécheresse — {selected_commune}")
+    df = get_annual(selected_commune, selected_scenario)
+    if not df.empty:
+        fig = px.line(df,x="year",y="drought",title="Indice de sécheresse (0=normal · 1=sévère)",color_discrete_sequence=["#ffd700"],template="plotly_dark")
+        fig.add_hline(y=0.3,line_dash="dot",line_color="orange",annotation_text="Modéré")
+        fig.add_hline(y=0.6,line_dash="dash",line_color="red",annotation_text="Critique")
+        fig.update_layout(**LAYOUT); st.plotly_chart(fig,use_container_width=True)
+        if df["spi"].notna().any():
+            fig2 = px.bar(df,x="year",y="spi",title="Indice SPI (négatif = déficit)",color="spi",color_continuous_scale=["#ff4444","#ffffff","#4db8ff"],template="plotly_dark")
+            fig2.update_layout(**LAYOUT); st.plotly_chart(fig2,use_container_width=True)
+        annees = df[df["drought"]>0.6]["year"].tolist()
+        if annees: st.error(f"⚠️ Années sécheresse sévère projetées : {', '.join(map(str,annees))}")
 
-# ── PAGE : Carte Interactive ──────────────────────────────────────────────────
+elif page == "🌱 Sols & Calendrier Cultural":
+    region, sol, cal, conseil = get_info(selected_commune)
+    st.markdown(f"# 🌱 Sols & Calendrier — {selected_commune}")
+    c1,c2 = st.columns(2)
+    with c1:
+        st.markdown("### 🪨 Type de sol")
+        st.markdown(f'<div class="info-card">🌍 <b>{selected_commune}</b> ({region})<br><br>{sol}</div>',unsafe_allow_html=True)
+        st.markdown("### 💡 Conseils agricoles")
+        st.markdown(f'<div class="info-card">🌾 {conseil}</div>',unsafe_allow_html=True)
+    with c2:
+        st.markdown("### 📅 Calendrier Cultural")
+        if cal:
+            st.markdown(f"""<div class="info-card">
+🌧️ <b>Hivernage :</b> {cal.get('hivernage','N/A')}<br>
+💧 <b>Début des pluies :</b> {cal.get('debut_pluies','N/A')}<br>
+🌱 <b>Semis :</b> {cal.get('semis','N/A')}<br>
+🌾 <b>Récolte :</b> {cal.get('recolte','N/A')}<br>
+🌿 <b>Cultures :</b> {cal.get('cultures','N/A')}
+</div>""",unsafe_allow_html=True)
+    st.markdown("---")
+    st.markdown("### 📊 Calendrier toutes communes")
+    cal_rows = [{"Commune":c,"Début pluies":v.get("debut_pluies","N/A"),"Hivernage":v.get("hivernage","N/A"),"Semis":v.get("semis","N/A"),"Récolte":v.get("recolte","N/A"),"Cultures":v.get("cultures","N/A")} for c,v in CALENDRIER.items()]
+    st.dataframe(pd.DataFrame(cal_rows),use_container_width=True,height=400)
+    st.markdown("### 🪨 Types de sols toutes communes")
+    sol_rows = [{"Commune":c,"Type de sol":s} for c,s in SOLS.items()]
+    st.dataframe(pd.DataFrame(sol_rows),use_container_width=True,height=400)
+
 elif page == "🗺️ Carte Interactive":
-    st.markdown("# 🗺️ Carte Interactive du Sénégal")
-
-    year = st.slider("Année de référence", 2025, 2055, 2030)
-    variable = st.selectbox("Variable", ["temp_mean", "precip_total", "drought", "heat_stress"])
-
-    df_map = get_all_regions_annual(selected_scenario, year)
+    st.markdown("# 🗺️ Carte Interactive")
+    c1,c2 = st.columns(2)
+    with c1: year = st.slider("Année",2025,2055,2030)
+    with c2: variable = st.selectbox("Variable",["temp_mean","temp_max","precip_total","drought","heat_stress"],format_func=lambda x:{"temp_mean":"🌡️ T° moyenne","temp_max":"🔥 T° max","precip_total":"🌧️ Précipitations","drought":"🏜️ Sécheresse","heat_stress":"⚡ Stress thermique"}[x])
+    df_map = get_all_map(selected_scenario, year)
     if not df_map.empty:
-        labels = {
-            "temp_mean": "T° moyenne (°C)",
-            "precip_total": "Précipitations (mm)",
-            "drought": "Indice sécheresse",
-            "heat_stress": "Stress thermique"
-        }
-        colors = {
-            "temp_mean": "Reds",
-            "precip_total": "Blues",
-            "drought": "YlOrRd",
-            "heat_stress": "hot"
-        }
+        cscales = {"temp_mean":"Reds","temp_max":"hot","precip_total":"Blues","drought":"YlOrRd","heat_stress":"Oranges"}
+        labels  = {"temp_mean":"T° moy (°C)","temp_max":"T° max (°C)","precip_total":"Précip (mm)","drought":"Sécheresse","heat_stress":"Stress"}
+        fig = px.scatter_mapbox(df_map,lat="latitude",lon="longitude",hover_name="commune_name",hover_data={"region":True,variable:True,"latitude":False,"longitude":False},color=variable,color_continuous_scale=cscales[variable],size_max=18,zoom=5.5,center={"lat":14.5,"lon":-14.5},mapbox_style="open-street-map",title=f"{labels[variable]} · {year} · {selected_scenario}")
+        fig.update_layout(height=600,margin={"r":0,"t":40,"l":0,"b":0})
+        st.plotly_chart(fig,use_container_width=True)
 
-        fig = px.scatter_mapbox(
-            df_map, lat="latitude", lon="longitude",
-            hover_name="commune_name",
-            hover_data=["region", variable],
-            color=variable,
-            color_continuous_scale=colors[variable],
-            size_max=15,
-            zoom=5.5,
-            center={"lat": 14.5, "lon": -14.5},
-            mapbox_style="carto-darkmatter",
-            title=f"{labels[variable]} — {year} · {selected_scenario}",
-            template="plotly_dark",
-        )
-        fig.update_layout(paper_bgcolor="#0a0f1e", font_color="#e8f4fd",
-                          height=600, margin={"r": 0, "t": 40, "l": 0, "b": 0})
-        st.plotly_chart(fig, use_container_width=True)
-    else:
-        st.warning("Données cartographiques non disponibles pour cette année.")
-
-# ── PAGE : Comparaison Scénarios ──────────────────────────────────────────────
-elif page == "📉 Comparaison Scénarios":
-    st.markdown(f"# 📉 Comparaison des Scénarios — {selected_commune}")
-
-    colors_sc = {"SSP1-1.9": "#44ff88", "SSP2-4.5": "#ffd700", "SSP5-8.5": "#ff4444"}
-    variable = st.selectbox("Variable", ["temp_mean", "precip_total", "drought", "heat_stress"])
-    labels = {"temp_mean": "T° moyenne (°C)", "precip_total": "Précipitations (mm)",
-               "drought": "Indice sécheresse", "heat_stress": "Stress thermique"}
-
-    fig = go.Figure()
-    summary = []
-    for sc in scenarios:
-        df = get_annual(selected_commune, sc)
-        if not df.empty and variable in df.columns:
-            fig.add_trace(go.Scatter(
-                x=df["year"], y=df[variable],
-                name=sc, mode="lines+markers",
-                line=dict(color=colors_sc.get(sc, "#ffffff"), width=2),
-            ))
-            summary.append({
-                "Scénario": sc,
-                f"Min": round(df[variable].min(), 2),
-                f"Moyenne": round(df[variable].mean(), 2),
-                f"Max": round(df[variable].max(), 2),
-                f"Tendance 2055 vs 2025": round(df[variable].iloc[-1] - df[variable].iloc[0], 2),
-            })
-
-    fig.update_layout(
-        title=f"{labels[variable]} — Comparaison scénarios · {selected_commune}",
-        template="plotly_dark", **LAYOUT,
-        legend=dict(bgcolor="#0d1527", bordercolor="#2a4a7f"),
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-    if summary:
-        st.markdown("### 📊 Résumé statistique")
-        st.dataframe(pd.DataFrame(summary), use_container_width=True)
-
-# ── PAGE : Alertes & Risques ──────────────────────────────────────────────────
-elif page == "⚠️ Alertes & Risques":
-    st.markdown(f"# ⚠️ Alertes & Risques — {selected_commune}")
-
+elif page == "⚠️ Alertes & Conseils":
+    region, sol, cal, conseil = get_info(selected_commune)
+    st.markdown(f"# ⚠️ Alertes & Conseils — {selected_commune}")
     df = get_annual(selected_commune, selected_scenario)
     if not df.empty:
         last = df.iloc[-1]
-        temp_max = last.get("temp_max", 0) or 0
-        precip = last.get("precip_total", 0) or 0
-        drought = last.get("drought", 0) or 0
-
-        # Niveau de risque global
+        temp_max = last.get("temp_max",0) or 0
+        precip   = last.get("precip_total",0) or 0
+        drought  = last.get("drought",0) or 0
         score = 0
-        if temp_max >= 42: score += 3
-        elif temp_max >= 38: score += 2
-        elif temp_max >= 35: score += 1
-        if drought >= 0.7: score += 3
-        elif drought >= 0.5: score += 2
-        elif drought >= 0.3: score += 1
-        if precip < 200: score += 2
-        elif precip < 400: score += 1
-
-        if score >= 6:
-            st.markdown('<div class="alert-critical">🔴 <b>CRITIQUE</b> — Risques climatiques extrêmes projetés à l\'horizon 2055</div>', unsafe_allow_html=True)
-        elif score >= 4:
-            st.markdown('<div class="alert-high">🟠 <b>ÉLEVÉ</b> — Risques importants nécessitant adaptation urgente</div>', unsafe_allow_html=True)
-        elif score >= 2:
-            st.markdown('<div class="alert-medium">🟡 <b>MODÉRÉ</b> — Surveillance recommandée</div>', unsafe_allow_html=True)
-        else:
-            st.markdown('<div class="alert-low">🟢 <b>FAIBLE</b> — Conditions relativement stables</div>', unsafe_allow_html=True)
-
+        if temp_max>=42: score+=3
+        elif temp_max>=38: score+=2
+        elif temp_max>=35: score+=1
+        if drought>=0.7: score+=3
+        elif drought>=0.5: score+=2
+        elif drought>=0.3: score+=1
+        if precip<200: score+=2
+        elif precip<400: score+=1
+        if score>=6: st.markdown('<div class="alert-critical">🔴 <b>CRITIQUE</b> — Risques extrêmes à horizon 2055</div>',unsafe_allow_html=True)
+        elif score>=4: st.markdown('<div class="alert-high">🟠 <b>ÉLEVÉ</b> — Adaptation urgente</div>',unsafe_allow_html=True)
+        elif score>=2: st.markdown('<div class="alert-medium">🟡 <b>MODÉRÉ</b> — Surveillance recommandée</div>',unsafe_allow_html=True)
+        else: st.markdown('<div class="alert-low">🟢 <b>FAIBLE</b> — Conditions stables</div>',unsafe_allow_html=True)
+        c1,c2,c3 = st.columns(3)
+        c1.metric("T° max 2055",f"{temp_max:.1f}°C")
+        c2.metric("Précip. 2055",f"{precip:.0f} mm")
+        c3.metric("Sécheresse",f"{drought:.2f}")
         st.markdown("---")
-        col1, col2, col3 = st.columns(3)
-        col1.metric("T° max 2055", f"{temp_max:.1f}°C", f"+{temp_max - df.iloc[0].get('temp_max', temp_max):.1f}°C")
-        col2.metric("Précip. 2055", f"{precip:.0f} mm", f"{precip - df.iloc[0].get('precip_total', precip):.0f} mm")
-        col3.metric("Sécheresse 2055", f"{drought:.2f}", "")
+        st.markdown("### 🌾 Conseils agricoles")
+        st.markdown(f'<div class="info-card">💡 {conseil}</div>',unsafe_allow_html=True)
+        st.markdown("### 📅 Calendrier cultural")
+        if cal:
+            st.markdown(f"- 💧 **Début des pluies :** {cal.get('debut_pluies','N/A')}\n- 🌱 **Semis :** {cal.get('semis','N/A')}\n- 🌾 **Récolte :** {cal.get('recolte','N/A')}\n- 🌿 **Cultures :** {cal.get('cultures','N/A')}")
+        st.markdown("### 🪨 Sol")
+        st.markdown(f"**Type :** {sol}")
+        st.markdown("### 📊 Années à risque")
+        df_risk = df[df["drought"]>0.4][["year","temp_max","precip_total","drought"]].copy()
+        df_risk.columns = ["Année","T° max","Précip (mm)","Sécheresse"]
+        if not df_risk.empty: st.dataframe(df_risk.round(2),use_container_width=True)
+        else: st.success("Aucune année à risque élevé pour ce scénario.")
 
-        st.markdown("### 💡 Recommandations agricoles")
-        if score >= 6:
-            st.error("🚨 Transition urgente vers cultures xérophytes (niébé, sorgho). Agroforesterie indispensable. Systèmes de retenue d'eau.")
-        elif score >= 4:
-            st.warning("⚠️ Introduire variétés résistantes à la sécheresse. Renforcer irrigation. Surveiller stress thermique.")
-        elif score >= 2:
-            st.info("ℹ️ Maintenir cultures traditionnelles avec irrigation complémentaire. Diversifier les variétés.")
-        else:
-            st.success("✅ Conditions favorables. Maintenir pratiques actuelles. Prévention préventive recommandée.")
+elif page == "📉 Comparaison Scénarios":
+    st.markdown(f"# 📉 Comparaison Scénarios — {selected_commune}")
+    variable = st.selectbox("Variable",["temp_mean","temp_max","precip_total","drought","heat_stress"],format_func=lambda x:{"temp_mean":"T° moyenne","temp_max":"T° max","precip_total":"Précipitations","drought":"Sécheresse","heat_stress":"Stress thermique"}[x])
+    fig = go.Figure()
+    summary = []
+    for sc in scenarios:
+        df = get_annual(selected_commune,sc)
+        if not df.empty and variable in df.columns:
+            fig.add_trace(go.Scatter(x=df["year"],y=df[variable],name=sc,line=dict(color=colors_sc.get(sc,"#fff"),width=2)))
+            v2040 = df[df["year"]==2040][variable].values
+            summary.append({"Scénario":sc,"2025":round(df[variable].iloc[0],2),"2040":round(v2040[0],2) if len(v2040) else "N/A","2055":round(df[variable].iloc[-1],2),"Variation":round(df[variable].iloc[-1]-df[variable].iloc[0],2)})
+    fig.update_layout(title=f"Comparaison · {selected_commune}",template="plotly_dark",**LAYOUT,legend=dict(bgcolor="#0d1527",bordercolor="#2a4a7f"))
+    st.plotly_chart(fig,use_container_width=True)
+    if summary: st.dataframe(pd.DataFrame(summary),use_container_width=True)
 
-# ── PAGE : Export ─────────────────────────────────────────────────────────────
 elif page == "💾 Export":
     st.markdown(f"# 💾 Export — {selected_commune}")
-
-    resolution = st.selectbox("Résolution", ["annual", "monthly", "daily"])
-    year_range = st.slider("Période", 2025, 2055, (2025, 2055))
-
-    if st.button("📥 Charger", type="primary"):
-        conn = get_conn()
-        q = f"""
-            SELECT * FROM commune_climate_data
-            WHERE commune_name = ? AND scenario = ? AND resolution = ?
-            AND (year >= ? OR strftime('%Y', date_daily) >= ?)
-            AND (year <= ? OR strftime('%Y', date_daily) <= ?)
-        """
-        df = pd.read_sql(q, conn, params=[
-            selected_commune, selected_scenario, resolution,
-            year_range[0], str(year_range[0]),
-            year_range[1], str(year_range[1])
-        ])
-
-        if not df.empty:
-            st.success(f"✅ {len(df):,} enregistrements")
-            st.dataframe(df.head(50), use_container_width=True)
-            csv = df.to_csv(index=False).encode("utf-8")
-            st.download_button(
-                "⬇️ Télécharger CSV", csv,
-                f"{selected_commune}_{resolution}_{selected_scenario}.csv",
-                "text/csv"
-            )
-        else:
-            st.warning("Aucune donnée trouvée.")
+    c1,c2,c3 = st.columns(3)
+    with c1: exp_scenario = st.selectbox("Scénario",scenarios)
+    with c2: year_start   = st.number_input("Année début",2025,2054,2025)
+    with c3: year_end     = st.number_input("Année fin",2026,2055,2055)
+    fmt = st.radio("Format",["CSV","JSON"],horizontal=True)
+    if st.button("📥 Générer",type="primary"):
+        try:
+            df_exp = pd.read_sql("""
+                SELECT year as Annee, temp_annual_mean as T_moy_C, temp_annual_max as T_max_C,
+                       temp_annual_min as T_min_C, precip_annual_total as Precip_mm,
+                       humidity_annual_mean as Humidite_pct, drought_index as Secheresse,
+                       spi_index as SPI, heat_stress as Stress_thermique, risk_level as Risque, scenario as Scenario
+                FROM commune_climate_data
+                WHERE commune_name=? AND scenario=? AND resolution='annual' AND year>=? AND year<=?
+                ORDER BY year
+            """, get_conn(), params=[selected_commune, exp_scenario, int(year_start), int(year_end)])
+            if not df_exp.empty:
+                st.success(f"✅ {len(df_exp)} années exportées")
+                st.dataframe(df_exp,use_container_width=True)
+                if fmt=="CSV":
+                    data  = df_exp.to_csv(index=False).encode("utf-8")
+                    mime  = "text/csv"
+                    fname = f"{selected_commune}_{exp_scenario}_{int(year_start)}_{int(year_end)}.csv"
+                else:
+                    data  = df_exp.to_json(orient="records",indent=2).encode("utf-8")
+                    mime  = "application/json"
+                    fname = f"{selected_commune}_{exp_scenario}_{int(year_start)}_{int(year_end)}.json"
+                st.download_button("⬇️ Télécharger",data,fname,mime)
+            else:
+                st.warning("Aucune donnée trouvée.")
+        except Exception as e:
+            st.error(f"Erreur : {e}")
