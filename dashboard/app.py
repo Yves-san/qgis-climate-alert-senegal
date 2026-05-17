@@ -218,6 +218,93 @@ CONSEILS = {
     'Oussouye':'Riz sacré de mangrove. Pratiques traditionnelles diola efficaces. Pêche.',
 }
 
+def afficher_calendrier_gantt(commune):
+    """Calendrier cultural sous forme de tableau Gantt Jan-Déc"""
+    MOIS = ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"]
+    
+    # Données Gantt par commune : {culture: [mois_debut, mois_fin]}
+    GANTT = {
+        'Dakar':        [("Maraîchage",1,12),("Niébé",7,10),("Pêche",1,12),("Légumes",10,4)],
+        'Pikine':       [("Arachide",7,11),("Maïs",7,10),("Maraîchage",11,4),("Niébé",8,10),("Manioc",1,12)],
+        'Guediawaye':   [("Légumes",1,12),("Maraîchage",10,4),("Niébé",8,10)],
+        'Rufisque':     [("Maïs",7,10),("Niébé",7,10),("Maraîchage",11,5),("Arachide",7,11)],
+        'Bargny':       [("Maraîchage",11,5),("Pêche",1,12),("Niébé",8,10)],
+        'Diourbel':     [("Arachide",7,11),("Mil",7,10),("Niébé",8,10),("Sorgho",7,11),("Manioc",1,12)],
+        'Bambey':       [("Arachide",7,11),("Niébé",8,10),("Mil",7,10),("Sorgho",7,11)],
+        'Mbacké':       [("Arachide",7,11),("Mil",7,10),("Niébé",8,10),("Sorgho",7,11)],
+        'Fatick':       [("Arachide",7,11),("Riz pluvial",7,12),("Riz mangrove",6,12),("Maraîchage",12,4),("Mil",7,10),("Pêche",1,12)],
+        'Gossas':       [("Mil",7,10),("Niébé",8,10),("Arachide",7,11),("Sorgho",7,11)],
+        'Foundiougne':  [("Riz mangrove",6,12),("Riz pluvial",6,11),("Pêche",1,12),("Maraîchage",12,4),("Arachide",6,11)],
+        'Sokone':       [("Arachide",7,11),("Riz pluvial",7,12),("Mil",7,10),("Pêche",1,12),("Maraîchage",12,4)],
+        'Kaolack':      [("Arachide",7,11),("Mil",7,10),("Sorgho",7,11),("Niébé",8,10),("Maïs",7,10),("Maraîchage",11,4)],
+        'Kaffrine':     [("Arachide",7,11),("Mil",7,10),("Niébé",8,10),("Sorgho",7,11),("Maïs",7,10)],
+        'Nioro du Rip': [("Arachide",7,11),("Coton",6,11),("Mil",7,10),("Niébé",8,10),("Maïs",7,10),("Sorgho",7,11)],
+        'Kolda':        [("Arachide",5,11),("Mil",5,11),("Coton",5,11),("Maïs",5,10),("Riz pluvial",6,11),("Manioc",1,12),("Palmier huile",1,12),("Mangue",3,7),("Anacarde",2,5),("Niébé",6,10)],
+        'Vélingara':    [("Arachide",5,11),("Mil",5,11),("Riz bas-fond",6,11),("Maïs",5,10),("Manioc",1,12),("Anacarde",2,5),("Niébé",6,10),("Sorgho",6,11)],
+        'Médina Yoro Foulah':[("Mil",6,11),("Arachide",6,11),("Sorgho",6,11),("Maïs",6,10),("Manioc",1,12),("Niébé",7,10)],
+        'Kédougou':     [("Maïs",4,10),("Mil",4,11),("Igname",4,12),("Riz pluvial",6,11),("Manioc",1,12),("Arachide",5,11),("Sorgho",6,11),("Mangue",3,7),("Anacarde",2,5),("Niébé",6,10),("Patate douce",5,11)],
+        'Saraya':       [("Mil",5,11),("Igname",4,12),("Riz pluvial",6,11),("Manioc",1,12),("Maïs",5,10),("Arachide",5,11),("Anacarde",2,5),("Mangue",3,7)],
+        'Salékata':     [("Mil",5,11),("Igname",4,12),("Manioc",1,12),("Maïs",5,10),("Arachide",5,11),("Mangue",3,7)],
+        'Louga':        [("Arachide",7,10),("Mil souna",7,10),("Niébé",8,10),("Sorgho",7,10),("Gomme arabique",1,12)],
+        'Linguère':     [("Mil",7,10),("Niébé",8,10),("Élevage",1,12),("Gomme arabique",1,12),("Sorgho",7,10)],
+        'Kébémer':      [("Arachide",7,10),("Mil",7,10),("Niébé",8,10),("Sorgho",7,10)],
+        'Matam':        [("Riz irrigué S1",2,6),("Riz irrigué S2",8,12),("Sorgho",7,11),("Maraîchage",11,4),("Mil",7,10),("Niébé",8,10),("Tomate",11,4),("Oignon",11,5)],
+        'Kanel':        [("Riz irrigué",7,11),("Mil",7,10),("Sorgho",7,11),("Décrue",10,12),("Maraîchage",11,4),("Niébé",8,10)],
+        'Ranérou':      [("Mil",7,10),("Élevage",1,12),("Niébé",8,10),("Gomme arabique",1,12),("Sorgho",7,10)],
+        'Saint-Louis':  [("Riz irrigué S1",2,6),("Riz irrigué S2",8,12),("Tomate",11,4),("Oignon",11,5),("Mil",7,10),("Maraîchage",11,4),("Pêche",1,12)],
+        'Podor':        [("Mil",7,10),("Riz irrigué",7,11),("Décrue",10,12),("Sorgho",7,11),("Maraîchage",11,4),("Niébé",8,10)],
+        'Dagana':       [("Riz irrigué S1",2,6),("Riz irrigué S2",8,12),("Tomate",11,4),("Oignon",11,5),("Maraîchage",11,4)],
+        'Richard-Toll': [("Canne à sucre",1,12),("Riz irrigué S1",2,6),("Riz irrigué S2",8,12),("Tomate",11,4),("Maraîchage",11,4)],
+        'Sédhiou':      [("Arachide",5,11),("Riz pluvial",5,11),("Riz mangrove",6,12),("Anacarde",2,5),("Palmier huile",1,12),("Manioc",1,12),("Maïs",5,10),("Mangue",3,7),("Niébé",6,10),("Maraîchage",12,4)],
+        'Goudomp':      [("Arachide",5,11),("Mil",5,11),("Riz bas-fond",6,12),("Anacarde",2,5),("Palmier huile",1,12),("Manioc",1,12),("Maïs",5,10),("Mangue",3,7),("Niébé",6,10)],
+        'Bounkiling':   [("Riz pluvial",5,12),("Anacarde",2,5),("Arachide",5,11),("Palmier huile",1,12),("Manioc",1,12),("Maïs",5,10),("Mangue",3,7),("Niébé",6,10)],
+        'Tambacounda':  [("Mil",6,11),("Arachide",6,11),("Sorgho",6,11),("Élevage",1,12),("Maïs",6,10),("Niébé",7,10),("Sésame",6,10),("Manioc",1,12),("Gomme arabique",1,12)],
+        'Bakel':        [("Mil",7,10),("Riz décrue",10,12),("Élevage",1,12),("Sorgho",7,10),("Niébé",8,10),("Gomme arabique",1,12),("Maraîchage",11,4)],
+        'Goudiry':      [("Sorgho",6,11),("Mil",6,11),("Niébé",7,10),("Arachide",6,11),("Maïs",6,10),("Élevage",1,12),("Sésame",6,10)],
+        'Koumpentoum':  [("Arachide",6,11),("Mil",6,11),("Niébé",7,10),("Sorgho",6,11),("Maïs",6,10),("Manioc",1,12)],
+        'Thiès':        [("Arachide",7,11),("Tomate",11,4),("Maraîchage",10,5),("Mil",7,10),("Niébé",8,10),("Oignon",11,4),("Piment",11,4)],
+        'Mbour':        [("Tomate",11,4),("Maraîchage",10,5),("Pêche",1,12),("Oignon",11,4),("Chou",11,3),("Piment",11,4),("Niébé",8,10)],
+        'Tivaouane':    [("Arachide",7,11),("Niébé",8,10),("Mil",7,10),("Maraîchage",11,4)],
+        'Mékhe':        [("Maïs",7,10),("Mil",7,10),("Arachide",7,11),("Niébé",8,10),("Sorgho",7,11)],
+        'Khombole':     [("Arachide",7,11),("Niébé",8,10),("Mil",7,10),("Sorgho",7,11)],
+        'Ziguinchor':   [("Riz pluvial",5,11),("Riz mangrove",6,12),("Anacarde",2,5),("Arachide",5,11),("Maïs",5,10),("Palmier huile",1,12),("Manioc",1,12),("Mangue",3,7),("Maraîchage",12,4),("Pêche",1,12),("Banane",1,12),("Agrumes",1,12)],
+        'Bignona':      [("Riz pluvial",5,11),("Riz mangrove",6,12),("Anacarde",2,5),("Arachide",5,11),("Palmier huile",1,12),("Manioc",1,12),("Mangue",3,7),("Maïs",5,10),("Niébé",6,10),("Banane",1,12)],
+        'Oussouye':     [("Riz mangrove",5,12),("Riz pluvial",5,11),("Pêche",1,12),("Palmier huile",1,12),("Manioc",1,12),("Mangue",3,7),("Anacarde",2,5),("Banane",1,12),("Agrumes",1,12)],
+    }
+
+    cultures = GANTT.get(commune, [("Mil",7,10),("Arachide",7,11)])
+    
+    COULEURS = ["#2ECC71","#3498DB","#E74C3C","#F39C12","#9B59B6","#1ABC9C","#E67E22","#16A085"]
+    
+    # Construction tableau
+    rows = []
+    for i, (culture, debut, fin) in enumerate(cultures):
+        row = {"🌿 Culture": culture}
+        for m_idx, mois in enumerate(MOIS, 1):
+            if debut <= fin:
+                actif = debut <= m_idx <= fin
+            else:  # cycle qui chevauche fin d'année
+                actif = m_idx >= debut or m_idx <= fin
+            row[mois] = "✅" if actif else ""
+        rows.append(row)
+    
+    df_gantt = pd.DataFrame(rows)
+    
+    # Affichage avec couleurs
+    import streamlit as st
+    
+    st.markdown("#### 📅 Calendrier Cultural — " + commune)
+    st.caption("✅ = période active pour cette culture")
+    
+    # Style conditionnel
+    def colorize(val):
+        if val == "✅":
+            return "background-color: #1a5c2a; color: #2ECC71; text-align: center; font-size: 16px;"
+        return "text-align: center; color: #555;"
+    
+    styled = df_gantt.style.applymap(colorize, subset=MOIS)
+    st.dataframe(styled, use_container_width=True, hide_index=True)
+
 LAYOUT = dict(paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527", font_color="#e8f4fd", margin=dict(t=40,b=20,l=10,r=10))
 
 with st.sidebar:
@@ -471,89 +558,4 @@ elif page == "💾 Export":
         except Exception as e:
             st.error(f"Erreur : {e}")
 
-def afficher_calendrier_gantt(commune):
-    """Calendrier cultural sous forme de tableau Gantt Jan-Déc"""
-    MOIS = ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"]
-    
-    # Données Gantt par commune : {culture: [mois_debut, mois_fin]}
-    GANTT = {
-        'Dakar':        [("Maraîchage",1,12),("Niébé",7,10),("Pêche",1,12),("Légumes",10,4)],
-        'Pikine':       [("Arachide",7,11),("Maïs",7,10),("Maraîchage",11,4),("Niébé",8,10),("Manioc",1,12)],
-        'Guediawaye':   [("Légumes",1,12),("Maraîchage",10,4),("Niébé",8,10)],
-        'Rufisque':     [("Maïs",7,10),("Niébé",7,10),("Maraîchage",11,5),("Arachide",7,11)],
-        'Bargny':       [("Maraîchage",11,5),("Pêche",1,12),("Niébé",8,10)],
-        'Diourbel':     [("Arachide",7,11),("Mil",7,10),("Niébé",8,10),("Sorgho",7,11),("Manioc",1,12)],
-        'Bambey':       [("Arachide",7,11),("Niébé",8,10),("Mil",7,10),("Sorgho",7,11)],
-        'Mbacké':       [("Arachide",7,11),("Mil",7,10),("Niébé",8,10),("Sorgho",7,11)],
-        'Fatick':       [("Arachide",7,11),("Riz pluvial",7,12),("Riz mangrove",6,12),("Maraîchage",12,4),("Mil",7,10),("Pêche",1,12)],
-        'Gossas':       [("Mil",7,10),("Niébé",8,10),("Arachide",7,11),("Sorgho",7,11)],
-        'Foundiougne':  [("Riz mangrove",6,12),("Riz pluvial",6,11),("Pêche",1,12),("Maraîchage",12,4),("Arachide",6,11)],
-        'Sokone':       [("Arachide",7,11),("Riz pluvial",7,12),("Mil",7,10),("Pêche",1,12),("Maraîchage",12,4)],
-        'Kaolack':      [("Arachide",7,11),("Mil",7,10),("Sorgho",7,11),("Niébé",8,10),("Maïs",7,10),("Maraîchage",11,4)],
-        'Kaffrine':     [("Arachide",7,11),("Mil",7,10),("Niébé",8,10),("Sorgho",7,11),("Maïs",7,10)],
-        'Nioro du Rip': [("Arachide",7,11),("Coton",6,11),("Mil",7,10),("Niébé",8,10),("Maïs",7,10),("Sorgho",7,11)],
-        'Kolda':        [("Arachide",5,11),("Mil",5,11),("Coton",5,11),("Maïs",5,10),("Riz pluvial",6,11),("Manioc",1,12),("Palmier huile",1,12),("Mangue",3,7),("Anacarde",2,5),("Niébé",6,10)],
-        'Vélingara':    [("Arachide",5,11),("Mil",5,11),("Riz bas-fond",6,11),("Maïs",5,10),("Manioc",1,12),("Anacarde",2,5),("Niébé",6,10),("Sorgho",6,11)],
-        'Médina Yoro Foulah':[("Mil",6,11),("Arachide",6,11),("Sorgho",6,11),("Maïs",6,10),("Manioc",1,12),("Niébé",7,10)],
-        'Kédougou':     [("Maïs",4,10),("Mil",4,11),("Igname",4,12),("Riz pluvial",6,11),("Manioc",1,12),("Arachide",5,11),("Sorgho",6,11),("Mangue",3,7),("Anacarde",2,5),("Niébé",6,10),("Patate douce",5,11)],
-        'Saraya':       [("Mil",5,11),("Igname",4,12),("Riz pluvial",6,11),("Manioc",1,12),("Maïs",5,10),("Arachide",5,11),("Anacarde",2,5),("Mangue",3,7)],
-        'Salékata':     [("Mil",5,11),("Igname",4,12),("Manioc",1,12),("Maïs",5,10),("Arachide",5,11),("Mangue",3,7)],
-        'Louga':        [("Arachide",7,10),("Mil souna",7,10),("Niébé",8,10),("Sorgho",7,10),("Gomme arabique",1,12)],
-        'Linguère':     [("Mil",7,10),("Niébé",8,10),("Élevage",1,12),("Gomme arabique",1,12),("Sorgho",7,10)],
-        'Kébémer':      [("Arachide",7,10),("Mil",7,10),("Niébé",8,10),("Sorgho",7,10)],
-        'Matam':        [("Riz irrigué S1",2,6),("Riz irrigué S2",8,12),("Sorgho",7,11),("Maraîchage",11,4),("Mil",7,10),("Niébé",8,10),("Tomate",11,4),("Oignon",11,5)],
-        'Kanel':        [("Riz irrigué",7,11),("Mil",7,10),("Sorgho",7,11),("Décrue",10,12),("Maraîchage",11,4),("Niébé",8,10)],
-        'Ranérou':      [("Mil",7,10),("Élevage",1,12),("Niébé",8,10),("Gomme arabique",1,12),("Sorgho",7,10)],
-        'Saint-Louis':  [("Riz irrigué S1",2,6),("Riz irrigué S2",8,12),("Tomate",11,4),("Oignon",11,5),("Mil",7,10),("Maraîchage",11,4),("Pêche",1,12)],
-        'Podor':        [("Mil",7,10),("Riz irrigué",7,11),("Décrue",10,12),("Sorgho",7,11),("Maraîchage",11,4),("Niébé",8,10)],
-        'Dagana':       [("Riz irrigué S1",2,6),("Riz irrigué S2",8,12),("Tomate",11,4),("Oignon",11,5),("Maraîchage",11,4)],
-        'Richard-Toll': [("Canne à sucre",1,12),("Riz irrigué S1",2,6),("Riz irrigué S2",8,12),("Tomate",11,4),("Maraîchage",11,4)],
-        'Sédhiou':      [("Arachide",5,11),("Riz pluvial",5,11),("Riz mangrove",6,12),("Anacarde",2,5),("Palmier huile",1,12),("Manioc",1,12),("Maïs",5,10),("Mangue",3,7),("Niébé",6,10),("Maraîchage",12,4)],
-        'Goudomp':      [("Arachide",5,11),("Mil",5,11),("Riz bas-fond",6,12),("Anacarde",2,5),("Palmier huile",1,12),("Manioc",1,12),("Maïs",5,10),("Mangue",3,7),("Niébé",6,10)],
-        'Bounkiling':   [("Riz pluvial",5,12),("Anacarde",2,5),("Arachide",5,11),("Palmier huile",1,12),("Manioc",1,12),("Maïs",5,10),("Mangue",3,7),("Niébé",6,10)],
-        'Tambacounda':  [("Mil",6,11),("Arachide",6,11),("Sorgho",6,11),("Élevage",1,12),("Maïs",6,10),("Niébé",7,10),("Sésame",6,10),("Manioc",1,12),("Gomme arabique",1,12)],
-        'Bakel':        [("Mil",7,10),("Riz décrue",10,12),("Élevage",1,12),("Sorgho",7,10),("Niébé",8,10),("Gomme arabique",1,12),("Maraîchage",11,4)],
-        'Goudiry':      [("Sorgho",6,11),("Mil",6,11),("Niébé",7,10),("Arachide",6,11),("Maïs",6,10),("Élevage",1,12),("Sésame",6,10)],
-        'Koumpentoum':  [("Arachide",6,11),("Mil",6,11),("Niébé",7,10),("Sorgho",6,11),("Maïs",6,10),("Manioc",1,12)],
-        'Thiès':        [("Arachide",7,11),("Tomate",11,4),("Maraîchage",10,5),("Mil",7,10),("Niébé",8,10),("Oignon",11,4),("Piment",11,4)],
-        'Mbour':        [("Tomate",11,4),("Maraîchage",10,5),("Pêche",1,12),("Oignon",11,4),("Chou",11,3),("Piment",11,4),("Niébé",8,10)],
-        'Tivaouane':    [("Arachide",7,11),("Niébé",8,10),("Mil",7,10),("Maraîchage",11,4)],
-        'Mékhe':        [("Maïs",7,10),("Mil",7,10),("Arachide",7,11),("Niébé",8,10),("Sorgho",7,11)],
-        'Khombole':     [("Arachide",7,11),("Niébé",8,10),("Mil",7,10),("Sorgho",7,11)],
-        'Ziguinchor':   [("Riz pluvial",5,11),("Riz mangrove",6,12),("Anacarde",2,5),("Arachide",5,11),("Maïs",5,10),("Palmier huile",1,12),("Manioc",1,12),("Mangue",3,7),("Maraîchage",12,4),("Pêche",1,12),("Banane",1,12),("Agrumes",1,12)],
-        'Bignona':      [("Riz pluvial",5,11),("Riz mangrove",6,12),("Anacarde",2,5),("Arachide",5,11),("Palmier huile",1,12),("Manioc",1,12),("Mangue",3,7),("Maïs",5,10),("Niébé",6,10),("Banane",1,12)],
-        'Oussouye':     [("Riz mangrove",5,12),("Riz pluvial",5,11),("Pêche",1,12),("Palmier huile",1,12),("Manioc",1,12),("Mangue",3,7),("Anacarde",2,5),("Banane",1,12),("Agrumes",1,12)],
-    }
 
-    cultures = GANTT.get(commune, [("Mil",7,10),("Arachide",7,11)])
-    
-    COULEURS = ["#2ECC71","#3498DB","#E74C3C","#F39C12","#9B59B6","#1ABC9C","#E67E22","#16A085"]
-    
-    # Construction tableau
-    rows = []
-    for i, (culture, debut, fin) in enumerate(cultures):
-        row = {"🌿 Culture": culture}
-        for m_idx, mois in enumerate(MOIS, 1):
-            if debut <= fin:
-                actif = debut <= m_idx <= fin
-            else:  # cycle qui chevauche fin d'année
-                actif = m_idx >= debut or m_idx <= fin
-            row[mois] = "✅" if actif else ""
-        rows.append(row)
-    
-    df_gantt = pd.DataFrame(rows)
-    
-    # Affichage avec couleurs
-    import streamlit as st
-    
-    st.markdown("#### 📅 Calendrier Cultural — " + commune)
-    st.caption("✅ = période active pour cette culture")
-    
-    # Style conditionnel
-    def colorize(val):
-        if val == "✅":
-            return "background-color: #1a5c2a; color: #2ECC71; text-align: center; font-size: 16px;"
-        return "text-align: center; color: #555;"
-    
-    styled = df_gantt.style.applymap(colorize, subset=MOIS)
-    st.dataframe(styled, use_container_width=True, hide_index=True)
