@@ -322,6 +322,8 @@ elif page == "🌧️ Précipitations":
         st.markdown("### 📋 Début des pluies — toutes communes")
         cal_rows = [{"Commune":c,"Début des pluies":v.get("debut_pluies","N/A"),"Hivernage":v.get("hivernage","N/A"),"Cultures":v.get("cultures","N/A")} for c,v in CALENDRIER.items()]
         st.dataframe(pd.DataFrame(cal_rows),use_container_width=True,height=400)
+    st.markdown('---')
+    afficher_calendrier_gantt(selected_commune)
 
 elif page == "🏜️ Sécheresse":
     st.markdown(f"# 🏜️ Sécheresse — {selected_commune}")
@@ -360,6 +362,8 @@ elif page == "🌱 Sols & Calendrier Cultural":
     st.markdown("### 📊 Calendrier toutes communes")
     cal_rows = [{"Commune":c,"Début pluies":v.get("debut_pluies","N/A"),"Hivernage":v.get("hivernage","N/A"),"Semis":v.get("semis","N/A"),"Récolte":v.get("recolte","N/A"),"Cultures":v.get("cultures","N/A")} for c,v in CALENDRIER.items()]
     st.dataframe(pd.DataFrame(cal_rows),use_container_width=True,height=400)
+    st.markdown('---')
+    afficher_calendrier_gantt(selected_commune)
     st.markdown("### 🪨 Types de sols toutes communes")
     sol_rows = [{"Commune":c,"Type de sol":s} for c,s in SOLS.items()]
     st.dataframe(pd.DataFrame(sol_rows),use_container_width=True,height=400)
@@ -466,3 +470,90 @@ elif page == "💾 Export":
                 st.warning("Aucune donnée trouvée.")
         except Exception as e:
             st.error(f"Erreur : {e}")
+
+def afficher_calendrier_gantt(commune):
+    """Calendrier cultural sous forme de tableau Gantt Jan-Déc"""
+    MOIS = ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"]
+    
+    # Données Gantt par commune : {culture: [mois_debut, mois_fin]}
+    GANTT = {
+        'Dakar':        [("Maraîchage",1,12),("Niébé",7,10),("Pêche",1,12)],
+        'Pikine':       [("Arachide",7,11),("Maïs",7,10),("Maraîchage",11,4)],
+        'Guediawaye':   [("Légumes",1,12),("Maraîchage",10,4)],
+        'Rufisque':     [("Maïs",7,10),("Niébé",7,10),("Maraîchage",11,5)],
+        'Bargny':       [("Maraîchage",11,5),("Pêche",1,12)],
+        'Diourbel':     [("Arachide",7,11),("Mil",7,10),("Niébé",8,10)],
+        'Bambey':       [("Arachide",7,11),("Niébé",8,10)],
+        'Mbacké':       [("Arachide",7,11),("Mil",7,10)],
+        'Fatick':       [("Arachide",7,11),("Riz",7,12),("Maraîchage",12,4)],
+        'Gossas':       [("Mil",7,10),("Niébé",8,10)],
+        'Foundiougne':  [("Riz mangrove",6,12),("Pêche",1,12)],
+        'Sokone':       [("Arachide",7,11),("Riz",7,12)],
+        'Kaolack':      [("Arachide",7,11),("Mil",7,10),("Sorgho",7,11)],
+        'Kaffrine':     [("Arachide",7,11),("Mil",7,10),("Niébé",8,10)],
+        'Nioro du Rip': [("Arachide",7,11),("Coton",6,11),("Mil",7,10)],
+        'Kolda':        [("Arachide",5,11),("Mil",5,11),("Coton",5,11),("Maïs",5,10)],
+        'Vélingara':    [("Arachide",5,11),("Mil",5,11),("Riz bas-fond",6,11)],
+        'Médina Yoro Foulah':[("Mil",6,11),("Arachide",6,11),("Sorgho",6,11)],
+        'Kédougou':     [("Maïs",4,10),("Mil",4,11),("Igname",4,12),("Riz",6,11)],
+        'Saraya':       [("Mil",5,11),("Igname",4,12),("Riz",6,11)],
+        'Salékata':     [("Mil",5,11),("Igname",4,12)],
+        'Louga':        [("Arachide",7,10),("Mil souna",7,10),("Niébé",8,10)],
+        'Linguère':     [("Mil",7,10),("Niébé",8,10),("Élevage",1,12)],
+        'Kébémer':      [("Arachide",7,10),("Mil",7,10)],
+        'Matam':        [("Riz irrigué",1,12),("Sorgho",7,11),("Maraîchage",11,4)],
+        'Kanel':        [("Riz",7,11),("Mil",7,10),("Décrue",10,12)],
+        'Ranérou':      [("Mil",7,10),("Élevage",1,12)],
+        'Saint-Louis':  [("Riz irrigué S1",2,6),("Riz irrigué S2",8,12),("Tomate",11,4),("Oignon",11,5)],
+        'Podor':        [("Mil",7,10),("Riz",7,11),("Décrue",10,12)],
+        'Dagana':       [("Riz irrigué S1",2,6),("Riz irrigué S2",8,12)],
+        'Richard-Toll': [("Canne à sucre",1,12),("Riz irrigué",1,12)],
+        'Sédhiou':      [("Arachide",5,11),("Riz",5,12),("Anacarde",2,5)],
+        'Goudomp':      [("Arachide",5,11),("Mil",5,11),("Riz bas-fond",6,12)],
+        'Bounkiling':   [("Riz",5,12),("Anacarde",2,5),("Arachide",5,11)],
+        'Tambacounda':  [("Mil",6,11),("Arachide",6,11),("Sorgho",6,11),("Élevage",1,12)],
+        'Bakel':        [("Mil",7,10),("Riz décrue",10,12),("Élevage",1,12)],
+        'Goudiry':      [("Sorgho",6,11),("Mil",6,11),("Niébé",7,10)],
+        'Koumpentoum':  [("Arachide",6,11),("Mil",6,11),("Niébé",7,10)],
+        'Thiès':        [("Arachide",7,11),("Tomate",11,4),("Maraîchage",10,5)],
+        'Mbour':        [("Tomate",11,4),("Maraîchage",10,5),("Pêche",1,12)],
+        'Tivaouane':    [("Arachide",7,11),("Niébé",8,10)],
+        'Mékhe':        [("Maïs",7,10),("Mil",7,10),("Arachide",7,11)],
+        'Khombole':     [("Arachide",7,11),("Niébé",8,10)],
+        'Ziguinchor':   [("Riz",5,12),("Anacarde",2,5),("Maraîchage",12,4)],
+        'Bignona':      [("Riz",5,12),("Anacarde",2,5),("Arachide",5,11)],
+        'Oussouye':     [("Riz mangrove",5,12),("Pêche",1,12)],
+    }
+
+    cultures = GANTT.get(commune, [("Mil",7,10),("Arachide",7,11)])
+    
+    COULEURS = ["#2ECC71","#3498DB","#E74C3C","#F39C12","#9B59B6","#1ABC9C","#E67E22","#16A085"]
+    
+    # Construction tableau
+    rows = []
+    for i, (culture, debut, fin) in enumerate(cultures):
+        row = {"🌿 Culture": culture}
+        for m_idx, mois in enumerate(MOIS, 1):
+            if debut <= fin:
+                actif = debut <= m_idx <= fin
+            else:  # cycle qui chevauche fin d'année
+                actif = m_idx >= debut or m_idx <= fin
+            row[mois] = "✅" if actif else ""
+        rows.append(row)
+    
+    df_gantt = pd.DataFrame(rows)
+    
+    # Affichage avec couleurs
+    import streamlit as st
+    
+    st.markdown("#### 📅 Calendrier Cultural — " + commune)
+    st.caption("✅ = période active pour cette culture")
+    
+    # Style conditionnel
+    def colorize(val):
+        if val == "✅":
+            return "background-color: #1a5c2a; color: #2ECC71; text-align: center; font-size: 16px;"
+        return "text-align: center; color: #555;"
+    
+    styled = df_gantt.style.applymap(colorize, subset=MOIS)
+    st.dataframe(styled, use_container_width=True, hide_index=True)
