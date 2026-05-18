@@ -1882,6 +1882,7 @@ with st.sidebar:
         "🌡️ Température",
         "🌧️ Précipitations",
         "🏜️ Sécheresse",
+        "💧 Ressources en eau",
         "🌱 Sols & Calendrier Cultural",
         "🗺️ Carte Interactive",
         "⚠️ Alertes & Conseils",
@@ -1993,6 +1994,9 @@ elif page == "🏜️ Sécheresse":
             fig2.update_layout(**LAYOUT); st.plotly_chart(fig2,use_container_width=True)
         annees = df[df["drought"]>0.6]["year"].tolist()
         if annees: st.error(f"⚠️ Années sécheresse sévère projetées : {', '.join(map(str,annees))}")
+
+elif page == "💧 Ressources en eau":
+    afficher_section_hydraulique(selected_commune, selected_scenario)
 
 elif page == "🌱 Sols & Calendrier Cultural":
     region, sol, cal, conseil = get_info(selected_commune)
