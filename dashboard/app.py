@@ -1,6 +1,6 @@
 """
 Senegal Climate Alert — Dashboard Complet 9 pages
-46 communes · Sols · Calendrier · Précipitations · Conseils · Export
+46 communes - Sols - Calendrier - Précipitations - Conseils - Export
 """
 import streamlit as st
 import pandas as pd
@@ -72,52 +72,52 @@ def get_all_map(scenario, year):
     """, get_conn(), params=[scenario, year])
 
 SOLS = {
-    'Dakar':'Sol sableux (Deck-Dior) · faible rétention hydrique',
-    'Pikine':'Sol sableux dégradé · urbanisation intense',
-    'Guediawaye':'Sol sableux · nappe phréatique affleurante',
-    'Rufisque':'Sol ferrugineux tropical · bon drainage',
-    'Bargny':'Sol salin · mangrove dégradée',
-    'Diourbel':'Sol ferrugineux (Dior) · arachide',
-    'Bambey':'Sol Dior sableux · très cultivé',
-    'Mbacké':'Sol Dior et Deck · polyculture',
-    'Fatick':'Sol sulfaté acide · tannes · mangrove',
-    'Gossas':'Sol ferrugineux · mil dominant',
-    'Foundiougne':'Sol alluvial · riziculture de mangrove',
-    'Sokone':'Sol hydromorphe · sel',
-    'Kaolack':'Sol argileux (Deck) · bassin arachidier',
-    'Kaffrine':'Sol Dior et Deck · transition sahélienne',
-    'Nioro du Rip':'Sol ferrugineux lessivé · coton',
-    'Kolda':'Sol ferralitique · forêt dégradée',
-    'Vélingara':'Sol ferrugineux · savane arbustive',
-    'Médina Yoro Foulah':'Sol latéritique · cuirasse ferrugineuse',
-    'Kédougou':'Sol ferralitique rouge · or et cultures',
-    'Saraya':'Sol latéritique · or alluvionnaire',
-    'Salékata':'Sol ferralitique · igname et mil',
-    'Louga':'Sol Dior sableux · déficit pluviométrique',
-    'Linguère':'Sol sableux sahélien · élevage',
-    'Kébémer':'Sol Dior · arachide et mil',
-    'Matam':'Sol alluvial (Walo) · riz irrigué',
-    'Kanel':'Sol alluvial · décrue et irrigation',
-    'Ranérou':'Sol sableux sahélien · élevage extensif',
-    'Saint-Louis':'Sol alluvial delta · riz irrigué',
-    'Podor':'Sol Walo · culture de décrue',
-    'Dagana':'Sol argileux lourd · riziculture irriguée',
-    'Richard-Toll':'Sol argileux · canne à sucre',
-    'Sédhiou':'Sol ferralitique · anacarde',
-    'Goudomp':'Sol hydromorphe · riziculture',
-    'Bounkiling':'Sol ferralitique · anacarde et riz',
-    'Tambacounda':'Sol ferrugineux tropical · savane',
-    'Bakel':'Sol sableux sahélien · mil et riz de décrue',
-    'Goudiry':'Sol ferrugineux · sorgho',
-    'Koumpentoum':'Sol ferrugineux · arachide',
-    'Thiès':'Sol ferrugineux rouge · phosphate',
-    'Mbour':'Sol sableux côtier · maraîchage',
-    'Tivaouane':'Sol Dior · arachide',
-    'Mékhe':'Sol ferrugineux · maïs',
-    'Khombole':'Sol Dior · arachide',
-    'Ziguinchor':'Sol ferralitique · riz et anacarde',
-    'Bignona':'Sol ferralitique · anacarde',
-    'Oussouye':'Sol hydromorphe · riziculture de mangrove',
+    'Dakar':'Sol sableux (Deck-Dior) - faible rétention hydrique',
+    'Pikine':'Sol sableux dégradé - urbanisation intense',
+    'Guediawaye':'Sol sableux - nappe phréatique affleurante',
+    'Rufisque':'Sol ferrugineux tropical - bon drainage',
+    'Bargny':'Sol salin - mangrove dégradée',
+    'Diourbel':'Sol ferrugineux (Dior) - arachide',
+    'Bambey':'Sol Dior sableux - très cultivé',
+    'Mbacké':'Sol Dior et Deck - polyculture',
+    'Fatick':'Sol sulfaté acide - tannes - mangrove',
+    'Gossas':'Sol ferrugineux - mil dominant',
+    'Foundiougne':'Sol alluvial - riziculture de mangrove',
+    'Sokone':'Sol hydromorphe - sel',
+    'Kaolack':'Sol argileux (Deck) - bassin arachidier',
+    'Kaffrine':'Sol Dior et Deck - transition sahélienne',
+    'Nioro du Rip':'Sol ferrugineux lessivé - coton',
+    'Kolda':'Sol ferralitique - forêt dégradée',
+    'Vélingara':'Sol ferrugineux - savane arbustive',
+    'Médina Yoro Foulah':'Sol latéritique - cuirasse ferrugineuse',
+    'Kédougou':'Sol ferralitique rouge - or et cultures',
+    'Saraya':'Sol latéritique - or alluvionnaire',
+    'Salékata':'Sol ferralitique - igname et mil',
+    'Louga':'Sol Dior sableux - déficit pluviométrique',
+    'Linguère':'Sol sableux sahélien - élevage',
+    'Kébémer':'Sol Dior - arachide et mil',
+    'Matam':'Sol alluvial (Walo) - riz irrigué',
+    'Kanel':'Sol alluvial - décrue et irrigation',
+    'Ranérou':'Sol sableux sahélien - élevage extensif',
+    'Saint-Louis':'Sol alluvial delta - riz irrigué',
+    'Podor':'Sol Walo - culture de décrue',
+    'Dagana':'Sol argileux lourd - riziculture irriguée',
+    'Richard-Toll':'Sol argileux - canne à sucre',
+    'Sédhiou':'Sol ferralitique - anacarde',
+    'Goudomp':'Sol hydromorphe - riziculture',
+    'Bounkiling':'Sol ferralitique - anacarde et riz',
+    'Tambacounda':'Sol ferrugineux tropical - savane',
+    'Bakel':'Sol sableux sahélien - mil et riz de décrue',
+    'Goudiry':'Sol ferrugineux - sorgho',
+    'Koumpentoum':'Sol ferrugineux - arachide',
+    'Thiès':'Sol ferrugineux rouge - phosphate',
+    'Mbour':'Sol sableux côtier - maraîchage',
+    'Tivaouane':'Sol Dior - arachide',
+    'Mékhe':'Sol ferrugineux - maïs',
+    'Khombole':'Sol Dior - arachide',
+    'Ziguinchor':'Sol ferralitique - riz et anacarde',
+    'Bignona':'Sol ferralitique - anacarde',
+    'Oussouye':'Sol hydromorphe - riziculture de mangrove',
 }
 
 CALENDRIER = {
@@ -321,52 +321,52 @@ pour faire face aux années difficiles.
 
 
 SOLS = {
-    'Dakar':'Sol sableux (Deck-Dior) · faible rétention hydrique',
-    'Pikine':'Sol sableux dégradé · urbanisation intense',
-    'Guediawaye':'Sol sableux · nappe phréatique affleurante',
-    'Rufisque':'Sol ferrugineux tropical · bon drainage',
-    'Bargny':'Sol salin · mangrove dégradée',
-    'Diourbel':'Sol ferrugineux (Dior) · arachide',
-    'Bambey':'Sol Dior sableux · très cultivé',
-    'Mbacké':'Sol Dior et Deck · polyculture',
-    'Fatick':'Sol sulfaté acide · tannes · mangrove',
-    'Gossas':'Sol ferrugineux · mil dominant',
-    'Foundiougne':'Sol alluvial · riziculture de mangrove',
-    'Sokone':'Sol hydromorphe · sel',
-    'Kaolack':'Sol argileux (Deck) · bassin arachidier',
-    'Kaffrine':'Sol Dior et Deck · transition sahélienne',
-    'Nioro du Rip':'Sol ferrugineux lessivé · coton',
-    'Kolda':'Sol ferralitique · forêt dégradée',
-    'Vélingara':'Sol ferrugineux · savane arbustive',
-    'Médina Yoro Foulah':'Sol latéritique · cuirasse ferrugineuse',
-    'Kédougou':'Sol ferralitique rouge · or et cultures',
-    'Saraya':'Sol latéritique · or alluvionnaire',
-    'Salékata':'Sol ferralitique · igname et mil',
-    'Louga':'Sol Dior sableux · déficit pluviométrique',
-    'Linguère':'Sol sableux sahélien · élevage',
-    'Kébémer':'Sol Dior · arachide et mil',
-    'Matam':'Sol alluvial (Walo) · riz irrigué',
-    'Kanel':'Sol alluvial · décrue et irrigation',
-    'Ranérou':'Sol sableux sahélien · élevage extensif',
-    'Saint-Louis':'Sol alluvial delta · riz irrigué',
-    'Podor':'Sol Walo · culture de décrue',
-    'Dagana':'Sol argileux lourd · riziculture irriguée',
-    'Richard-Toll':'Sol argileux · canne à sucre',
-    'Sédhiou':'Sol ferralitique · anacarde',
-    'Goudomp':'Sol hydromorphe · riziculture',
-    'Bounkiling':'Sol ferralitique · anacarde et riz',
-    'Tambacounda':'Sol ferrugineux tropical · savane',
-    'Bakel':'Sol sableux sahélien · mil et riz de décrue',
-    'Goudiry':'Sol ferrugineux · sorgho',
-    'Koumpentoum':'Sol ferrugineux · arachide',
-    'Thiès':'Sol ferrugineux rouge · phosphate',
-    'Mbour':'Sol sableux côtier · maraîchage',
-    'Tivaouane':'Sol Dior · arachide',
-    'Mékhe':'Sol ferrugineux · maïs',
-    'Khombole':'Sol Dior · arachide',
-    'Ziguinchor':'Sol ferralitique · riz et anacarde',
-    'Bignona':'Sol ferralitique · anacarde',
-    'Oussouye':'Sol hydromorphe · riziculture de mangrove',
+    'Dakar':'Sol sableux (Deck-Dior) - faible rétention hydrique',
+    'Pikine':'Sol sableux dégradé - urbanisation intense',
+    'Guediawaye':'Sol sableux - nappe phréatique affleurante',
+    'Rufisque':'Sol ferrugineux tropical - bon drainage',
+    'Bargny':'Sol salin - mangrove dégradée',
+    'Diourbel':'Sol ferrugineux (Dior) - arachide',
+    'Bambey':'Sol Dior sableux - très cultivé',
+    'Mbacké':'Sol Dior et Deck - polyculture',
+    'Fatick':'Sol sulfaté acide - tannes - mangrove',
+    'Gossas':'Sol ferrugineux - mil dominant',
+    'Foundiougne':'Sol alluvial - riziculture de mangrove',
+    'Sokone':'Sol hydromorphe - sel',
+    'Kaolack':'Sol argileux (Deck) - bassin arachidier',
+    'Kaffrine':'Sol Dior et Deck - transition sahélienne',
+    'Nioro du Rip':'Sol ferrugineux lessivé - coton',
+    'Kolda':'Sol ferralitique - forêt dégradée',
+    'Vélingara':'Sol ferrugineux - savane arbustive',
+    'Médina Yoro Foulah':'Sol latéritique - cuirasse ferrugineuse',
+    'Kédougou':'Sol ferralitique rouge - or et cultures',
+    'Saraya':'Sol latéritique - or alluvionnaire',
+    'Salékata':'Sol ferralitique - igname et mil',
+    'Louga':'Sol Dior sableux - déficit pluviométrique',
+    'Linguère':'Sol sableux sahélien - élevage',
+    'Kébémer':'Sol Dior - arachide et mil',
+    'Matam':'Sol alluvial (Walo) - riz irrigué',
+    'Kanel':'Sol alluvial - décrue et irrigation',
+    'Ranérou':'Sol sableux sahélien - élevage extensif',
+    'Saint-Louis':'Sol alluvial delta - riz irrigué',
+    'Podor':'Sol Walo - culture de décrue',
+    'Dagana':'Sol argileux lourd - riziculture irriguée',
+    'Richard-Toll':'Sol argileux - canne à sucre',
+    'Sédhiou':'Sol ferralitique - anacarde',
+    'Goudomp':'Sol hydromorphe - riziculture',
+    'Bounkiling':'Sol ferralitique - anacarde et riz',
+    'Tambacounda':'Sol ferrugineux tropical - savane',
+    'Bakel':'Sol sableux sahélien - mil et riz de décrue',
+    'Goudiry':'Sol ferrugineux - sorgho',
+    'Koumpentoum':'Sol ferrugineux - arachide',
+    'Thiès':'Sol ferrugineux rouge - phosphate',
+    'Mbour':'Sol sableux côtier - maraîchage',
+    'Tivaouane':'Sol Dior - arachide',
+    'Mékhe':'Sol ferrugineux - maïs',
+    'Khombole':'Sol Dior - arachide',
+    'Ziguinchor':'Sol ferralitique - riz et anacarde',
+    'Bignona':'Sol ferralitique - anacarde',
+    'Oussouye':'Sol hydromorphe - riziculture de mangrove',
 }
 
 CALENDRIER = {
@@ -494,7 +494,7 @@ Les cultures pratiquées sont principalement : **{cultures}**.
 
 ---
 
-### ⚠️ Causes et risques climatiques projetés (2025–2055 · scénario {scenario})
+### ⚠️ Causes et risques climatiques projetés (2025–2055 - scénario {scenario})
 
 Sur les 30 prochaines années, le réchauffement climatique va modifier les conditions de {commune}.
 Voici les mécanismes en jeu :
@@ -572,52 +572,52 @@ est le meilleur outil d'adaptation face aux années difficiles.
 
 
 SOLS = {
-    'Dakar':'Sol sableux (Deck-Dior) · faible rétention hydrique',
-    'Pikine':'Sol sableux dégradé · urbanisation intense',
-    'Guediawaye':'Sol sableux · nappe phréatique affleurante',
-    'Rufisque':'Sol ferrugineux tropical · bon drainage',
-    'Bargny':'Sol salin · mangrove dégradée',
-    'Diourbel':'Sol ferrugineux (Dior) · arachide',
-    'Bambey':'Sol Dior sableux · très cultivé',
-    'Mbacké':'Sol Dior et Deck · polyculture',
-    'Fatick':'Sol sulfaté acide · tannes · mangrove',
-    'Gossas':'Sol ferrugineux · mil dominant',
-    'Foundiougne':'Sol alluvial · riziculture de mangrove',
-    'Sokone':'Sol hydromorphe · sel',
-    'Kaolack':'Sol argileux (Deck) · bassin arachidier',
-    'Kaffrine':'Sol Dior et Deck · transition sahélienne',
-    'Nioro du Rip':'Sol ferrugineux lessivé · coton',
-    'Kolda':'Sol ferralitique · forêt dégradée',
-    'Vélingara':'Sol ferrugineux · savane arbustive',
-    'Médina Yoro Foulah':'Sol latéritique · cuirasse ferrugineuse',
-    'Kédougou':'Sol ferralitique rouge · or et cultures',
-    'Saraya':'Sol latéritique · or alluvionnaire',
-    'Salékata':'Sol ferralitique · igname et mil',
-    'Louga':'Sol Dior sableux · déficit pluviométrique',
-    'Linguère':'Sol sableux sahélien · élevage',
-    'Kébémer':'Sol Dior · arachide et mil',
-    'Matam':'Sol alluvial (Walo) · riz irrigué',
-    'Kanel':'Sol alluvial · décrue et irrigation',
-    'Ranérou':'Sol sableux sahélien · élevage extensif',
-    'Saint-Louis':'Sol alluvial delta · riz irrigué',
-    'Podor':'Sol Walo · culture de décrue',
-    'Dagana':'Sol argileux lourd · riziculture irriguée',
-    'Richard-Toll':'Sol argileux · canne à sucre',
-    'Sédhiou':'Sol ferralitique · anacarde',
-    'Goudomp':'Sol hydromorphe · riziculture',
-    'Bounkiling':'Sol ferralitique · anacarde et riz',
-    'Tambacounda':'Sol ferrugineux tropical · savane',
-    'Bakel':'Sol sableux sahélien · mil et riz de décrue',
-    'Goudiry':'Sol ferrugineux · sorgho',
-    'Koumpentoum':'Sol ferrugineux · arachide',
-    'Thiès':'Sol ferrugineux rouge · phosphate',
-    'Mbour':'Sol sableux côtier · maraîchage',
-    'Tivaouane':'Sol Dior · arachide',
-    'Mékhe':'Sol ferrugineux · maïs',
-    'Khombole':'Sol Dior · arachide',
-    'Ziguinchor':'Sol ferralitique · riz et anacarde',
-    'Bignona':'Sol ferralitique · anacarde',
-    'Oussouye':'Sol hydromorphe · riziculture de mangrove',
+    'Dakar':'Sol sableux (Deck-Dior) - faible rétention hydrique',
+    'Pikine':'Sol sableux dégradé - urbanisation intense',
+    'Guediawaye':'Sol sableux - nappe phréatique affleurante',
+    'Rufisque':'Sol ferrugineux tropical - bon drainage',
+    'Bargny':'Sol salin - mangrove dégradée',
+    'Diourbel':'Sol ferrugineux (Dior) - arachide',
+    'Bambey':'Sol Dior sableux - très cultivé',
+    'Mbacké':'Sol Dior et Deck - polyculture',
+    'Fatick':'Sol sulfaté acide - tannes - mangrove',
+    'Gossas':'Sol ferrugineux - mil dominant',
+    'Foundiougne':'Sol alluvial - riziculture de mangrove',
+    'Sokone':'Sol hydromorphe - sel',
+    'Kaolack':'Sol argileux (Deck) - bassin arachidier',
+    'Kaffrine':'Sol Dior et Deck - transition sahélienne',
+    'Nioro du Rip':'Sol ferrugineux lessivé - coton',
+    'Kolda':'Sol ferralitique - forêt dégradée',
+    'Vélingara':'Sol ferrugineux - savane arbustive',
+    'Médina Yoro Foulah':'Sol latéritique - cuirasse ferrugineuse',
+    'Kédougou':'Sol ferralitique rouge - or et cultures',
+    'Saraya':'Sol latéritique - or alluvionnaire',
+    'Salékata':'Sol ferralitique - igname et mil',
+    'Louga':'Sol Dior sableux - déficit pluviométrique',
+    'Linguère':'Sol sableux sahélien - élevage',
+    'Kébémer':'Sol Dior - arachide et mil',
+    'Matam':'Sol alluvial (Walo) - riz irrigué',
+    'Kanel':'Sol alluvial - décrue et irrigation',
+    'Ranérou':'Sol sableux sahélien - élevage extensif',
+    'Saint-Louis':'Sol alluvial delta - riz irrigué',
+    'Podor':'Sol Walo - culture de décrue',
+    'Dagana':'Sol argileux lourd - riziculture irriguée',
+    'Richard-Toll':'Sol argileux - canne à sucre',
+    'Sédhiou':'Sol ferralitique - anacarde',
+    'Goudomp':'Sol hydromorphe - riziculture',
+    'Bounkiling':'Sol ferralitique - anacarde et riz',
+    'Tambacounda':'Sol ferrugineux tropical - savane',
+    'Bakel':'Sol sableux sahélien - mil et riz de décrue',
+    'Goudiry':'Sol ferrugineux - sorgho',
+    'Koumpentoum':'Sol ferrugineux - arachide',
+    'Thiès':'Sol ferrugineux rouge - phosphate',
+    'Mbour':'Sol sableux côtier - maraîchage',
+    'Tivaouane':'Sol Dior - arachide',
+    'Mékhe':'Sol ferrugineux - maïs',
+    'Khombole':'Sol Dior - arachide',
+    'Ziguinchor':'Sol ferralitique - riz et anacarde',
+    'Bignona':'Sol ferralitique - anacarde',
+    'Oussouye':'Sol hydromorphe - riziculture de mangrove',
 }
 
 CALENDRIER = {
@@ -821,52 +821,52 @@ pour faire face aux années difficiles.
 
 
 SOLS = {
-    'Dakar':'Sol sableux (Deck-Dior) · faible rétention hydrique',
-    'Pikine':'Sol sableux dégradé · urbanisation intense',
-    'Guediawaye':'Sol sableux · nappe phréatique affleurante',
-    'Rufisque':'Sol ferrugineux tropical · bon drainage',
-    'Bargny':'Sol salin · mangrove dégradée',
-    'Diourbel':'Sol ferrugineux (Dior) · arachide',
-    'Bambey':'Sol Dior sableux · très cultivé',
-    'Mbacké':'Sol Dior et Deck · polyculture',
-    'Fatick':'Sol sulfaté acide · tannes · mangrove',
-    'Gossas':'Sol ferrugineux · mil dominant',
-    'Foundiougne':'Sol alluvial · riziculture de mangrove',
-    'Sokone':'Sol hydromorphe · sel',
-    'Kaolack':'Sol argileux (Deck) · bassin arachidier',
-    'Kaffrine':'Sol Dior et Deck · transition sahélienne',
-    'Nioro du Rip':'Sol ferrugineux lessivé · coton',
-    'Kolda':'Sol ferralitique · forêt dégradée',
-    'Vélingara':'Sol ferrugineux · savane arbustive',
-    'Médina Yoro Foulah':'Sol latéritique · cuirasse ferrugineuse',
-    'Kédougou':'Sol ferralitique rouge · or et cultures',
-    'Saraya':'Sol latéritique · or alluvionnaire',
-    'Salékata':'Sol ferralitique · igname et mil',
-    'Louga':'Sol Dior sableux · déficit pluviométrique',
-    'Linguère':'Sol sableux sahélien · élevage',
-    'Kébémer':'Sol Dior · arachide et mil',
-    'Matam':'Sol alluvial (Walo) · riz irrigué',
-    'Kanel':'Sol alluvial · décrue et irrigation',
-    'Ranérou':'Sol sableux sahélien · élevage extensif',
-    'Saint-Louis':'Sol alluvial delta · riz irrigué',
-    'Podor':'Sol Walo · culture de décrue',
-    'Dagana':'Sol argileux lourd · riziculture irriguée',
-    'Richard-Toll':'Sol argileux · canne à sucre',
-    'Sédhiou':'Sol ferralitique · anacarde',
-    'Goudomp':'Sol hydromorphe · riziculture',
-    'Bounkiling':'Sol ferralitique · anacarde et riz',
-    'Tambacounda':'Sol ferrugineux tropical · savane',
-    'Bakel':'Sol sableux sahélien · mil et riz de décrue',
-    'Goudiry':'Sol ferrugineux · sorgho',
-    'Koumpentoum':'Sol ferrugineux · arachide',
-    'Thiès':'Sol ferrugineux rouge · phosphate',
-    'Mbour':'Sol sableux côtier · maraîchage',
-    'Tivaouane':'Sol Dior · arachide',
-    'Mékhe':'Sol ferrugineux · maïs',
-    'Khombole':'Sol Dior · arachide',
-    'Ziguinchor':'Sol ferralitique · riz et anacarde',
-    'Bignona':'Sol ferralitique · anacarde',
-    'Oussouye':'Sol hydromorphe · riziculture de mangrove',
+    'Dakar':'Sol sableux (Deck-Dior) - faible rétention hydrique',
+    'Pikine':'Sol sableux dégradé - urbanisation intense',
+    'Guediawaye':'Sol sableux - nappe phréatique affleurante',
+    'Rufisque':'Sol ferrugineux tropical - bon drainage',
+    'Bargny':'Sol salin - mangrove dégradée',
+    'Diourbel':'Sol ferrugineux (Dior) - arachide',
+    'Bambey':'Sol Dior sableux - très cultivé',
+    'Mbacké':'Sol Dior et Deck - polyculture',
+    'Fatick':'Sol sulfaté acide - tannes - mangrove',
+    'Gossas':'Sol ferrugineux - mil dominant',
+    'Foundiougne':'Sol alluvial - riziculture de mangrove',
+    'Sokone':'Sol hydromorphe - sel',
+    'Kaolack':'Sol argileux (Deck) - bassin arachidier',
+    'Kaffrine':'Sol Dior et Deck - transition sahélienne',
+    'Nioro du Rip':'Sol ferrugineux lessivé - coton',
+    'Kolda':'Sol ferralitique - forêt dégradée',
+    'Vélingara':'Sol ferrugineux - savane arbustive',
+    'Médina Yoro Foulah':'Sol latéritique - cuirasse ferrugineuse',
+    'Kédougou':'Sol ferralitique rouge - or et cultures',
+    'Saraya':'Sol latéritique - or alluvionnaire',
+    'Salékata':'Sol ferralitique - igname et mil',
+    'Louga':'Sol Dior sableux - déficit pluviométrique',
+    'Linguère':'Sol sableux sahélien - élevage',
+    'Kébémer':'Sol Dior - arachide et mil',
+    'Matam':'Sol alluvial (Walo) - riz irrigué',
+    'Kanel':'Sol alluvial - décrue et irrigation',
+    'Ranérou':'Sol sableux sahélien - élevage extensif',
+    'Saint-Louis':'Sol alluvial delta - riz irrigué',
+    'Podor':'Sol Walo - culture de décrue',
+    'Dagana':'Sol argileux lourd - riziculture irriguée',
+    'Richard-Toll':'Sol argileux - canne à sucre',
+    'Sédhiou':'Sol ferralitique - anacarde',
+    'Goudomp':'Sol hydromorphe - riziculture',
+    'Bounkiling':'Sol ferralitique - anacarde et riz',
+    'Tambacounda':'Sol ferrugineux tropical - savane',
+    'Bakel':'Sol sableux sahélien - mil et riz de décrue',
+    'Goudiry':'Sol ferrugineux - sorgho',
+    'Koumpentoum':'Sol ferrugineux - arachide',
+    'Thiès':'Sol ferrugineux rouge - phosphate',
+    'Mbour':'Sol sableux côtier - maraîchage',
+    'Tivaouane':'Sol Dior - arachide',
+    'Mékhe':'Sol ferrugineux - maïs',
+    'Khombole':'Sol Dior - arachide',
+    'Ziguinchor':'Sol ferralitique - riz et anacarde',
+    'Bignona':'Sol ferralitique - anacarde',
+    'Oussouye':'Sol hydromorphe - riziculture de mangrove',
 }
 
 CALENDRIER = {
@@ -1056,7 +1056,7 @@ def afficher_calendrier_gantt(commune):
 
 
 HYDRAULIQUE = {
-    "Dakar":{"nappe":"Nappe sables quaternaires 5-15m saumâtre","eau_types":["Mer Atlantique","Eau souterraine","Eau ville SDE"],"fleuves":"Aucun fleuve · presquîle","lacs":"Lac Rose salé · Baie de Hann","mares":"Mares temporaires hivernage","forages":45,"puits":120,"perimetre_irrigue_ha":150,"acces_eau":"Très bon","risque_penurie":"Modéré","lat":14.6928,"lon":-17.0407},
+    "Dakar":{"nappe":"Nappe sables quaternaires 5-15m saumâtre","eau_types":["Mer Atlantique","Eau souterraine","Eau ville SDE"],"fleuves":"Aucun fleuve - presquîle","lacs":"Lac Rose salé - Baie de Hann","mares":"Mares temporaires hivernage","forages":45,"puits":120,"perimetre_irrigue_ha":150,"acces_eau":"Très bon","risque_penurie":"Modéré","lat":14.6928,"lon":-17.0407},
     "Pikine":{"nappe":"Nappe affleurante 2-8m risque salinisation","eau_types":["Eau souterraine","Eau ville","Mer proche"],"fleuves":"Aucun","lacs":"Lac Mbeubeuss zones humides","mares":"Nombreuses inondations","forages":28,"puits":85,"perimetre_irrigue_ha":80,"acces_eau":"Bon","risque_penurie":"Modéré","lat":14.7667,"lon":-17.1500},
     "Guediawaye":{"nappe":"Nappe sableuse 3-10m qualité variable","eau_types":["Eau souterraine","Eau ville"],"fleuves":"Aucun","lacs":"Zones humides côtières","mares":"Mares temporaires","forages":18,"puits":60,"perimetre_irrigue_ha":40,"acces_eau":"Bon","risque_penurie":"Faible","lat":14.7550,"lon":-17.2850},
     "Rufisque":{"nappe":"Nappe Maestrichtien 80-200m bonne qualité","eau_types":["Eau souterraine profonde","Mer Atlantique","Eau ville"],"fleuves":"Aucun direct","lacs":"Baie de Rufisque","mares":"Mares saisonnières","forages":22,"puits":75,"perimetre_irrigue_ha":120,"acces_eau":"Bon","risque_penurie":"Faible","lat":14.7167,"lon":-17.2667},
@@ -1064,7 +1064,7 @@ HYDRAULIQUE = {
     "Diourbel":{"nappe":"Nappe Paléocène 30-80m bonne qualité","eau_types":["Eau souterraine","Eau ville","Eau pluie collectée"],"fleuves":"Aucun permanent","lacs":"Aucun","mares":"Mares temporaires élevage","forages":35,"puits":180,"perimetre_irrigue_ha":200,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":14.6500,"lon":-16.2333},
     "Bambey":{"nappe":"Continental terminal 40-90m","eau_types":["Eau souterraine","Eau pluie"],"fleuves":"Aucun","lacs":"Aucun","mares":"Mares villageoises","forages":25,"puits":150,"perimetre_irrigue_ha":180,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":14.7000,"lon":-16.4500},
     "Mbacké":{"nappe":"Nappe Maestrichtien 60-120m bonne qualité","eau_types":["Eau souterraine profonde","Eau ville","Eau pluie"],"fleuves":"Aucun","lacs":"Aucun","mares":"Mares temporaires","forages":30,"puits":160,"perimetre_irrigue_ha":220,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":14.8000,"lon":-15.9100},
-    "Fatick":{"nappe":"Nappe Sénégalo-mauritanien 20-60m légèrement salée","eau_types":["Eau souterraine","Eau salée bras de mer","Eau douce saisonnière"],"fleuves":"Bras Sine-Saloum saumâtre","lacs":"Delta Saloum mangroves bolons","mares":"Nombreuses mares et bolons","forages":40,"puits":200,"perimetre_irrigue_ha":350,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":14.3386,"lon":-16.4114},
+    "Fatick":{"nappe":"Nappe Sénégalo-mauritanien 20-60m légèrement salée","eau_types":["Eau souterraine","Eau salée bras mer","Eau douce saisonnière"],"fleuves":"Bras Sine-Saloum saumâtre","lacs":"Delta Saloum mangroves bolons","mares":"Nombreuses mares et bolons","forages":40,"puits":200,"perimetre_irrigue_ha":350,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":14.3386,"lon":-16.4114},
     "Gossas":{"nappe":"Continental terminal 50-100m","eau_types":["Eau souterraine","Eau pluie"],"fleuves":"Aucun","lacs":"Aucun","mares":"Mares temporaires villageoises","forages":18,"puits":90,"perimetre_irrigue_ha":100,"acces_eau":"Difficile","risque_penurie":"Élevé","lat":14.5000,"lon":-16.0667},
     "Foundiougne":{"nappe":"Nappe alluviale 5-20m qualité variable","eau_types":["Eau saumâtre bras mer","Eau douce saisonnière","Eau souterraine"],"fleuves":"Bras Saloum mangroves","lacs":"Delta Saloum bolons","mares":"Bolons et chenaux permanents","forages":25,"puits":110,"perimetre_irrigue_ha":280,"acces_eau":"Bon","risque_penurie":"Modéré","lat":14.1333,"lon":-16.4667},
     "Sokone":{"nappe":"Nappe côtière salinité variable 10-30m","eau_types":["Eau saumâtre","Eau douce souterraine","Mer Saloum"],"fleuves":"Fleuve Saloum bolons","lacs":"Delta Saloum","mares":"Mares et bolons permanents","forages":20,"puits":80,"perimetre_irrigue_ha":200,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":13.8833,"lon":-16.3667},
@@ -1207,7 +1207,7 @@ def afficher_section_hydraulique(commune, selected_scenario):
         zoom=5.5,
         center={"lat":14.5,"lon":-14.5},
         mapbox_style="open-street-map",
-        title=f"Réseau hydraulique Sénégal · {variable_carte}",
+        title=f"Réseau hydraulique Sénégal - {variable_carte}",
     )
     fig_map.update_layout(height=600,margin={"r":0,"t":40,"l":0,"b":0})
     st.plotly_chart(fig_map,use_container_width=True)
@@ -1226,9 +1226,9 @@ def afficher_section_hydraulique(commune, selected_scenario):
     st.markdown("---")
     st.info(f"""
     💡 Recommandations hydrauliques pour {commune} :
-    Forages disponibles : {data["forages"]} · Puits : {data["puits"]} · Périmètre irrigué : {data["perimetre_irrigue_ha"]} ha
-    Accès à l eau : {data["acces_eau"]} · Risque pénurie : {data["risque_penurie"]}
-    Actions prioritaires : réhabiliter les forages existants · construire des retenues d eau · développer l irrigation goutte-à-goutte.
+    Forages disponibles : {data["forages"]} - Puits : {data["puits"]} - Périmètre irrigué : {data["perimetre_irrigue_ha"]} ha
+    Accès à l eau : {data["acces_eau"]} - Risque pénurie : {data["risque_penurie"]}
+    Actions prioritaires : réhabiliter les forages existants - construire des retenues d eau - développer l irrigation goutte-à-goutte.
     """)
 
 
@@ -1237,27 +1237,27 @@ def afficher_section_hydraulique(commune, selected_scenario):
 # ── Données hydrauliques par commune ─────────────────────────────────────────
 HYDRAULIQUE = {
     'Dakar': {
-        'nappe': 'Nappe des sables quaternaires · profondeur 5-15m · eau saumâtre côtier',
+        'nappe': 'Nappe des sables quaternaires - profondeur 5-15m - eau saumâtre côtier',
         'eau_types': ['Mer (Atlantique)', 'Eau souterraine', 'Eau de ville (SDE)'],
-        'fleuves': 'Aucun fleuve · presquîle entourée de mer',
-        'lacs': 'Lac Rose (lac salé) · Baie de Hann',
+        'fleuves': 'Aucun fleuve - presquîle entourée de mer',
+        'lacs': 'Lac Rose (lac salé) - Baie de Hann',
         'mares': 'Mares temporaires en hivernage',
         'forages': 45, 'puits': 120, 'perimetre_irrigue_ha': 150,
         'acces_eau': 'Très bon (réseau SDE)', 'risque_penurie': 'Modéré (surexploitation nappe)',
         'lat': 14.6928, 'lon': -17.0407, 'couleur_eau': '#1565C0',
     },
     'Pikine': {
-        'nappe': 'Nappe phréatique affleurante · 2-8m · risque salinisation',
+        'nappe': 'Nappe phréatique affleurante - 2-8m - risque salinisation',
         'eau_types': ['Eau souterraine', 'Eau de ville', 'Mer (proche)'],
-        'fleuves': 'Aucun · zone périurbaine',
-        'lacs': 'Lac Mbeubeuss (décharge) · zones humides dégradées',
-        'mares': 'Nombreuses mares en hivernage · inondations fréquentes',
+        'fleuves': 'Aucun - zone périurbaine',
+        'lacs': 'Lac Mbeubeuss (décharge) - zones humides dégradées',
+        'mares': 'Nombreuses mares en hivernage - inondations fréquentes',
         'forages': 28, 'puits': 85, 'perimetre_irrigue_ha': 80,
         'acces_eau': 'Bon (réseau SDE partiel)', 'risque_penurie': 'Modéré',
         'lat': 14.7667, 'lon': -17.1500, 'couleur_eau': '#1976D2',
     },
     'Guediawaye': {
-        'nappe': 'Nappe sableuse superficielle · 3-10m · qualité variable',
+        'nappe': 'Nappe sableuse superficielle - 3-10m - qualité variable',
         'eau_types': ['Eau souterraine', 'Eau de ville'],
         'fleuves': 'Aucun',
         'lacs': 'Zones humides côtières',
@@ -1267,7 +1267,7 @@ HYDRAULIQUE = {
         'lat': 14.7550, 'lon': -17.2850, 'couleur_eau': '#1976D2',
     },
     'Rufisque': {
-        'nappe': 'Nappe du Maestrichtien · 80-200m · bonne qualité',
+        'nappe': 'Nappe du Maestrichtien - 80-200m - bonne qualité',
         'eau_types': ['Eau souterraine profonde', 'Mer (Atlantique)', 'Eau de ville'],
         'fleuves': 'Aucun direct',
         'lacs': 'Baie de Rufisque',
@@ -1277,27 +1277,27 @@ HYDRAULIQUE = {
         'lat': 14.7167, 'lon': -17.2667, 'couleur_eau': '#0D47A1',
     },
     'Bargny': {
-        'nappe': 'Nappe côtière saline · eau douce rare · 10-25m',
+        'nappe': 'Nappe côtière saline - eau douce rare - 10-25m',
         'eau_types': ['Mer (Atlantique)', 'Eau souterraine saline', 'Eau de ville'],
         'fleuves': 'Aucun',
-        'lacs': 'Mangrove dégradée · zones salées',
+        'lacs': 'Mangrove dégradée - zones salées',
         'mares': 'Mares salées',
         'forages': 8, 'puits': 30, 'perimetre_irrigue_ha': 20,
         'acces_eau': 'Difficile (eau salée dominante)', 'risque_penurie': 'Élevé',
         'lat': 14.6942, 'lon': -17.2311, 'couleur_eau': '#0D47A1',
     },
     'Diourbel': {
-        'nappe': 'Nappe du Paléocène · 30-80m · bonne qualité',
+        'nappe': 'Nappe du Paléocène - 30-80m - bonne qualité',
         'eau_types': ['Eau souterraine', 'Eau de ville', 'Eau de pluie collectée'],
         'fleuves': 'Aucun permanent',
         'lacs': 'Aucun lac permanent',
-        'mares': 'Mares temporaires hivernage · importantes pour élevage',
+        'mares': 'Mares temporaires hivernage - importantes pour élevage',
         'forages': 35, 'puits': 180, 'perimetre_irrigue_ha': 200,
         'acces_eau': 'Moyen', 'risque_penurie': 'Modéré',
         'lat': 14.6500, 'lon': -16.2333, 'couleur_eau': '#388E3C',
     },
     'Bambey': {
-        'nappe': 'Nappe du Continental terminal · 40-90m',
+        'nappe': 'Nappe du Continental terminal - 40-90m',
         'eau_types': ['Eau souterraine', 'Eau de pluie'],
         'fleuves': 'Aucun',
         'lacs': 'Aucun',
@@ -1307,7 +1307,7 @@ HYDRAULIQUE = {
         'lat': 14.7000, 'lon': -16.4500, 'couleur_eau': '#388E3C',
     },
     'Mbacké': {
-        'nappe': 'Nappe du Maestrichtien · 60-120m · bonne qualité',
+        'nappe': 'Nappe du Maestrichtien - 60-120m - bonne qualité',
         'eau_types': ['Eau souterraine profonde', 'Eau de ville', 'Eau de pluie'],
         'fleuves': 'Aucun permanent',
         'lacs': 'Aucun',
@@ -1317,17 +1317,17 @@ HYDRAULIQUE = {
         'lat': 14.8000, 'lon': -15.9100, 'couleur_eau': '#388E3C',
     },
     'Fatick': {
-        'nappe': 'Nappe du Sénégalo-mauritanien · 20-60m · légèrement salée en zones basses',
-        'eau_types': ['Eau souterraine', 'Eau salée (bras de mer)', 'Eau douce saisonnière'],
-        'fleuves': 'Bras du Sine-Saloum · eau saumâtre',
-        'lacs': 'Delta du Saloum · mangroves · bolons',
+        'nappe': 'Nappe du Sénégalo-mauritanien - 20-60m - légèrement salée en zones basses',
+        'eau_types': ['Eau souterraine', 'Eau salée (bras mer)', 'Eau douce saisonnière'],
+        'fleuves': 'Bras du Sine-Saloum - eau saumâtre',
+        'lacs': 'Delta du Saloum - mangroves - bolons',
         'mares': 'Nombreuses mares et bolons',
         'forages': 40, 'puits': 200, 'perimetre_irrigue_ha': 350,
         'acces_eau': 'Moyen (salinité problématique)', 'risque_penurie': 'Modéré',
         'lat': 14.3386, 'lon': -16.4114, 'couleur_eau': '#00897B',
     },
     'Gossas': {
-        'nappe': 'Nappe du Continental terminal · 50-100m',
+        'nappe': 'Nappe du Continental terminal - 50-100m',
         'eau_types': ['Eau souterraine', 'Eau de pluie'],
         'fleuves': 'Aucun permanent',
         'lacs': 'Aucun',
@@ -1337,19 +1337,19 @@ HYDRAULIQUE = {
         'lat': 14.5000, 'lon': -16.0667, 'couleur_eau': '#388E3C',
     },
     'Foundiougne': {
-        'nappe': 'Nappe alluviale · 5-20m · qualité variable selon salinité',
-        'eau_types': ['Eau saumâtre (bras de mer)', 'Eau douce saisonnière', 'Eau souterraine'],
-        'fleuves': 'Bras du Saloum · mangroves',
-        'lacs': 'Delta du Saloum · bolons nombreux',
+        'nappe': 'Nappe alluviale - 5-20m - qualité variable selon salinité',
+        'eau_types': ['Eau saumâtre (bras mer)', 'Eau douce saisonnière', 'Eau souterraine'],
+        'fleuves': 'Bras du Saloum - mangroves',
+        'lacs': 'Delta du Saloum - bolons nombreux',
         'mares': 'Bolons et chenaux permanents',
         'forages': 25, 'puits': 110, 'perimetre_irrigue_ha': 280,
         'acces_eau': 'Bon (mais salinité)', 'risque_penurie': 'Modéré',
         'lat': 14.1333, 'lon': -16.4667, 'couleur_eau': '#00897B',
     },
     'Sokone': {
-        'nappe': 'Nappe côtière · salinité variable · 10-30m',
+        'nappe': 'Nappe côtière - salinité variable - 10-30m',
         'eau_types': ['Eau saumâtre', 'Eau douce souterraine', 'Mer (Saloum)'],
-        'fleuves': 'Fleuve Saloum · bolons',
+        'fleuves': 'Fleuve Saloum - bolons',
         'lacs': 'Delta du Saloum',
         'mares': 'Mares et bolons permanents',
         'forages': 20, 'puits': 80, 'perimetre_irrigue_ha': 200,
@@ -1357,19 +1357,19 @@ HYDRAULIQUE = {
         'lat': 13.8833, 'lon': -16.3667, 'couleur_eau': '#00897B',
     },
     'Kaolack': {
-        'nappe': 'Nappe du Maestrichtien · 40-100m · très bonne qualité',
+        'nappe': 'Nappe du Maestrichtien - 40-100m - très bonne qualité',
         'eau_types': ['Eau souterraine', 'Fleuve Saloum', 'Eau de ville (SDE)'],
-        'fleuves': 'Fleuve Saloum · navigation possible',
-        'lacs': 'Bras du Saloum · lac salé en aval',
+        'fleuves': 'Fleuve Saloum - navigation possible',
+        'lacs': 'Bras du Saloum - lac salé en aval',
         'mares': 'Mares temporaires',
         'forages': 55, 'puits': 280, 'perimetre_irrigue_ha': 500,
         'acces_eau': 'Bon', 'risque_penurie': 'Faible',
         'lat': 13.9667, 'lon': -16.0167, 'couleur_eau': '#1565C0',
     },
     'Kaffrine': {
-        'nappe': 'Nappe du Maestrichtien · 60-140m · bonne qualité',
+        'nappe': 'Nappe du Maestrichtien - 60-140m - bonne qualité',
         'eau_types': ['Eau souterraine profonde', 'Eau de pluie collectée'],
-        'fleuves': 'Aucun permanent · marigots saisonniers',
+        'fleuves': 'Aucun permanent - marigots saisonniers',
         'lacs': 'Aucun permanent',
         'mares': 'Mares temporaires importantes pour élevage',
         'forages': 42, 'puits': 220, 'perimetre_irrigue_ha': 300,
@@ -1377,9 +1377,9 @@ HYDRAULIQUE = {
         'lat': 14.1056, 'lon': -15.5506, 'couleur_eau': '#388E3C',
     },
     'Nioro du Rip': {
-        'nappe': 'Nappe du Continental terminal · 40-80m',
+        'nappe': 'Nappe du Continental terminal - 40-80m',
         'eau_types': ['Eau souterraine', 'Marigots saisonniers', 'Eau de pluie'],
-        'fleuves': 'Marigot du Rip · saisonnier',
+        'fleuves': 'Marigot du Rip - saisonnier',
         'lacs': 'Aucun permanent',
         'mares': 'Mares saisonnières importantes',
         'forages': 30, 'puits': 160, 'perimetre_irrigue_ha': 250,
@@ -1387,9 +1387,9 @@ HYDRAULIQUE = {
         'lat': 13.7500, 'lon': -15.7833, 'couleur_eau': '#388E3C',
     },
     'Kolda': {
-        'nappe': 'Nappe du Continental terminal · 20-50m · excellente qualité',
+        'nappe': 'Nappe du Continental terminal - 20-50m - excellente qualité',
         'eau_types': ['Eau souterraine douce', 'Fleuve Casamance', 'Marigots permanents'],
-        'fleuves': 'Fleuve Casamance · permanent · navigable',
+        'fleuves': 'Fleuve Casamance - permanent - navigable',
         'lacs': 'Marigots et bas-fonds permanents',
         'mares': 'Nombreuses mares permanentes et temporaires',
         'forages': 65, 'puits': 350, 'perimetre_irrigue_ha': 800,
@@ -1397,9 +1397,9 @@ HYDRAULIQUE = {
         'lat': 12.8908, 'lon': -14.9508, 'couleur_eau': '#2E7D32',
     },
     'Vélingara': {
-        'nappe': 'Nappe du Continental terminal · 25-60m · bonne qualité',
+        'nappe': 'Nappe du Continental terminal - 25-60m - bonne qualité',
         'eau_types': ['Eau souterraine douce', 'Marigots permanents', 'Fleuve Gambie (proche)'],
-        'fleuves': 'Marigot de Vélingara · Fleuve Gambie (nord)',
+        'fleuves': 'Marigot de Vélingara - Fleuve Gambie (nord)',
         'lacs': 'Bas-fonds permanents',
         'mares': 'Nombreuses mares permanentes',
         'forages': 50, 'puits': 280, 'perimetre_irrigue_ha': 600,
@@ -1407,7 +1407,7 @@ HYDRAULIQUE = {
         'lat': 13.1500, 'lon': -14.1000, 'couleur_eau': '#2E7D32',
     },
     'Médina Yoro Foulah': {
-        'nappe': 'Nappe latéritique · 15-40m · qualité moyenne',
+        'nappe': 'Nappe latéritique - 15-40m - qualité moyenne',
         'eau_types': ['Eau souterraine', 'Marigots saisonniers'],
         'fleuves': 'Marigots saisonniers',
         'lacs': 'Bas-fonds temporaires',
@@ -1417,27 +1417,27 @@ HYDRAULIQUE = {
         'lat': 13.4000, 'lon': -14.2000, 'couleur_eau': '#388E3C',
     },
     'Kédougou': {
-        'nappe': 'Nappe des altérites · 10-30m · excellente qualité',
+        'nappe': 'Nappe des altérites - 10-30m - excellente qualité',
         'eau_types': ['Eau souterraine douce', 'Fleuve Gambie', 'Rivières permanentes', 'Cascades'],
-        'fleuves': 'Fleuve Gambie · Fleuve Falémé · nombreuses rivières',
-        'lacs': 'Nombreux cours d'eau permanents · cascades de Dindéfelo',
+        'fleuves': 'Fleuve Gambie - Fleuve Falémé - nombreuses rivières',
+        'lacs': 'Nombreux cours eau permanents - cascades de Dindefelo',
         'mares': 'Mares et rivières permanentes',
         'forages': 40, 'puits': 200, 'perimetre_irrigue_ha': 400,
         'acces_eau': 'Excellent', 'risque_penurie': 'Très faible',
         'lat': 12.5569, 'lon': -12.1747, 'couleur_eau': '#1B5E20',
     },
     'Saraya': {
-        'nappe': 'Nappe des altérites · 8-25m · très bonne qualité',
+        'nappe': 'Nappe des altérites - 8-25m - très bonne qualité',
         'eau_types': ['Eau souterraine douce', 'Fleuve Falémé', 'Rivières permanentes'],
-        'fleuves': 'Fleuve Falémé · permanent · or alluvionnaire',
-        'lacs': 'Cours d'eau permanents',
+        'fleuves': 'Fleuve Falémé - permanent - or alluvionnaire',
+        'lacs': 'Cours eau permanents',
         'mares': 'Nombreuses mares et rivières',
         'forages': 20, 'puits': 100, 'perimetre_irrigue_ha': 150,
         'acces_eau': 'Bon', 'risque_penurie': 'Faible',
         'lat': 12.8333, 'lon': -11.7500, 'couleur_eau': '#1B5E20',
     },
     'Salékata': {
-        'nappe': 'Nappe des altérites · 10-30m',
+        'nappe': 'Nappe des altérites - 10-30m',
         'eau_types': ['Eau souterraine douce', 'Rivières saisonnières'],
         'fleuves': 'Rivières saisonnières',
         'lacs': 'Bas-fonds temporaires',
@@ -1447,7 +1447,7 @@ HYDRAULIQUE = {
         'lat': 12.6300, 'lon': -12.8200, 'couleur_eau': '#2E7D32',
     },
     'Louga': {
-        'nappe': 'Nappe du Maestrichtien · 80-200m · très bonne qualité mais profonde',
+        'nappe': 'Nappe du Maestrichtien - 80-200m - très bonne qualité mais profonde',
         'eau_types': ['Eau souterraine profonde', 'Eau de pluie collectée'],
         'fleuves': 'Aucun permanent',
         'lacs': 'Aucun permanent',
@@ -1457,9 +1457,9 @@ HYDRAULIQUE = {
         'lat': 15.6167, 'lon': -16.2333, 'couleur_eau': '#F57F17',
     },
     'Linguère': {
-        'nappe': 'Nappe du Maestrichtien · 100-250m · très profonde',
+        'nappe': 'Nappe du Maestrichtien - 100-250m - très profonde',
         'eau_types': ['Eau souterraine très profonde', 'Eau de pluie'],
-        'fleuves': 'Aucun permanent · marigots saisonniers',
+        'fleuves': 'Aucun permanent - marigots saisonniers',
         'lacs': 'Aucun permanent',
         'mares': 'Mares temporaires essentielles pour pasteurs',
         'forages': 25, 'puits': 120, 'perimetre_irrigue_ha': 80,
@@ -1467,7 +1467,7 @@ HYDRAULIQUE = {
         'lat': 15.3833, 'lon': -15.1167, 'couleur_eau': '#E65100',
     },
     'Kébémer': {
-        'nappe': 'Nappe du Paléocène · 40-100m · qualité correcte',
+        'nappe': 'Nappe du Paléocène - 40-100m - qualité correcte',
         'eau_types': ['Eau souterraine', 'Eau de pluie collectée'],
         'fleuves': 'Aucun permanent',
         'lacs': 'Aucun',
@@ -1477,27 +1477,27 @@ HYDRAULIQUE = {
         'lat': 15.3667, 'lon': -16.4500, 'couleur_eau': '#F57F17',
     },
     'Matam': {
-        'nappe': 'Nappe alluviale du fleuve Sénégal · 5-20m · bonne qualité',
+        'nappe': 'Nappe alluviale du fleuve Sénégal - 5-20m - bonne qualité',
         'eau_types': ['Fleuve Sénégal', 'Eau souterraine alluviale', 'Canaux SAED'],
-        'fleuves': 'Fleuve Sénégal · permanent · grand débit',
-        'lacs': 'Plaine d'inondation (Walo) · mares de décrue',
-        'mares': 'Mares de décrue permanentes · walo',
+        'fleuves': 'Fleuve Sénégal - permanent - grand débit',
+        'lacs': 'Plaine inondation (Walo) - mares decrue',
+        'mares': 'Mares decrue permanentes - walo',
         'forages': 48, 'puits': 250, 'perimetre_irrigue_ha': 1200,
         'acces_eau': 'Très bon (fleuve)', 'risque_penurie': 'Faible',
         'lat': 15.6553, 'lon': -13.2553, 'couleur_eau': '#1565C0',
     },
     'Kanel': {
-        'nappe': 'Nappe alluviale · 8-25m · bonne qualité',
+        'nappe': 'Nappe alluviale - 8-25m - bonne qualité',
         'eau_types': ['Fleuve Sénégal', 'Eau alluviale', 'Canaux irrigation'],
-        'fleuves': 'Fleuve Sénégal · décrue agricole',
+        'fleuves': 'Fleuve Sénégal - décrue agricole',
         'lacs': 'Plaine inondable (Walo)',
-        'mares': 'Mares de décrue importantes',
+        'mares': 'Mares decrue importantes',
         'forages': 30, 'puits': 160, 'perimetre_irrigue_ha': 800,
         'acces_eau': 'Bon', 'risque_penurie': 'Faible',
         'lat': 15.4900, 'lon': -13.1700, 'couleur_eau': '#1565C0',
     },
     'Ranérou': {
-        'nappe': 'Nappe du Maestrichtien · 100-200m · très profonde',
+        'nappe': 'Nappe du Maestrichtien - 100-200m - très profonde',
         'eau_types': ['Eau souterraine très profonde', 'Eau de pluie'],
         'fleuves': 'Aucun permanent',
         'lacs': 'Aucun permanent',
@@ -1507,69 +1507,69 @@ HYDRAULIQUE = {
         'lat': 15.3000, 'lon': -13.9600, 'couleur_eau': '#E65100',
     },
     'Saint-Louis': {
-        'nappe': 'Nappe alluviale delta · 3-10m · qualité variable (salinité)',
+        'nappe': 'Nappe alluviale delta - 3-10m - qualité variable (salinité)',
         'eau_types': ['Fleuve Sénégal', 'Mer (Atlantique)', 'Eau douce delta', 'Canaux SAED'],
-        'fleuves': 'Fleuve Sénégal · delta · très grand débit',
-        'lacs': 'Lac de Guiers · lac Diama · plaine inondable',
+        'fleuves': 'Fleuve Sénégal - delta - très grand débit',
+        'lacs': 'Lac de Guiers - lac Diama - plaine inondable',
         'mares': 'Nombreuses mares permanentes et temporaires',
         'forages': 80, 'puits': 400, 'perimetre_irrigue_ha': 5000,
         'acces_eau': 'Excellent (fleuve + irrigation)', 'risque_penurie': 'Très faible',
         'lat': 16.0167, 'lon': -16.4833, 'couleur_eau': '#0D47A1',
     },
     'Podor': {
-        'nappe': 'Nappe alluviale Walo · 5-15m · bonne qualité',
+        'nappe': 'Nappe alluviale Walo - 5-15m - bonne qualité',
         'eau_types': ['Fleuve Sénégal', 'Eau alluviale', 'Canaux SAED'],
-        'fleuves': 'Fleuve Sénégal · Doué (défluent)',
-        'lacs': 'Plaine Walo inondable · mares permanentes',
-        'mares': 'Mares de décrue importantes',
+        'fleuves': 'Fleuve Sénégal - Doué (défluent)',
+        'lacs': 'Plaine Walo inondable - mares permanentes',
+        'mares': 'Mares decrue importantes',
         'forages': 45, 'puits': 230, 'perimetre_irrigue_ha': 2500,
         'acces_eau': 'Très bon', 'risque_penurie': 'Faible',
         'lat': 16.6500, 'lon': -15.2000, 'couleur_eau': '#1565C0',
     },
     'Dagana': {
-        'nappe': 'Nappe alluviale · 3-12m · bonne qualité',
+        'nappe': 'Nappe alluviale - 3-12m - bonne qualité',
         'eau_types': ['Fleuve Sénégal', 'Lac de Guiers', 'Canaux SAED', 'Eau douce'],
-        'fleuves': 'Fleuve Sénégal · Lac de Guiers',
+        'fleuves': 'Fleuve Sénégal - Lac de Guiers',
         'lacs': 'Lac de Guiers (réservoir eau douce majeur)',
-        'mares': 'Lac de Guiers · plaine inondable',
+        'mares': 'Lac de Guiers - plaine inondable',
         'forages': 50, 'puits': 250, 'perimetre_irrigue_ha': 3500,
         'acces_eau': 'Excellent', 'risque_penurie': 'Très faible',
         'lat': 16.4000, 'lon': -15.7667, 'couleur_eau': '#0D47A1',
     },
     'Richard-Toll': {
-        'nappe': 'Nappe alluviale · 2-8m · bonne qualité',
+        'nappe': 'Nappe alluviale - 2-8m - bonne qualité',
         'eau_types': ['Fleuve Sénégal', 'Lac de Guiers', 'Canaux CSS', 'Eau douce abondante'],
-        'fleuves': 'Fleuve Sénégal · canal de la CSS',
+        'fleuves': 'Fleuve Sénégal - canal de la CSS',
         'lacs': 'Lac de Guiers (adjacent)',
-        'mares': 'Canaux d'irrigation permanents',
+        'mares': 'Canaux irrigation permanents',
         'forages': 35, 'puits': 120, 'perimetre_irrigue_ha': 8000,
         'acces_eau': 'Excellent (irrigation intensive)', 'risque_penurie': 'Très faible',
         'lat': 16.4628, 'lon': -15.7022, 'couleur_eau': '#0D47A1',
     },
     'Sédhiou': {
-        'nappe': 'Nappe du Continental terminal · 15-40m · très bonne qualité',
+        'nappe': 'Nappe du Continental terminal - 15-40m - très bonne qualité',
         'eau_types': ['Fleuve Casamance', 'Eau souterraine douce', 'Marigots permanents'],
-        'fleuves': 'Fleuve Casamance · permanent · navigable',
-        'lacs': 'Marigots et bras de mer permanents',
+        'fleuves': 'Fleuve Casamance - permanent - navigable',
+        'lacs': 'Marigots et bras mer permanents',
         'mares': 'Nombreuses mares permanentes',
         'forages': 55, 'puits': 300, 'perimetre_irrigue_ha': 700,
         'acces_eau': 'Très bon', 'risque_penurie': 'Faible',
         'lat': 12.7078, 'lon': -15.5569, 'couleur_eau': '#2E7D32',
     },
     'Goudomp': {
-        'nappe': 'Nappe du Continental terminal · 10-30m · excellente qualité',
+        'nappe': 'Nappe du Continental terminal - 10-30m - excellente qualité',
         'eau_types': ['Fleuve Casamance', 'Eau souterraine douce', 'Marigots'],
-        'fleuves': 'Fleuve Casamance · marigots permanents',
-        'lacs': 'Bas-fonds permanents · mangrove',
+        'fleuves': 'Fleuve Casamance - marigots permanents',
+        'lacs': 'Bas-fonds permanents - mangrove',
         'mares': 'Nombreuses mares et marigots',
         'forages': 35, 'puits': 180, 'perimetre_irrigue_ha': 400,
         'acces_eau': 'Bon', 'risque_penurie': 'Faible',
         'lat': 12.5700, 'lon': -15.1800, 'couleur_eau': '#2E7D32',
     },
     'Bounkiling': {
-        'nappe': 'Nappe du Continental terminal · 12-35m · bonne qualité',
+        'nappe': 'Nappe du Continental terminal - 12-35m - bonne qualité',
         'eau_types': ['Marigots permanents', 'Eau souterraine douce', 'Eau de pluie'],
-        'fleuves': 'Marigots permanents · affluents Casamance',
+        'fleuves': 'Marigots permanents - affluents Casamance',
         'lacs': 'Bas-fonds permanents',
         'mares': 'Mares permanentes',
         'forages': 28, 'puits': 140, 'perimetre_irrigue_ha': 300,
@@ -1577,9 +1577,9 @@ HYDRAULIQUE = {
         'lat': 12.9000, 'lon': -14.9700, 'couleur_eau': '#2E7D32',
     },
     'Tambacounda': {
-        'nappe': 'Nappe du Continental terminal · 30-80m · bonne qualité',
+        'nappe': 'Nappe du Continental terminal - 30-80m - bonne qualité',
         'eau_types': ['Fleuve Gambie', 'Eau souterraine', 'Marigots saisonniers'],
-        'fleuves': 'Fleuve Gambie (nord) · Fleuve Falémé (est)',
+        'fleuves': 'Fleuve Gambie (nord) - Fleuve Falémé (est)',
         'lacs': 'Mares permanentes en saison sèche',
         'mares': 'Mares importantes pour élevage',
         'forages': 60, 'puits': 320, 'perimetre_irrigue_ha': 600,
@@ -1587,19 +1587,19 @@ HYDRAULIQUE = {
         'lat': 13.7719, 'lon': -13.7731, 'couleur_eau': '#F57F17',
     },
     'Bakel': {
-        'nappe': 'Nappe alluviale Fleuve Sénégal · 5-20m',
+        'nappe': 'Nappe alluviale Fleuve Sénégal - 5-20m',
         'eau_types': ['Fleuve Sénégal', 'Fleuve Falémé', 'Eau alluviale'],
-        'fleuves': 'Fleuve Sénégal · Fleuve Falémé (confluent)',
-        'lacs': 'Plaine inondable · mares de décrue',
-        'mares': 'Mares de décrue importantes',
+        'fleuves': 'Fleuve Sénégal - Fleuve Falémé (confluent)',
+        'lacs': 'Plaine inondable - mares decrue',
+        'mares': 'Mares decrue importantes',
         'forages': 25, 'puits': 130, 'perimetre_irrigue_ha': 400,
         'acces_eau': 'Bon (fleuve)', 'risque_penurie': 'Modéré',
         'lat': 14.9000, 'lon': -12.4667, 'couleur_eau': '#1565C0',
     },
     'Goudiry': {
-        'nappe': 'Nappe du Continental terminal · 40-90m',
+        'nappe': 'Nappe du Continental terminal - 40-90m',
         'eau_types': ['Eau souterraine', 'Marigots saisonniers'],
-        'fleuves': 'Marigots saisonniers · Falémé (est)',
+        'fleuves': 'Marigots saisonniers - Falémé (est)',
         'lacs': 'Mares temporaires',
         'mares': 'Mares temporaires importantes',
         'forages': 30, 'puits': 160, 'perimetre_irrigue_ha': 200,
@@ -1607,7 +1607,7 @@ HYDRAULIQUE = {
         'lat': 14.1833, 'lon': -12.7333, 'couleur_eau': '#F57F17',
     },
     'Koumpentoum': {
-        'nappe': 'Nappe du Continental terminal · 35-80m',
+        'nappe': 'Nappe du Continental terminal - 35-80m',
         'eau_types': ['Eau souterraine', 'Marigots saisonniers', 'Eau de pluie'],
         'fleuves': 'Marigots saisonniers',
         'lacs': 'Aucun permanent',
@@ -1617,7 +1617,7 @@ HYDRAULIQUE = {
         'lat': 13.9833, 'lon': -14.5500, 'couleur_eau': '#F57F17',
     },
     'Thiès': {
-        'nappe': 'Nappe du Paléocène · 20-60m · bonne qualité',
+        'nappe': 'Nappe du Paléocène - 20-60m - bonne qualité',
         'eau_types': ['Eau souterraine', 'Eau de ville (SDE)', 'Eau de pluie'],
         'fleuves': 'Aucun permanent',
         'lacs': 'Aucun permanent',
@@ -1627,17 +1627,17 @@ HYDRAULIQUE = {
         'lat': 14.7861, 'lon': -16.9203, 'couleur_eau': '#1976D2',
     },
     'Mbour': {
-        'nappe': 'Nappe sableuse côtière · 10-30m · qualité variable',
+        'nappe': 'Nappe sableuse côtière - 10-30m - qualité variable',
         'eau_types': ['Mer (Atlantique)', 'Eau souterraine', 'Eau de ville'],
-        'fleuves': 'Aucun permanent · marigots côtiers',
-        'lacs': 'Lac Tanma · zones humides côtières',
+        'fleuves': 'Aucun permanent - marigots côtiers',
+        'lacs': 'Lac Tanma - zones humides côtières',
         'mares': 'Mares côtières temporaires',
         'forages': 35, 'puits': 180, 'perimetre_irrigue_ha': 350,
         'acces_eau': 'Bon', 'risque_penurie': 'Modéré',
         'lat': 14.3917, 'lon': -16.7250, 'couleur_eau': '#1976D2',
     },
     'Tivaouane': {
-        'nappe': 'Nappe du Paléocène · 25-70m · qualité correcte',
+        'nappe': 'Nappe du Paléocène - 25-70m - qualité correcte',
         'eau_types': ['Eau souterraine', 'Eau de ville', 'Eau de pluie'],
         'fleuves': 'Aucun permanent',
         'lacs': 'Aucun',
@@ -1647,7 +1647,7 @@ HYDRAULIQUE = {
         'lat': 14.9500, 'lon': -16.8333, 'couleur_eau': '#1976D2',
     },
     'Mékhe': {
-        'nappe': 'Nappe du Paléocène · 30-80m',
+        'nappe': 'Nappe du Paléocène - 30-80m',
         'eau_types': ['Eau souterraine', 'Eau de pluie'],
         'fleuves': 'Aucun permanent',
         'lacs': 'Aucun',
@@ -1657,7 +1657,7 @@ HYDRAULIQUE = {
         'lat': 14.8833, 'lon': -16.4167, 'couleur_eau': '#F57F17',
     },
     'Khombole': {
-        'nappe': 'Nappe du Paléocène · 30-75m',
+        'nappe': 'Nappe du Paléocène - 30-75m',
         'eau_types': ['Eau souterraine', 'Eau de pluie'],
         'fleuves': 'Aucun permanent',
         'lacs': 'Aucun',
@@ -1667,30 +1667,30 @@ HYDRAULIQUE = {
         'lat': 14.7500, 'lon': -16.7000, 'couleur_eau': '#F57F17',
     },
     'Ziguinchor': {
-        'nappe': 'Nappe du Continental terminal · 8-25m · excellente qualité eau douce',
+        'nappe': 'Nappe du Continental terminal - 8-25m - excellente qualité eau douce',
         'eau_types': ['Fleuve Casamance', 'Eau souterraine douce', 'Marigots permanents', 'Mangrove'],
-        'fleuves': 'Fleuve Casamance · permanent · navigable · eau douce',
-        'lacs': 'Bras de mer · mangroves · bolons permanents',
+        'fleuves': 'Fleuve Casamance - permanent - navigable - eau douce',
+        'lacs': 'Bras mer - mangroves - bolons permanents',
         'mares': 'Nombreuses mares et marigots permanents',
         'forages': 70, 'puits': 400, 'perimetre_irrigue_ha': 1500,
         'acces_eau': 'Excellent', 'risque_penurie': 'Très faible',
         'lat': 12.5589, 'lon': -16.2719, 'couleur_eau': '#1B5E20',
     },
     'Bignona': {
-        'nappe': 'Nappe du Continental terminal · 10-30m · très bonne qualité',
+        'nappe': 'Nappe du Continental terminal - 10-30m - très bonne qualité',
         'eau_types': ['Marigots permanents', 'Eau souterraine douce', 'Fleuve Casamance (proche)'],
-        'fleuves': 'Marigots permanents · affluents Casamance',
-        'lacs': 'Bas-fonds permanents · mangroves',
+        'fleuves': 'Marigots permanents - affluents Casamance',
+        'lacs': 'Bas-fonds permanents - mangroves',
         'mares': 'Nombreuses mares permanentes',
         'forages': 50, 'puits': 280, 'perimetre_irrigue_ha': 900,
         'acces_eau': 'Très bon', 'risque_penurie': 'Faible',
         'lat': 12.8101, 'lon': -16.2244, 'couleur_eau': '#2E7D32',
     },
     'Oussouye': {
-        'nappe': 'Nappe du Continental terminal · 6-20m · excellente qualité',
+        'nappe': 'Nappe du Continental terminal - 6-20m - excellente qualité',
         'eau_types': ['Marigots permanents', 'Eau souterraine douce', 'Mer (proche)', 'Mangrove'],
-        'fleuves': 'Marigots permanents · bolons · mangrove',
-        'lacs': 'Bolons permanents · mangroves étendues',
+        'fleuves': 'Marigots permanents - bolons - mangrove',
+        'lacs': 'Bolons permanents - mangroves étendues',
         'mares': 'Mares et bolons permanents',
         'forages': 35, 'puits': 200, 'perimetre_irrigue_ha': 600,
         'acces_eau': 'Excellent', 'risque_penurie': 'Très faible',
@@ -1742,7 +1742,7 @@ def afficher_section_hydraulique(commune, selected_scenario):
                 st.markdown(f"💧 **{eau}**")
 
         st.markdown(f"\n**🪨 Nappe phréatique :** {data['nappe']}")
-        st.markdown(f"**🏞️ Fleuves/Cours d'eau :** {data['fleuves']}")
+        st.markdown(f"**🏞️ Fleuves/Cours eau :** {data['fleuves']}")
         st.markdown(f"**🌊 Lacs/Zones humides :** {data['lacs']}")
         st.markdown(f"**🐸 Mares :** {data['mares']}")
 
@@ -1817,7 +1817,7 @@ def afficher_section_hydraulique(commune, selected_scenario):
         zoom=5.5,
         center={"lat": 14.5, "lon": -14.5},
         mapbox_style="open-street-map",
-        title=f"Réseau hydraulique du Sénégal · {variable_carte}",
+        title=f"Réseau hydraulique du Sénégal - {variable_carte}",
     )
     fig_map.update_layout(
         height=600,
@@ -1852,7 +1852,7 @@ def afficher_section_hydraulique(commune, selected_scenario):
     fig2.add_trace(go.Scatter(x=annees, y=forages_proj, name="Forages", line=dict(color="#1565C0",width=2)))
     fig2.add_trace(go.Scatter(x=annees, y=puits_proj,   name="Puits fonctionnels", line=dict(color="#2E7D32",width=2,dash="dash")))
     fig2.update_layout(
-        title=f"Évolution infrastructure hydraulique · {commune} · {selected_scenario}",
+        title=f"Évolution infrastructure hydraulique - {commune} - {selected_scenario}",
         template="plotly_dark",
         paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527",
         font_color="#e8f4fd",
@@ -1898,7 +1898,7 @@ with st.sidebar:
     st.markdown("---")
     st.success("🟢 Base connectée")
     nb = pd.read_sql("SELECT COUNT(*) as n FROM commune_climate_data", get_conn()).iloc[0]["n"]
-    st.caption(f"📦 {nb:,} enregistrements · 46 communes")
+    st.caption(f"📦 {nb:,} enregistrements - 46 communes")
 
 def get_info(commune):
     row = communes_df[communes_df["commune_name"]==commune]
@@ -1913,7 +1913,7 @@ colors_sc = {"SSP1-1.9":"#44ff88","SSP2-4.5":"#ffd700","SSP5-8.5":"#ff4444"}
 if page == "📊 Aperçu":
     region, sol, cal, conseil = get_info(selected_commune)
     st.markdown(f"# 🌍 Système d'Alerte Climatique — Sénégal 2025–2055")
-    st.caption(f"Commune : **{selected_commune}** · Région : **{region}** · Scénario : **{selected_scenario}**")
+    st.caption(f"Commune : **{selected_commune}** - Région : **{region}** - Scénario : **{selected_scenario}**")
     c1,c2,c3,c4 = st.columns(4)
     c1.markdown('<div class="metric-card"><div class="metric-value">46</div><div class="metric-label">Communes</div></div>', unsafe_allow_html=True)
     c2.markdown('<div class="metric-card"><div class="metric-value">2025–2055</div><div class="metric-label">30 ans</div></div>', unsafe_allow_html=True)
@@ -1930,7 +1930,7 @@ if page == "📊 Aperçu":
             fig2 = px.bar(df,x="year",y="precip_total",title="🌧️ Précipitations (mm/an)",color_discrete_sequence=["#4db8ff"],template="plotly_dark")
             fig2.update_layout(**LAYOUT); st.plotly_chart(fig2,use_container_width=True)
     if cal:
-        st.info(f"💧 **Début des pluies :** {cal.get('debut_pluies','N/A')} · **Hivernage :** {cal.get('hivernage','N/A')} · **Cultures :** {cal.get('cultures','N/A')}")
+        st.info(f"💧 **Début des pluies :** {cal.get('debut_pluies','N/A')} - **Hivernage :** {cal.get('hivernage','N/A')} - **Cultures :** {cal.get('cultures','N/A')}")
     st.markdown(f'<div class="info-card">💡 <b>Conseil :</b> {conseil}</div>', unsafe_allow_html=True)
 
 elif page == "🌡️ Température":
@@ -1942,7 +1942,7 @@ elif page == "🌡️ Température":
         fig.add_trace(go.Scatter(x=df["year"],y=df["temp_mean"],name="T° moy",line=dict(color="#ffd700",width=2)))
         fig.add_trace(go.Scatter(x=df["year"],y=df["temp_min"],name="T° min",line=dict(color="#4db8ff",width=2)))
         fig.add_hline(y=38,line_dash="dash",line_color="red",annotation_text="Seuil stress 38°C")
-        fig.update_layout(title=f"Températures 2025–2055 · {selected_commune}",template="plotly_dark",**LAYOUT)
+        fig.update_layout(title=f"Températures 2025–2055 - {selected_commune}",template="plotly_dark",**LAYOUT)
         st.plotly_chart(fig,use_container_width=True)
         c1,c2,c3 = st.columns(3)
         c1.metric("T° min projetée",f"{df['temp_min'].min():.1f}°C")
@@ -1955,10 +1955,10 @@ elif page == "🌡️ Température":
 elif page == "🌧️ Précipitations":
     region, sol, cal, conseil = get_info(selected_commune)
     st.markdown(f"# 🌧️ Précipitations — {selected_commune}")
-    if cal: st.info(f"📅 **Début des pluies :** {cal.get('debut_pluies','N/A')} · **Hivernage :** {cal.get('hivernage','N/A')}")
+    if cal: st.info(f"📅 **Début des pluies :** {cal.get('debut_pluies','N/A')} - **Hivernage :** {cal.get('hivernage','N/A')}")
     df = get_annual(selected_commune, selected_scenario)
     if not df.empty:
-        fig = px.bar(df,x="year",y="precip_total",title=f"Précipitations annuelles (mm) · {selected_commune}",color="precip_total",color_continuous_scale=["#ff4444","#ffd700","#4db8ff"],template="plotly_dark")
+        fig = px.bar(df,x="year",y="precip_total",title=f"Précipitations annuelles (mm) - {selected_commune}",color="precip_total",color_continuous_scale=["#ff4444","#ffd700","#4db8ff"],template="plotly_dark")
         fig.update_layout(**LAYOUT); st.plotly_chart(fig,use_container_width=True)
         c1,c2,c3,c4 = st.columns(4)
         c1.metric("Précip. 2025",f"{df['precip_total'].iloc[0]:.0f} mm")
@@ -1984,7 +1984,7 @@ elif page == "🏜️ Sécheresse":
     st.markdown(f"# 🏜️ Sécheresse — {selected_commune}")
     df = get_annual(selected_commune, selected_scenario)
     if not df.empty:
-        fig = px.line(df,x="year",y="drought",title="Indice de sécheresse (0=normal · 1=sévère)",color_discrete_sequence=["#ffd700"],template="plotly_dark")
+        fig = px.line(df,x="year",y="drought",title="Indice de sécheresse (0=normal - 1=sévère)",color_discrete_sequence=["#ffd700"],template="plotly_dark")
         fig.add_hline(y=0.3,line_dash="dot",line_color="orange",annotation_text="Modéré")
         fig.add_hline(y=0.6,line_dash="dash",line_color="red",annotation_text="Critique")
         fig.update_layout(**LAYOUT); st.plotly_chart(fig,use_container_width=True)
@@ -2029,7 +2029,7 @@ elif page == "🗺️ Carte Interactive":
     if not df_map.empty:
         cscales = {"temp_mean":"Reds","temp_max":"hot","precip_total":"Blues","drought":"YlOrRd","heat_stress":"Oranges"}
         labels  = {"temp_mean":"T° moy (°C)","temp_max":"T° max (°C)","precip_total":"Précip (mm)","drought":"Sécheresse","heat_stress":"Stress"}
-        fig = px.scatter_mapbox(df_map,lat="latitude",lon="longitude",hover_name="commune_name",hover_data={"region":True,variable:True,"latitude":False,"longitude":False},color=variable,color_continuous_scale=cscales[variable],size_max=18,zoom=5.5,center={"lat":14.5,"lon":-14.5},mapbox_style="open-street-map",title=f"{labels[variable]} · {year} · {selected_scenario}")
+        fig = px.scatter_mapbox(df_map,lat="latitude",lon="longitude",hover_name="commune_name",hover_data={"region":True,variable:True,"latitude":False,"longitude":False},color=variable,color_continuous_scale=cscales[variable],size_max=18,zoom=5.5,center={"lat":14.5,"lon":-14.5},mapbox_style="open-street-map",title=f"{labels[variable]} - {year} - {selected_scenario}")
         fig.update_layout(height=600,margin={"r":0,"t":40,"l":0,"b":0})
         st.plotly_chart(fig,use_container_width=True)
 
@@ -2084,7 +2084,7 @@ elif page == "📉 Comparaison Scénarios":
             fig.add_trace(go.Scatter(x=df["year"],y=df[variable],name=sc,line=dict(color=colors_sc.get(sc,"#fff"),width=2)))
             v2040 = df[df["year"]==2040][variable].values
             summary.append({"Scénario":sc,"2025":round(df[variable].iloc[0],2),"2040":round(v2040[0],2) if len(v2040) else "N/A","2055":round(df[variable].iloc[-1],2),"Variation":round(df[variable].iloc[-1]-df[variable].iloc[0],2)})
-    fig.update_layout(title=f"Comparaison · {selected_commune}",template="plotly_dark",**LAYOUT,legend=dict(bgcolor="#0d1527",bordercolor="#2a4a7f"))
+    fig.update_layout(title=f"Comparaison - {selected_commune}",template="plotly_dark",**LAYOUT,legend=dict(bgcolor="#0d1527",bordercolor="#2a4a7f"))
     st.plotly_chart(fig,use_container_width=True)
     if summary: st.dataframe(pd.DataFrame(summary),use_container_width=True)
 
