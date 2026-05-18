@@ -1054,6 +1054,825 @@ def afficher_calendrier_gantt(commune):
     styled = df_gantt.style.applymap(colorize, subset=MOIS)
     st.dataframe(styled, use_container_width=True, hide_index=True)
 
+
+HYDRAULIQUE = {
+    "Dakar":{"nappe":"Nappe sables quaternaires 5-15m saumâtre","eau_types":["Mer Atlantique","Eau souterraine","Eau ville SDE"],"fleuves":"Aucun fleuve · presquîle","lacs":"Lac Rose salé · Baie de Hann","mares":"Mares temporaires hivernage","forages":45,"puits":120,"perimetre_irrigue_ha":150,"acces_eau":"Très bon","risque_penurie":"Modéré","lat":14.6928,"lon":-17.0407},
+    "Pikine":{"nappe":"Nappe affleurante 2-8m risque salinisation","eau_types":["Eau souterraine","Eau ville","Mer proche"],"fleuves":"Aucun","lacs":"Lac Mbeubeuss zones humides","mares":"Nombreuses inondations","forages":28,"puits":85,"perimetre_irrigue_ha":80,"acces_eau":"Bon","risque_penurie":"Modéré","lat":14.7667,"lon":-17.1500},
+    "Guediawaye":{"nappe":"Nappe sableuse 3-10m qualité variable","eau_types":["Eau souterraine","Eau ville"],"fleuves":"Aucun","lacs":"Zones humides côtières","mares":"Mares temporaires","forages":18,"puits":60,"perimetre_irrigue_ha":40,"acces_eau":"Bon","risque_penurie":"Faible","lat":14.7550,"lon":-17.2850},
+    "Rufisque":{"nappe":"Nappe Maestrichtien 80-200m bonne qualité","eau_types":["Eau souterraine profonde","Mer Atlantique","Eau ville"],"fleuves":"Aucun direct","lacs":"Baie de Rufisque","mares":"Mares saisonnières","forages":22,"puits":75,"perimetre_irrigue_ha":120,"acces_eau":"Bon","risque_penurie":"Faible","lat":14.7167,"lon":-17.2667},
+    "Bargny":{"nappe":"Nappe côtière saline 10-25m eau douce rare","eau_types":["Mer Atlantique","Eau souterraine saline","Eau ville"],"fleuves":"Aucun","lacs":"Mangrove dégradée zones salées","mares":"Mares salées","forages":8,"puits":30,"perimetre_irrigue_ha":20,"acces_eau":"Difficile","risque_penurie":"Élevé","lat":14.6942,"lon":-17.2311},
+    "Diourbel":{"nappe":"Nappe Paléocène 30-80m bonne qualité","eau_types":["Eau souterraine","Eau ville","Eau pluie collectée"],"fleuves":"Aucun permanent","lacs":"Aucun","mares":"Mares temporaires élevage","forages":35,"puits":180,"perimetre_irrigue_ha":200,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":14.6500,"lon":-16.2333},
+    "Bambey":{"nappe":"Continental terminal 40-90m","eau_types":["Eau souterraine","Eau pluie"],"fleuves":"Aucun","lacs":"Aucun","mares":"Mares villageoises","forages":25,"puits":150,"perimetre_irrigue_ha":180,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":14.7000,"lon":-16.4500},
+    "Mbacké":{"nappe":"Nappe Maestrichtien 60-120m bonne qualité","eau_types":["Eau souterraine profonde","Eau ville","Eau pluie"],"fleuves":"Aucun","lacs":"Aucun","mares":"Mares temporaires","forages":30,"puits":160,"perimetre_irrigue_ha":220,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":14.8000,"lon":-15.9100},
+    "Fatick":{"nappe":"Nappe Sénégalo-mauritanien 20-60m légèrement salée","eau_types":["Eau souterraine","Eau salée bras de mer","Eau douce saisonnière"],"fleuves":"Bras Sine-Saloum saumâtre","lacs":"Delta Saloum mangroves bolons","mares":"Nombreuses mares et bolons","forages":40,"puits":200,"perimetre_irrigue_ha":350,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":14.3386,"lon":-16.4114},
+    "Gossas":{"nappe":"Continental terminal 50-100m","eau_types":["Eau souterraine","Eau pluie"],"fleuves":"Aucun","lacs":"Aucun","mares":"Mares temporaires villageoises","forages":18,"puits":90,"perimetre_irrigue_ha":100,"acces_eau":"Difficile","risque_penurie":"Élevé","lat":14.5000,"lon":-16.0667},
+    "Foundiougne":{"nappe":"Nappe alluviale 5-20m qualité variable","eau_types":["Eau saumâtre bras mer","Eau douce saisonnière","Eau souterraine"],"fleuves":"Bras Saloum mangroves","lacs":"Delta Saloum bolons","mares":"Bolons et chenaux permanents","forages":25,"puits":110,"perimetre_irrigue_ha":280,"acces_eau":"Bon","risque_penurie":"Modéré","lat":14.1333,"lon":-16.4667},
+    "Sokone":{"nappe":"Nappe côtière salinité variable 10-30m","eau_types":["Eau saumâtre","Eau douce souterraine","Mer Saloum"],"fleuves":"Fleuve Saloum bolons","lacs":"Delta Saloum","mares":"Mares et bolons permanents","forages":20,"puits":80,"perimetre_irrigue_ha":200,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":13.8833,"lon":-16.3667},
+    "Kaolack":{"nappe":"Nappe Maestrichtien 40-100m très bonne qualité","eau_types":["Eau souterraine","Fleuve Saloum","Eau ville SDE"],"fleuves":"Fleuve Saloum navigable","lacs":"Bras Saloum lac salé aval","mares":"Mares temporaires","forages":55,"puits":280,"perimetre_irrigue_ha":500,"acces_eau":"Bon","risque_penurie":"Faible","lat":13.9667,"lon":-16.0167},
+    "Kaffrine":{"nappe":"Nappe Maestrichtien 60-140m bonne qualité","eau_types":["Eau souterraine profonde","Eau pluie collectée"],"fleuves":"Aucun permanent marigots saisonniers","lacs":"Aucun permanent","mares":"Mares temporaires élevage","forages":42,"puits":220,"perimetre_irrigue_ha":300,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":14.1056,"lon":-15.5506},
+    "Nioro du Rip":{"nappe":"Continental terminal 40-80m","eau_types":["Eau souterraine","Marigots saisonniers","Eau pluie"],"fleuves":"Marigot du Rip saisonnier","lacs":"Aucun permanent","mares":"Mares saisonnières","forages":30,"puits":160,"perimetre_irrigue_ha":250,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":13.7500,"lon":-15.7833},
+    "Kolda":{"nappe":"Continental terminal 20-50m excellente qualité","eau_types":["Eau souterraine douce","Fleuve Casamance","Marigots permanents"],"fleuves":"Fleuve Casamance permanent navigable","lacs":"Marigots et bas-fonds permanents","mares":"Nombreuses mares permanentes et temporaires","forages":65,"puits":350,"perimetre_irrigue_ha":800,"acces_eau":"Très bon","risque_penurie":"Faible","lat":12.8908,"lon":-14.9508},
+    "Vélingara":{"nappe":"Continental terminal 25-60m bonne qualité","eau_types":["Eau souterraine douce","Marigots permanents","Fleuve Gambie proche"],"fleuves":"Marigot de Vélingara Fleuve Gambie nord","lacs":"Bas-fonds permanents","mares":"Nombreuses mares permanentes","forages":50,"puits":280,"perimetre_irrigue_ha":600,"acces_eau":"Bon","risque_penurie":"Faible","lat":13.1500,"lon":-14.1000},
+    "Médina Yoro Foulah":{"nappe":"Nappe latéritique 15-40m qualité moyenne","eau_types":["Eau souterraine","Marigots saisonniers"],"fleuves":"Marigots saisonniers","lacs":"Bas-fonds temporaires","mares":"Mares temporaires","forages":25,"puits":140,"perimetre_irrigue_ha":200,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":13.4000,"lon":-14.2000},
+    "Kédougou":{"nappe":"Nappe altérites 10-30m excellente qualité","eau_types":["Eau souterraine douce","Fleuve Gambie","Rivières permanentes","Cascades"],"fleuves":"Fleuve Gambie Fleuve Falémé nombreuses rivières","lacs":"Cascades de Dindéfelo cours eau permanents","mares":"Mares et rivières permanentes","forages":40,"puits":200,"perimetre_irrigue_ha":400,"acces_eau":"Excellent","risque_penurie":"Très faible","lat":12.5569,"lon":-12.1747},
+    "Saraya":{"nappe":"Nappe altérites 8-25m très bonne qualité","eau_types":["Eau souterraine douce","Fleuve Falémé","Rivières permanentes"],"fleuves":"Fleuve Falémé permanent or alluvionnaire","lacs":"Cours eau permanents","mares":"Nombreuses mares et rivières","forages":20,"puits":100,"perimetre_irrigue_ha":150,"acces_eau":"Bon","risque_penurie":"Faible","lat":12.8333,"lon":-11.7500},
+    "Salékata":{"nappe":"Nappe altérites 10-30m","eau_types":["Eau souterraine douce","Rivières saisonnières"],"fleuves":"Rivières saisonnières","lacs":"Bas-fonds temporaires","mares":"Mares temporaires","forages":12,"puits":60,"perimetre_irrigue_ha":80,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":12.6300,"lon":-12.8200},
+    "Louga":{"nappe":"Nappe Maestrichtien 80-200m très bonne mais profonde","eau_types":["Eau souterraine profonde","Eau pluie collectée"],"fleuves":"Aucun permanent","lacs":"Aucun","mares":"Mares temporaires critiques élevage","forages":38,"puits":190,"perimetre_irrigue_ha":150,"acces_eau":"Difficile","risque_penurie":"Élevé","lat":15.6167,"lon":-16.2333},
+    "Linguère":{"nappe":"Nappe Maestrichtien 100-250m très profonde","eau_types":["Eau souterraine très profonde","Eau pluie"],"fleuves":"Aucun permanent marigots saisonniers","lacs":"Aucun","mares":"Mares temporaires essentielles pasteurs","forages":25,"puits":120,"perimetre_irrigue_ha":80,"acces_eau":"Très difficile","risque_penurie":"Très élevé","lat":15.3833,"lon":-15.1167},
+    "Kébémer":{"nappe":"Nappe Paléocène 40-100m qualité correcte","eau_types":["Eau souterraine","Eau pluie collectée"],"fleuves":"Aucun","lacs":"Aucun","mares":"Mares temporaires","forages":22,"puits":110,"perimetre_irrigue_ha":120,"acces_eau":"Moyen","risque_penurie":"Élevé","lat":15.3667,"lon":-16.4500},
+    "Matam":{"nappe":"Nappe alluviale fleuve 5-20m bonne qualité","eau_types":["Fleuve Sénégal","Eau souterraine alluviale","Canaux SAED"],"fleuves":"Fleuve Sénégal permanent grand débit","lacs":"Plaine inondation Walo mares décrue","mares":"Mares décrue permanentes walo","forages":48,"puits":250,"perimetre_irrigue_ha":1200,"acces_eau":"Très bon","risque_penurie":"Faible","lat":15.6553,"lon":-13.2553},
+    "Kanel":{"nappe":"Nappe alluviale 8-25m bonne qualité","eau_types":["Fleuve Sénégal","Eau alluviale","Canaux irrigation"],"fleuves":"Fleuve Sénégal décrue agricole Doué","lacs":"Plaine Walo inondable","mares":"Mares décrue importantes","forages":30,"puits":160,"perimetre_irrigue_ha":800,"acces_eau":"Bon","risque_penurie":"Faible","lat":15.4900,"lon":-13.1700},
+    "Ranérou":{"nappe":"Nappe Maestrichtien 100-200m très profonde","eau_types":["Eau souterraine très profonde","Eau pluie"],"fleuves":"Aucun permanent","lacs":"Aucun","mares":"Mares temporaires critiques élevage pastoral","forages":15,"puits":70,"perimetre_irrigue_ha":50,"acces_eau":"Très difficile","risque_penurie":"Très élevé","lat":15.3000,"lon":-13.9600},
+    "Saint-Louis":{"nappe":"Nappe alluviale delta 3-10m salinité variable","eau_types":["Fleuve Sénégal","Mer Atlantique","Eau douce delta","Canaux SAED","Lac de Guiers"],"fleuves":"Fleuve Sénégal delta très grand débit","lacs":"Lac de Guiers Lac Diama plaine inondable","mares":"Nombreuses mares permanentes et temporaires","forages":80,"puits":400,"perimetre_irrigue_ha":5000,"acces_eau":"Excellent","risque_penurie":"Très faible","lat":16.0167,"lon":-16.4833},
+    "Podor":{"nappe":"Nappe alluviale Walo 5-15m bonne qualité","eau_types":["Fleuve Sénégal","Eau alluviale","Canaux SAED"],"fleuves":"Fleuve Sénégal Doué défluent","lacs":"Plaine Walo inondable","mares":"Mares décrue importantes","forages":45,"puits":230,"perimetre_irrigue_ha":2500,"acces_eau":"Très bon","risque_penurie":"Faible","lat":16.6500,"lon":-15.2000},
+    "Dagana":{"nappe":"Nappe alluviale 3-12m bonne qualité","eau_types":["Fleuve Sénégal","Lac de Guiers","Canaux SAED","Eau douce"],"fleuves":"Fleuve Sénégal Lac de Guiers","lacs":"Lac de Guiers réservoir eau douce majeur","mares":"Lac de Guiers plaine inondable","forages":50,"puits":250,"perimetre_irrigue_ha":3500,"acces_eau":"Excellent","risque_penurie":"Très faible","lat":16.4000,"lon":-15.7667},
+    "Richard-Toll":{"nappe":"Nappe alluviale 2-8m bonne qualité","eau_types":["Fleuve Sénégal","Lac de Guiers","Canaux CSS","Eau douce abondante"],"fleuves":"Fleuve Sénégal canal CSS","lacs":"Lac de Guiers adjacent","mares":"Canaux irrigation permanents","forages":35,"puits":120,"perimetre_irrigue_ha":8000,"acces_eau":"Excellent","risque_penurie":"Très faible","lat":16.4628,"lon":-15.7022},
+    "Sédhiou":{"nappe":"Continental terminal 15-40m très bonne qualité","eau_types":["Fleuve Casamance","Eau souterraine douce","Marigots permanents"],"fleuves":"Fleuve Casamance permanent navigable","lacs":"Marigots et bras mer permanents","mares":"Nombreuses mares permanentes","forages":55,"puits":300,"perimetre_irrigue_ha":700,"acces_eau":"Très bon","risque_penurie":"Faible","lat":12.7078,"lon":-15.5569},
+    "Goudomp":{"nappe":"Continental terminal 10-30m excellente qualité","eau_types":["Fleuve Casamance","Eau souterraine douce","Marigots"],"fleuves":"Fleuve Casamance marigots permanents","lacs":"Bas-fonds permanents mangrove","mares":"Nombreuses mares et marigots","forages":35,"puits":180,"perimetre_irrigue_ha":400,"acces_eau":"Bon","risque_penurie":"Faible","lat":12.5700,"lon":-15.1800},
+    "Bounkiling":{"nappe":"Continental terminal 12-35m bonne qualité","eau_types":["Marigots permanents","Eau souterraine douce","Eau pluie"],"fleuves":"Marigots permanents affluents Casamance","lacs":"Bas-fonds permanents","mares":"Mares permanentes","forages":28,"puits":140,"perimetre_irrigue_ha":300,"acces_eau":"Bon","risque_penurie":"Faible","lat":12.9000,"lon":-14.9700},
+    "Tambacounda":{"nappe":"Continental terminal 30-80m bonne qualité","eau_types":["Fleuve Gambie","Eau souterraine","Marigots saisonniers"],"fleuves":"Fleuve Gambie nord Fleuve Falémé est","lacs":"Mares permanentes saison sèche","mares":"Mares importantes élevage","forages":60,"puits":320,"perimetre_irrigue_ha":600,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":13.7719,"lon":-13.7731},
+    "Bakel":{"nappe":"Nappe alluviale Fleuve Sénégal 5-20m","eau_types":["Fleuve Sénégal","Fleuve Falémé","Eau alluviale"],"fleuves":"Fleuve Sénégal Fleuve Falémé confluent","lacs":"Plaine inondable mares décrue","mares":"Mares décrue importantes","forages":25,"puits":130,"perimetre_irrigue_ha":400,"acces_eau":"Bon","risque_penurie":"Modéré","lat":14.9000,"lon":-12.4667},
+    "Goudiry":{"nappe":"Continental terminal 40-90m","eau_types":["Eau souterraine","Marigots saisonniers"],"fleuves":"Marigots saisonniers Falémé est","lacs":"Mares temporaires","mares":"Mares temporaires importantes","forages":30,"puits":160,"perimetre_irrigue_ha":200,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":14.1833,"lon":-12.7333},
+    "Koumpentoum":{"nappe":"Continental terminal 35-80m","eau_types":["Eau souterraine","Marigots saisonniers","Eau pluie"],"fleuves":"Marigots saisonniers","lacs":"Aucun permanent","mares":"Mares temporaires","forages":28,"puits":150,"perimetre_irrigue_ha":250,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":13.9833,"lon":-14.5500},
+    "Thiès":{"nappe":"Nappe Paléocène 20-60m bonne qualité","eau_types":["Eau souterraine","Eau ville SDE","Eau pluie"],"fleuves":"Aucun permanent","lacs":"Aucun","mares":"Mares temporaires","forages":45,"puits":230,"perimetre_irrigue_ha":400,"acces_eau":"Bon","risque_penurie":"Modéré","lat":14.7861,"lon":-16.9203},
+    "Mbour":{"nappe":"Nappe sableuse côtière 10-30m qualité variable","eau_types":["Mer Atlantique","Eau souterraine","Eau ville"],"fleuves":"Aucun permanent marigots côtiers","lacs":"Lac Tanma zones humides côtières","mares":"Mares côtières temporaires","forages":35,"puits":180,"perimetre_irrigue_ha":350,"acces_eau":"Bon","risque_penurie":"Modéré","lat":14.3917,"lon":-16.7250},
+    "Tivaouane":{"nappe":"Nappe Paléocène 25-70m qualité correcte","eau_types":["Eau souterraine","Eau ville","Eau pluie"],"fleuves":"Aucun","lacs":"Aucun","mares":"Mares temporaires","forages":28,"puits":140,"perimetre_irrigue_ha":200,"acces_eau":"Moyen","risque_penurie":"Modéré","lat":14.9500,"lon":-16.8333},
+    "Mékhe":{"nappe":"Nappe Paléocène 30-80m","eau_types":["Eau souterraine","Eau pluie"],"fleuves":"Aucun","lacs":"Aucun","mares":"Mares temporaires","forages":18,"puits":90,"perimetre_irrigue_ha":150,"acces_eau":"Difficile","risque_penurie":"Élevé","lat":14.8833,"lon":-16.4167},
+    "Khombole":{"nappe":"Nappe Paléocène 30-75m","eau_types":["Eau souterraine","Eau pluie"],"fleuves":"Aucun","lacs":"Aucun","mares":"Mares temporaires","forages":15,"puits":80,"perimetre_irrigue_ha":120,"acces_eau":"Difficile","risque_penurie":"Élevé","lat":14.7500,"lon":-16.7000},
+    "Ziguinchor":{"nappe":"Continental terminal 8-25m excellente eau douce","eau_types":["Fleuve Casamance","Eau souterraine douce","Marigots permanents","Mangrove"],"fleuves":"Fleuve Casamance permanent navigable eau douce","lacs":"Bras mer mangroves bolons permanents","mares":"Nombreuses mares et marigots permanents","forages":70,"puits":400,"perimetre_irrigue_ha":1500,"acces_eau":"Excellent","risque_penurie":"Très faible","lat":12.5589,"lon":-16.2719},
+    "Bignona":{"nappe":"Continental terminal 10-30m très bonne qualité","eau_types":["Marigots permanents","Eau souterraine douce","Fleuve Casamance proche"],"fleuves":"Marigots permanents affluents Casamance","lacs":"Bas-fonds permanents mangroves","mares":"Nombreuses mares permanentes","forages":50,"puits":280,"perimetre_irrigue_ha":900,"acces_eau":"Très bon","risque_penurie":"Faible","lat":12.8101,"lon":-16.2244},
+    "Oussouye":{"nappe":"Continental terminal 6-20m excellente qualité","eau_types":["Marigots permanents","Eau souterraine douce","Mer proche","Mangrove"],"fleuves":"Marigots permanents bolons mangrove","lacs":"Bolons permanents mangroves étendues","mares":"Mares et bolons permanents","forages":35,"puits":200,"perimetre_irrigue_ha":600,"acces_eau":"Excellent","risque_penurie":"Très faible","lat":12.4844,"lon":-16.5464},
+}
+
+def afficher_section_hydraulique(commune, selected_scenario):
+    import plotly.express as px
+    import plotly.graph_objects as go
+    import pandas as pd
+    import streamlit as st
+
+    data = HYDRAULIQUE.get(commune, None)
+    if not data:
+        st.warning(f"Données hydrauliques non disponibles pour {commune}")
+        return
+
+    st.markdown(f"## 💧 Ressources en eau — {commune}")
+
+    col1,col2,col3,col4 = st.columns(4)
+    col1.metric("🔧 Forages fonctionnels", str(data["forages"]))
+    col2.metric("🪣 Puits disponibles", str(data["puits"]))
+    col3.metric("🌾 Périmètre irrigué", f"{data['perimetre_irrigue_ha']} ha")
+    col4.metric("⚠️ Risque pénurie", data["risque_penurie"])
+
+    st.markdown("---")
+    col1,col2 = st.columns(2)
+
+    with col1:
+        st.markdown("### 🌊 Types d eau disponibles")
+        for eau in data["eau_types"]:
+            if any(x in eau for x in ["Mer","Atlantique"]):
+                emoji = "🔵"
+                type_label = "eau salée"
+            elif any(x in eau for x in ["Fleuve","fleuve","Rivière"]):
+                emoji = "🟦"
+                type_label = "eau douce courante"
+            elif any(x in eau for x in ["Lac","lac"]):
+                emoji = "🟩"
+                type_label = "eau douce stagnante"
+            elif any(x in eau for x in ["Marigot","marigot","Cascade"]):
+                emoji = "🟢"
+                type_label = "eau douce saisonnière"
+            elif any(x in eau for x in ["Canal","SAED","CSS","irrigation"]):
+                emoji = "🟡"
+                type_label = "eau irriguée"
+            elif any(x in eau for x in ["souterraine","nappe","puits","Eau ville"]):
+                emoji = "🟤"
+                type_label = "eau souterraine"
+            elif any(x in eau for x in ["saumâtre","Mangrove","salée"]):
+                emoji = "🟠"
+                type_label = "eau saumâtre"
+            else:
+                emoji = "💧"
+                type_label = ""
+            st.markdown(f"{emoji} **{eau}** *({type_label})*" if type_label else f"{emoji} **{eau}**")
+
+        st.markdown(f"**🪨 Nappe :** {data['nappe']}")
+        st.markdown(f"**🏞️ Fleuves :** {data['fleuves']}")
+        st.markdown(f"**🌊 Lacs/Zones humides :** {data['lacs']}")
+        st.markdown(f"**🐸 Mares :** {data['mares']}")
+
+    with col2:
+        st.markdown("### 📊 Infrastructure hydraulique")
+        fig = go.Figure(go.Bar(
+            x=["Forages","Puits","Périmètre (ha/10)"],
+            y=[data["forages"], data["puits"], data["perimetre_irrigue_ha"]//10],
+            marker_color=["#1565C0","#2E7D32","#F57F17"],
+            text=[f"{data['forages']}",f"{data['puits']}",f"{data['perimetre_irrigue_ha']} ha"],
+            textposition="outside",
+        ))
+        fig.update_layout(
+            title="Infrastructure eau disponible",
+            template="plotly_dark",
+            paper_bgcolor="#0a0f1e",plot_bgcolor="#0d1527",
+            font_color="#e8f4fd",showlegend=False,
+            height=300,margin=dict(t=40,b=20,l=10,r=10)
+        )
+        st.plotly_chart(fig,use_container_width=True)
+
+    st.markdown("---")
+    st.markdown("### 🗺️ Carte réseau hydraulique — 46 communes")
+
+    variable_carte = st.selectbox("Afficher sur la carte",["Forages","Puits","Périmètre irrigué (ha)"])
+
+    map_rows = []
+    for c,d in HYDRAULIQUE.items():
+        map_rows.append({
+            "commune":c,"lat":d["lat"],"lon":d["lon"],
+            "Forages":d["forages"],"Puits":d["puits"],
+            "Périmètre irrigué (ha)":d["perimetre_irrigue_ha"],
+            "Accès eau":d["acces_eau"],"Risque":d["risque_penurie"],
+            "Fleuves":d["fleuves"],"Nappe":d["nappe"],
+        })
+    df_map = pd.DataFrame(map_rows)
+
+    cscale = {"Forages":"Blues","Puits":"Greens","Périmètre irrigué (ha)":"YlOrBr"}
+
+    fig_map = px.scatter_mapbox(
+        df_map, lat="lat", lon="lon",
+        hover_name="commune",
+        hover_data={"Forages":True,"Puits":True,"Périmètre irrigué (ha)":True,"Accès eau":True,"Risque":True,"lat":False,"lon":False},
+        color=variable_carte,
+        size=variable_carte,
+        size_max=25,
+        color_continuous_scale=cscale[variable_carte],
+        zoom=5.5,
+        center={"lat":14.5,"lon":-14.5},
+        mapbox_style="open-street-map",
+        title=f"Réseau hydraulique Sénégal · {variable_carte}",
+    )
+    fig_map.update_layout(height=600,margin={"r":0,"t":40,"l":0,"b":0})
+    st.plotly_chart(fig_map,use_container_width=True)
+
+    st.markdown("### 🎨 Légende types d eau")
+    col1,col2,col3,col4 = st.columns(4)
+    col1.markdown("🔵 Mer / Océan (salée)")
+    col1.markdown("🟦 Fleuve / Rivière (douce courante)")
+    col2.markdown("🟩 Lac (douce stagnante)")
+    col2.markdown("🟢 Marigot (saisonnière)")
+    col3.markdown("🟡 Canal irrigation")
+    col3.markdown("🟤 Eau souterraine / Puits")
+    col4.markdown("🟠 Eau saumâtre / Mangrove")
+    col4.markdown("💧 Eau de pluie")
+
+    st.markdown("---")
+    st.info(f"""
+    💡 Recommandations hydrauliques pour {commune} :
+    Forages disponibles : {data["forages"]} · Puits : {data["puits"]} · Périmètre irrigué : {data["perimetre_irrigue_ha"]} ha
+    Accès à l eau : {data["acces_eau"]} · Risque pénurie : {data["risque_penurie"]}
+    Actions prioritaires : réhabiliter les forages existants · construire des retenues d eau · développer l irrigation goutte-à-goutte.
+    """)
+
+
+
+
+# ── Données hydrauliques par commune ─────────────────────────────────────────
+HYDRAULIQUE = {
+    'Dakar': {
+        'nappe': 'Nappe des sables quaternaires · profondeur 5-15m · eau saumâtre côtier',
+        'eau_types': ['Mer (Atlantique)', 'Eau souterraine', 'Eau de ville (SDE)'],
+        'fleuves': 'Aucun fleuve · presquîle entourée de mer',
+        'lacs': 'Lac Rose (lac salé) · Baie de Hann',
+        'mares': 'Mares temporaires en hivernage',
+        'forages': 45, 'puits': 120, 'perimetre_irrigue_ha': 150,
+        'acces_eau': 'Très bon (réseau SDE)', 'risque_penurie': 'Modéré (surexploitation nappe)',
+        'lat': 14.6928, 'lon': -17.0407, 'couleur_eau': '#1565C0',
+    },
+    'Pikine': {
+        'nappe': 'Nappe phréatique affleurante · 2-8m · risque salinisation',
+        'eau_types': ['Eau souterraine', 'Eau de ville', 'Mer (proche)'],
+        'fleuves': 'Aucun · zone périurbaine',
+        'lacs': 'Lac Mbeubeuss (décharge) · zones humides dégradées',
+        'mares': 'Nombreuses mares en hivernage · inondations fréquentes',
+        'forages': 28, 'puits': 85, 'perimetre_irrigue_ha': 80,
+        'acces_eau': 'Bon (réseau SDE partiel)', 'risque_penurie': 'Modéré',
+        'lat': 14.7667, 'lon': -17.1500, 'couleur_eau': '#1976D2',
+    },
+    'Guediawaye': {
+        'nappe': 'Nappe sableuse superficielle · 3-10m · qualité variable',
+        'eau_types': ['Eau souterraine', 'Eau de ville'],
+        'fleuves': 'Aucun',
+        'lacs': 'Zones humides côtières',
+        'mares': 'Mares temporaires',
+        'forages': 18, 'puits': 60, 'perimetre_irrigue_ha': 40,
+        'acces_eau': 'Bon', 'risque_penurie': 'Faible',
+        'lat': 14.7550, 'lon': -17.2850, 'couleur_eau': '#1976D2',
+    },
+    'Rufisque': {
+        'nappe': 'Nappe du Maestrichtien · 80-200m · bonne qualité',
+        'eau_types': ['Eau souterraine profonde', 'Mer (Atlantique)', 'Eau de ville'],
+        'fleuves': 'Aucun direct',
+        'lacs': 'Baie de Rufisque',
+        'mares': 'Mares saisonnières',
+        'forages': 22, 'puits': 75, 'perimetre_irrigue_ha': 120,
+        'acces_eau': 'Bon', 'risque_penurie': 'Faible',
+        'lat': 14.7167, 'lon': -17.2667, 'couleur_eau': '#0D47A1',
+    },
+    'Bargny': {
+        'nappe': 'Nappe côtière saline · eau douce rare · 10-25m',
+        'eau_types': ['Mer (Atlantique)', 'Eau souterraine saline', 'Eau de ville'],
+        'fleuves': 'Aucun',
+        'lacs': 'Mangrove dégradée · zones salées',
+        'mares': 'Mares salées',
+        'forages': 8, 'puits': 30, 'perimetre_irrigue_ha': 20,
+        'acces_eau': 'Difficile (eau salée dominante)', 'risque_penurie': 'Élevé',
+        'lat': 14.6942, 'lon': -17.2311, 'couleur_eau': '#0D47A1',
+    },
+    'Diourbel': {
+        'nappe': 'Nappe du Paléocène · 30-80m · bonne qualité',
+        'eau_types': ['Eau souterraine', 'Eau de ville', 'Eau de pluie collectée'],
+        'fleuves': 'Aucun permanent',
+        'lacs': 'Aucun lac permanent',
+        'mares': 'Mares temporaires hivernage · importantes pour élevage',
+        'forages': 35, 'puits': 180, 'perimetre_irrigue_ha': 200,
+        'acces_eau': 'Moyen', 'risque_penurie': 'Modéré',
+        'lat': 14.6500, 'lon': -16.2333, 'couleur_eau': '#388E3C',
+    },
+    'Bambey': {
+        'nappe': 'Nappe du Continental terminal · 40-90m',
+        'eau_types': ['Eau souterraine', 'Eau de pluie'],
+        'fleuves': 'Aucun',
+        'lacs': 'Aucun',
+        'mares': 'Mares villageoises temporaires',
+        'forages': 25, 'puits': 150, 'perimetre_irrigue_ha': 180,
+        'acces_eau': 'Moyen', 'risque_penurie': 'Modéré',
+        'lat': 14.7000, 'lon': -16.4500, 'couleur_eau': '#388E3C',
+    },
+    'Mbacké': {
+        'nappe': 'Nappe du Maestrichtien · 60-120m · bonne qualité',
+        'eau_types': ['Eau souterraine profonde', 'Eau de ville', 'Eau de pluie'],
+        'fleuves': 'Aucun permanent',
+        'lacs': 'Aucun',
+        'mares': 'Mares temporaires importantes',
+        'forages': 30, 'puits': 160, 'perimetre_irrigue_ha': 220,
+        'acces_eau': 'Moyen', 'risque_penurie': 'Modéré',
+        'lat': 14.8000, 'lon': -15.9100, 'couleur_eau': '#388E3C',
+    },
+    'Fatick': {
+        'nappe': 'Nappe du Sénégalo-mauritanien · 20-60m · légèrement salée en zones basses',
+        'eau_types': ['Eau souterraine', 'Eau salée (bras de mer)', 'Eau douce saisonnière'],
+        'fleuves': 'Bras du Sine-Saloum · eau saumâtre',
+        'lacs': 'Delta du Saloum · mangroves · bolons',
+        'mares': 'Nombreuses mares et bolons',
+        'forages': 40, 'puits': 200, 'perimetre_irrigue_ha': 350,
+        'acces_eau': 'Moyen (salinité problématique)', 'risque_penurie': 'Modéré',
+        'lat': 14.3386, 'lon': -16.4114, 'couleur_eau': '#00897B',
+    },
+    'Gossas': {
+        'nappe': 'Nappe du Continental terminal · 50-100m',
+        'eau_types': ['Eau souterraine', 'Eau de pluie'],
+        'fleuves': 'Aucun permanent',
+        'lacs': 'Aucun',
+        'mares': 'Mares temporaires villageoises',
+        'forages': 18, 'puits': 90, 'perimetre_irrigue_ha': 100,
+        'acces_eau': 'Difficile', 'risque_penurie': 'Élevé',
+        'lat': 14.5000, 'lon': -16.0667, 'couleur_eau': '#388E3C',
+    },
+    'Foundiougne': {
+        'nappe': 'Nappe alluviale · 5-20m · qualité variable selon salinité',
+        'eau_types': ['Eau saumâtre (bras de mer)', 'Eau douce saisonnière', 'Eau souterraine'],
+        'fleuves': 'Bras du Saloum · mangroves',
+        'lacs': 'Delta du Saloum · bolons nombreux',
+        'mares': 'Bolons et chenaux permanents',
+        'forages': 25, 'puits': 110, 'perimetre_irrigue_ha': 280,
+        'acces_eau': 'Bon (mais salinité)', 'risque_penurie': 'Modéré',
+        'lat': 14.1333, 'lon': -16.4667, 'couleur_eau': '#00897B',
+    },
+    'Sokone': {
+        'nappe': 'Nappe côtière · salinité variable · 10-30m',
+        'eau_types': ['Eau saumâtre', 'Eau douce souterraine', 'Mer (Saloum)'],
+        'fleuves': 'Fleuve Saloum · bolons',
+        'lacs': 'Delta du Saloum',
+        'mares': 'Mares et bolons permanents',
+        'forages': 20, 'puits': 80, 'perimetre_irrigue_ha': 200,
+        'acces_eau': 'Moyen', 'risque_penurie': 'Modéré',
+        'lat': 13.8833, 'lon': -16.3667, 'couleur_eau': '#00897B',
+    },
+    'Kaolack': {
+        'nappe': 'Nappe du Maestrichtien · 40-100m · très bonne qualité',
+        'eau_types': ['Eau souterraine', 'Fleuve Saloum', 'Eau de ville (SDE)'],
+        'fleuves': 'Fleuve Saloum · navigation possible',
+        'lacs': 'Bras du Saloum · lac salé en aval',
+        'mares': 'Mares temporaires',
+        'forages': 55, 'puits': 280, 'perimetre_irrigue_ha': 500,
+        'acces_eau': 'Bon', 'risque_penurie': 'Faible',
+        'lat': 13.9667, 'lon': -16.0167, 'couleur_eau': '#1565C0',
+    },
+    'Kaffrine': {
+        'nappe': 'Nappe du Maestrichtien · 60-140m · bonne qualité',
+        'eau_types': ['Eau souterraine profonde', 'Eau de pluie collectée'],
+        'fleuves': 'Aucun permanent · marigots saisonniers',
+        'lacs': 'Aucun permanent',
+        'mares': 'Mares temporaires importantes pour élevage',
+        'forages': 42, 'puits': 220, 'perimetre_irrigue_ha': 300,
+        'acces_eau': 'Moyen', 'risque_penurie': 'Modéré',
+        'lat': 14.1056, 'lon': -15.5506, 'couleur_eau': '#388E3C',
+    },
+    'Nioro du Rip': {
+        'nappe': 'Nappe du Continental terminal · 40-80m',
+        'eau_types': ['Eau souterraine', 'Marigots saisonniers', 'Eau de pluie'],
+        'fleuves': 'Marigot du Rip · saisonnier',
+        'lacs': 'Aucun permanent',
+        'mares': 'Mares saisonnières importantes',
+        'forages': 30, 'puits': 160, 'perimetre_irrigue_ha': 250,
+        'acces_eau': 'Moyen', 'risque_penurie': 'Modéré',
+        'lat': 13.7500, 'lon': -15.7833, 'couleur_eau': '#388E3C',
+    },
+    'Kolda': {
+        'nappe': 'Nappe du Continental terminal · 20-50m · excellente qualité',
+        'eau_types': ['Eau souterraine douce', 'Fleuve Casamance', 'Marigots permanents'],
+        'fleuves': 'Fleuve Casamance · permanent · navigable',
+        'lacs': 'Marigots et bas-fonds permanents',
+        'mares': 'Nombreuses mares permanentes et temporaires',
+        'forages': 65, 'puits': 350, 'perimetre_irrigue_ha': 800,
+        'acces_eau': 'Très bon', 'risque_penurie': 'Faible',
+        'lat': 12.8908, 'lon': -14.9508, 'couleur_eau': '#2E7D32',
+    },
+    'Vélingara': {
+        'nappe': 'Nappe du Continental terminal · 25-60m · bonne qualité',
+        'eau_types': ['Eau souterraine douce', 'Marigots permanents', 'Fleuve Gambie (proche)'],
+        'fleuves': 'Marigot de Vélingara · Fleuve Gambie (nord)',
+        'lacs': 'Bas-fonds permanents',
+        'mares': 'Nombreuses mares permanentes',
+        'forages': 50, 'puits': 280, 'perimetre_irrigue_ha': 600,
+        'acces_eau': 'Bon', 'risque_penurie': 'Faible',
+        'lat': 13.1500, 'lon': -14.1000, 'couleur_eau': '#2E7D32',
+    },
+    'Médina Yoro Foulah': {
+        'nappe': 'Nappe latéritique · 15-40m · qualité moyenne',
+        'eau_types': ['Eau souterraine', 'Marigots saisonniers'],
+        'fleuves': 'Marigots saisonniers',
+        'lacs': 'Bas-fonds temporaires',
+        'mares': 'Mares temporaires',
+        'forages': 25, 'puits': 140, 'perimetre_irrigue_ha': 200,
+        'acces_eau': 'Moyen', 'risque_penurie': 'Modéré',
+        'lat': 13.4000, 'lon': -14.2000, 'couleur_eau': '#388E3C',
+    },
+    'Kédougou': {
+        'nappe': 'Nappe des altérites · 10-30m · excellente qualité',
+        'eau_types': ['Eau souterraine douce', 'Fleuve Gambie', 'Rivières permanentes', 'Cascades'],
+        'fleuves': 'Fleuve Gambie · Fleuve Falémé · nombreuses rivières',
+        'lacs': 'Nombreux cours d'eau permanents · cascades de Dindéfelo',
+        'mares': 'Mares et rivières permanentes',
+        'forages': 40, 'puits': 200, 'perimetre_irrigue_ha': 400,
+        'acces_eau': 'Excellent', 'risque_penurie': 'Très faible',
+        'lat': 12.5569, 'lon': -12.1747, 'couleur_eau': '#1B5E20',
+    },
+    'Saraya': {
+        'nappe': 'Nappe des altérites · 8-25m · très bonne qualité',
+        'eau_types': ['Eau souterraine douce', 'Fleuve Falémé', 'Rivières permanentes'],
+        'fleuves': 'Fleuve Falémé · permanent · or alluvionnaire',
+        'lacs': 'Cours d'eau permanents',
+        'mares': 'Nombreuses mares et rivières',
+        'forages': 20, 'puits': 100, 'perimetre_irrigue_ha': 150,
+        'acces_eau': 'Bon', 'risque_penurie': 'Faible',
+        'lat': 12.8333, 'lon': -11.7500, 'couleur_eau': '#1B5E20',
+    },
+    'Salékata': {
+        'nappe': 'Nappe des altérites · 10-30m',
+        'eau_types': ['Eau souterraine douce', 'Rivières saisonnières'],
+        'fleuves': 'Rivières saisonnières',
+        'lacs': 'Bas-fonds temporaires',
+        'mares': 'Mares temporaires',
+        'forages': 12, 'puits': 60, 'perimetre_irrigue_ha': 80,
+        'acces_eau': 'Moyen', 'risque_penurie': 'Modéré',
+        'lat': 12.6300, 'lon': -12.8200, 'couleur_eau': '#2E7D32',
+    },
+    'Louga': {
+        'nappe': 'Nappe du Maestrichtien · 80-200m · très bonne qualité mais profonde',
+        'eau_types': ['Eau souterraine profonde', 'Eau de pluie collectée'],
+        'fleuves': 'Aucun permanent',
+        'lacs': 'Aucun permanent',
+        'mares': 'Mares temporaires critiques pour élevage',
+        'forages': 38, 'puits': 190, 'perimetre_irrigue_ha': 150,
+        'acces_eau': 'Difficile (profondeur nappe)', 'risque_penurie': 'Élevé',
+        'lat': 15.6167, 'lon': -16.2333, 'couleur_eau': '#F57F17',
+    },
+    'Linguère': {
+        'nappe': 'Nappe du Maestrichtien · 100-250m · très profonde',
+        'eau_types': ['Eau souterraine très profonde', 'Eau de pluie'],
+        'fleuves': 'Aucun permanent · marigots saisonniers',
+        'lacs': 'Aucun permanent',
+        'mares': 'Mares temporaires essentielles pour pasteurs',
+        'forages': 25, 'puits': 120, 'perimetre_irrigue_ha': 80,
+        'acces_eau': 'Très difficile', 'risque_penurie': 'Très élevé',
+        'lat': 15.3833, 'lon': -15.1167, 'couleur_eau': '#E65100',
+    },
+    'Kébémer': {
+        'nappe': 'Nappe du Paléocène · 40-100m · qualité correcte',
+        'eau_types': ['Eau souterraine', 'Eau de pluie collectée'],
+        'fleuves': 'Aucun permanent',
+        'lacs': 'Aucun',
+        'mares': 'Mares temporaires',
+        'forages': 22, 'puits': 110, 'perimetre_irrigue_ha': 120,
+        'acces_eau': 'Moyen', 'risque_penurie': 'Élevé',
+        'lat': 15.3667, 'lon': -16.4500, 'couleur_eau': '#F57F17',
+    },
+    'Matam': {
+        'nappe': 'Nappe alluviale du fleuve Sénégal · 5-20m · bonne qualité',
+        'eau_types': ['Fleuve Sénégal', 'Eau souterraine alluviale', 'Canaux SAED'],
+        'fleuves': 'Fleuve Sénégal · permanent · grand débit',
+        'lacs': 'Plaine d'inondation (Walo) · mares de décrue',
+        'mares': 'Mares de décrue permanentes · walo',
+        'forages': 48, 'puits': 250, 'perimetre_irrigue_ha': 1200,
+        'acces_eau': 'Très bon (fleuve)', 'risque_penurie': 'Faible',
+        'lat': 15.6553, 'lon': -13.2553, 'couleur_eau': '#1565C0',
+    },
+    'Kanel': {
+        'nappe': 'Nappe alluviale · 8-25m · bonne qualité',
+        'eau_types': ['Fleuve Sénégal', 'Eau alluviale', 'Canaux irrigation'],
+        'fleuves': 'Fleuve Sénégal · décrue agricole',
+        'lacs': 'Plaine inondable (Walo)',
+        'mares': 'Mares de décrue importantes',
+        'forages': 30, 'puits': 160, 'perimetre_irrigue_ha': 800,
+        'acces_eau': 'Bon', 'risque_penurie': 'Faible',
+        'lat': 15.4900, 'lon': -13.1700, 'couleur_eau': '#1565C0',
+    },
+    'Ranérou': {
+        'nappe': 'Nappe du Maestrichtien · 100-200m · très profonde',
+        'eau_types': ['Eau souterraine très profonde', 'Eau de pluie'],
+        'fleuves': 'Aucun permanent',
+        'lacs': 'Aucun permanent',
+        'mares': 'Mares temporaires critiques pour élevage pastoral',
+        'forages': 15, 'puits': 70, 'perimetre_irrigue_ha': 50,
+        'acces_eau': 'Très difficile', 'risque_penurie': 'Très élevé',
+        'lat': 15.3000, 'lon': -13.9600, 'couleur_eau': '#E65100',
+    },
+    'Saint-Louis': {
+        'nappe': 'Nappe alluviale delta · 3-10m · qualité variable (salinité)',
+        'eau_types': ['Fleuve Sénégal', 'Mer (Atlantique)', 'Eau douce delta', 'Canaux SAED'],
+        'fleuves': 'Fleuve Sénégal · delta · très grand débit',
+        'lacs': 'Lac de Guiers · lac Diama · plaine inondable',
+        'mares': 'Nombreuses mares permanentes et temporaires',
+        'forages': 80, 'puits': 400, 'perimetre_irrigue_ha': 5000,
+        'acces_eau': 'Excellent (fleuve + irrigation)', 'risque_penurie': 'Très faible',
+        'lat': 16.0167, 'lon': -16.4833, 'couleur_eau': '#0D47A1',
+    },
+    'Podor': {
+        'nappe': 'Nappe alluviale Walo · 5-15m · bonne qualité',
+        'eau_types': ['Fleuve Sénégal', 'Eau alluviale', 'Canaux SAED'],
+        'fleuves': 'Fleuve Sénégal · Doué (défluent)',
+        'lacs': 'Plaine Walo inondable · mares permanentes',
+        'mares': 'Mares de décrue importantes',
+        'forages': 45, 'puits': 230, 'perimetre_irrigue_ha': 2500,
+        'acces_eau': 'Très bon', 'risque_penurie': 'Faible',
+        'lat': 16.6500, 'lon': -15.2000, 'couleur_eau': '#1565C0',
+    },
+    'Dagana': {
+        'nappe': 'Nappe alluviale · 3-12m · bonne qualité',
+        'eau_types': ['Fleuve Sénégal', 'Lac de Guiers', 'Canaux SAED', 'Eau douce'],
+        'fleuves': 'Fleuve Sénégal · Lac de Guiers',
+        'lacs': 'Lac de Guiers (réservoir eau douce majeur)',
+        'mares': 'Lac de Guiers · plaine inondable',
+        'forages': 50, 'puits': 250, 'perimetre_irrigue_ha': 3500,
+        'acces_eau': 'Excellent', 'risque_penurie': 'Très faible',
+        'lat': 16.4000, 'lon': -15.7667, 'couleur_eau': '#0D47A1',
+    },
+    'Richard-Toll': {
+        'nappe': 'Nappe alluviale · 2-8m · bonne qualité',
+        'eau_types': ['Fleuve Sénégal', 'Lac de Guiers', 'Canaux CSS', 'Eau douce abondante'],
+        'fleuves': 'Fleuve Sénégal · canal de la CSS',
+        'lacs': 'Lac de Guiers (adjacent)',
+        'mares': 'Canaux d'irrigation permanents',
+        'forages': 35, 'puits': 120, 'perimetre_irrigue_ha': 8000,
+        'acces_eau': 'Excellent (irrigation intensive)', 'risque_penurie': 'Très faible',
+        'lat': 16.4628, 'lon': -15.7022, 'couleur_eau': '#0D47A1',
+    },
+    'Sédhiou': {
+        'nappe': 'Nappe du Continental terminal · 15-40m · très bonne qualité',
+        'eau_types': ['Fleuve Casamance', 'Eau souterraine douce', 'Marigots permanents'],
+        'fleuves': 'Fleuve Casamance · permanent · navigable',
+        'lacs': 'Marigots et bras de mer permanents',
+        'mares': 'Nombreuses mares permanentes',
+        'forages': 55, 'puits': 300, 'perimetre_irrigue_ha': 700,
+        'acces_eau': 'Très bon', 'risque_penurie': 'Faible',
+        'lat': 12.7078, 'lon': -15.5569, 'couleur_eau': '#2E7D32',
+    },
+    'Goudomp': {
+        'nappe': 'Nappe du Continental terminal · 10-30m · excellente qualité',
+        'eau_types': ['Fleuve Casamance', 'Eau souterraine douce', 'Marigots'],
+        'fleuves': 'Fleuve Casamance · marigots permanents',
+        'lacs': 'Bas-fonds permanents · mangrove',
+        'mares': 'Nombreuses mares et marigots',
+        'forages': 35, 'puits': 180, 'perimetre_irrigue_ha': 400,
+        'acces_eau': 'Bon', 'risque_penurie': 'Faible',
+        'lat': 12.5700, 'lon': -15.1800, 'couleur_eau': '#2E7D32',
+    },
+    'Bounkiling': {
+        'nappe': 'Nappe du Continental terminal · 12-35m · bonne qualité',
+        'eau_types': ['Marigots permanents', 'Eau souterraine douce', 'Eau de pluie'],
+        'fleuves': 'Marigots permanents · affluents Casamance',
+        'lacs': 'Bas-fonds permanents',
+        'mares': 'Mares permanentes',
+        'forages': 28, 'puits': 140, 'perimetre_irrigue_ha': 300,
+        'acces_eau': 'Bon', 'risque_penurie': 'Faible',
+        'lat': 12.9000, 'lon': -14.9700, 'couleur_eau': '#2E7D32',
+    },
+    'Tambacounda': {
+        'nappe': 'Nappe du Continental terminal · 30-80m · bonne qualité',
+        'eau_types': ['Fleuve Gambie', 'Eau souterraine', 'Marigots saisonniers'],
+        'fleuves': 'Fleuve Gambie (nord) · Fleuve Falémé (est)',
+        'lacs': 'Mares permanentes en saison sèche',
+        'mares': 'Mares importantes pour élevage',
+        'forages': 60, 'puits': 320, 'perimetre_irrigue_ha': 600,
+        'acces_eau': 'Moyen', 'risque_penurie': 'Modéré',
+        'lat': 13.7719, 'lon': -13.7731, 'couleur_eau': '#F57F17',
+    },
+    'Bakel': {
+        'nappe': 'Nappe alluviale Fleuve Sénégal · 5-20m',
+        'eau_types': ['Fleuve Sénégal', 'Fleuve Falémé', 'Eau alluviale'],
+        'fleuves': 'Fleuve Sénégal · Fleuve Falémé (confluent)',
+        'lacs': 'Plaine inondable · mares de décrue',
+        'mares': 'Mares de décrue importantes',
+        'forages': 25, 'puits': 130, 'perimetre_irrigue_ha': 400,
+        'acces_eau': 'Bon (fleuve)', 'risque_penurie': 'Modéré',
+        'lat': 14.9000, 'lon': -12.4667, 'couleur_eau': '#1565C0',
+    },
+    'Goudiry': {
+        'nappe': 'Nappe du Continental terminal · 40-90m',
+        'eau_types': ['Eau souterraine', 'Marigots saisonniers'],
+        'fleuves': 'Marigots saisonniers · Falémé (est)',
+        'lacs': 'Mares temporaires',
+        'mares': 'Mares temporaires importantes',
+        'forages': 30, 'puits': 160, 'perimetre_irrigue_ha': 200,
+        'acces_eau': 'Moyen', 'risque_penurie': 'Modéré',
+        'lat': 14.1833, 'lon': -12.7333, 'couleur_eau': '#F57F17',
+    },
+    'Koumpentoum': {
+        'nappe': 'Nappe du Continental terminal · 35-80m',
+        'eau_types': ['Eau souterraine', 'Marigots saisonniers', 'Eau de pluie'],
+        'fleuves': 'Marigots saisonniers',
+        'lacs': 'Aucun permanent',
+        'mares': 'Mares temporaires',
+        'forages': 28, 'puits': 150, 'perimetre_irrigue_ha': 250,
+        'acces_eau': 'Moyen', 'risque_penurie': 'Modéré',
+        'lat': 13.9833, 'lon': -14.5500, 'couleur_eau': '#F57F17',
+    },
+    'Thiès': {
+        'nappe': 'Nappe du Paléocène · 20-60m · bonne qualité',
+        'eau_types': ['Eau souterraine', 'Eau de ville (SDE)', 'Eau de pluie'],
+        'fleuves': 'Aucun permanent',
+        'lacs': 'Aucun permanent',
+        'mares': 'Mares temporaires',
+        'forages': 45, 'puits': 230, 'perimetre_irrigue_ha': 400,
+        'acces_eau': 'Bon', 'risque_penurie': 'Modéré',
+        'lat': 14.7861, 'lon': -16.9203, 'couleur_eau': '#1976D2',
+    },
+    'Mbour': {
+        'nappe': 'Nappe sableuse côtière · 10-30m · qualité variable',
+        'eau_types': ['Mer (Atlantique)', 'Eau souterraine', 'Eau de ville'],
+        'fleuves': 'Aucun permanent · marigots côtiers',
+        'lacs': 'Lac Tanma · zones humides côtières',
+        'mares': 'Mares côtières temporaires',
+        'forages': 35, 'puits': 180, 'perimetre_irrigue_ha': 350,
+        'acces_eau': 'Bon', 'risque_penurie': 'Modéré',
+        'lat': 14.3917, 'lon': -16.7250, 'couleur_eau': '#1976D2',
+    },
+    'Tivaouane': {
+        'nappe': 'Nappe du Paléocène · 25-70m · qualité correcte',
+        'eau_types': ['Eau souterraine', 'Eau de ville', 'Eau de pluie'],
+        'fleuves': 'Aucun permanent',
+        'lacs': 'Aucun',
+        'mares': 'Mares temporaires',
+        'forages': 28, 'puits': 140, 'perimetre_irrigue_ha': 200,
+        'acces_eau': 'Moyen', 'risque_penurie': 'Modéré',
+        'lat': 14.9500, 'lon': -16.8333, 'couleur_eau': '#1976D2',
+    },
+    'Mékhe': {
+        'nappe': 'Nappe du Paléocène · 30-80m',
+        'eau_types': ['Eau souterraine', 'Eau de pluie'],
+        'fleuves': 'Aucun permanent',
+        'lacs': 'Aucun',
+        'mares': 'Mares temporaires',
+        'forages': 18, 'puits': 90, 'perimetre_irrigue_ha': 150,
+        'acces_eau': 'Difficile', 'risque_penurie': 'Élevé',
+        'lat': 14.8833, 'lon': -16.4167, 'couleur_eau': '#F57F17',
+    },
+    'Khombole': {
+        'nappe': 'Nappe du Paléocène · 30-75m',
+        'eau_types': ['Eau souterraine', 'Eau de pluie'],
+        'fleuves': 'Aucun permanent',
+        'lacs': 'Aucun',
+        'mares': 'Mares temporaires',
+        'forages': 15, 'puits': 80, 'perimetre_irrigue_ha': 120,
+        'acces_eau': 'Difficile', 'risque_penurie': 'Élevé',
+        'lat': 14.7500, 'lon': -16.7000, 'couleur_eau': '#F57F17',
+    },
+    'Ziguinchor': {
+        'nappe': 'Nappe du Continental terminal · 8-25m · excellente qualité eau douce',
+        'eau_types': ['Fleuve Casamance', 'Eau souterraine douce', 'Marigots permanents', 'Mangrove'],
+        'fleuves': 'Fleuve Casamance · permanent · navigable · eau douce',
+        'lacs': 'Bras de mer · mangroves · bolons permanents',
+        'mares': 'Nombreuses mares et marigots permanents',
+        'forages': 70, 'puits': 400, 'perimetre_irrigue_ha': 1500,
+        'acces_eau': 'Excellent', 'risque_penurie': 'Très faible',
+        'lat': 12.5589, 'lon': -16.2719, 'couleur_eau': '#1B5E20',
+    },
+    'Bignona': {
+        'nappe': 'Nappe du Continental terminal · 10-30m · très bonne qualité',
+        'eau_types': ['Marigots permanents', 'Eau souterraine douce', 'Fleuve Casamance (proche)'],
+        'fleuves': 'Marigots permanents · affluents Casamance',
+        'lacs': 'Bas-fonds permanents · mangroves',
+        'mares': 'Nombreuses mares permanentes',
+        'forages': 50, 'puits': 280, 'perimetre_irrigue_ha': 900,
+        'acces_eau': 'Très bon', 'risque_penurie': 'Faible',
+        'lat': 12.8101, 'lon': -16.2244, 'couleur_eau': '#2E7D32',
+    },
+    'Oussouye': {
+        'nappe': 'Nappe du Continental terminal · 6-20m · excellente qualité',
+        'eau_types': ['Marigots permanents', 'Eau souterraine douce', 'Mer (proche)', 'Mangrove'],
+        'fleuves': 'Marigots permanents · bolons · mangrove',
+        'lacs': 'Bolons permanents · mangroves étendues',
+        'mares': 'Mares et bolons permanents',
+        'forages': 35, 'puits': 200, 'perimetre_irrigue_ha': 600,
+        'acces_eau': 'Excellent', 'risque_penurie': 'Très faible',
+        'lat': 12.4844, 'lon': -16.5464, 'couleur_eau': '#1B5E20',
+    },
+}
+
+def afficher_section_hydraulique(commune, selected_scenario):
+    """Affiche la section ressources en eau et réseau hydraulique"""
+    import plotly.express as px
+    import plotly.graph_objects as go
+    import pandas as pd
+
+    data = HYDRAULIQUE.get(commune, None)
+    if not data:
+        st.warning(f"Données hydrauliques non disponibles pour {commune}")
+        return
+
+    st.markdown(f"## 💧 Ressources en eau — {commune}")
+
+    # Métriques principales
+    col1,col2,col3,col4 = st.columns(4)
+    col1.metric("🔧 Forages fonctionnels", f"{data['forages']}")
+    col2.metric("🪣 Puits disponibles", f"{data['puits']}")
+    col3.metric("🌾 Périmètre irrigué", f"{data['perimetre_irrigue_ha']} ha")
+    col4.metric("⚠️ Risque pénurie", data['risque_penurie'])
+
+    st.markdown("---")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("### 🌊 Types d'eau disponibles")
+        for eau in data['eau_types']:
+            if 'Mer' in eau or 'Atlantique' in eau:
+                st.markdown(f"🔵 **{eau}** *(eau salée)*")
+            elif 'Fleuve' in eau or 'fleuve' in eau:
+                st.markdown(f"🟦 **{eau}** *(eau douce courante)*")
+            elif 'Lac' in eau or 'lac' in eau:
+                st.markdown(f"🟩 **{eau}** *(eau douce stagnante)*")
+            elif 'Marigot' in eau or 'marigot' in eau:
+                st.markdown(f"🟢 **{eau}** *(eau douce saisonnière)*")
+            elif 'Canal' in eau or 'SAED' in eau or 'irrigation' in eau:
+                st.markdown(f"🟡 **{eau}** *(eau irriguée)*")
+            elif 'souterraine' in eau or 'nappe' in eau.lower() or 'puits' in eau.lower():
+                st.markdown(f"🟤 **{eau}** *(eau souterraine)*")
+            elif 'saumâtre' in eau or 'Mangrove' in eau:
+                st.markdown(f"🟠 **{eau}** *(eau saumâtre)*")
+            else:
+                st.markdown(f"💧 **{eau}**")
+
+        st.markdown(f"\n**🪨 Nappe phréatique :** {data['nappe']}")
+        st.markdown(f"**🏞️ Fleuves/Cours d'eau :** {data['fleuves']}")
+        st.markdown(f"**🌊 Lacs/Zones humides :** {data['lacs']}")
+        st.markdown(f"**🐸 Mares :** {data['mares']}")
+
+    with col2:
+        st.markdown("### 📊 Infrastructure hydraulique")
+        fig = go.Figure(go.Bar(
+            x=["Forages", "Puits", "Périmètre irrigué (ha/10)"],
+            y=[data['forages'], data['puits'], data['perimetre_irrigue_ha']//10],
+            marker_color=["#1565C0","#2E7D32","#F57F17"],
+            text=[f"{data['forages']} forages", f"{data['puits']} puits", f"{data['perimetre_irrigue_ha']} ha"],
+            textposition="outside",
+        ))
+        fig.update_layout(
+            title="Infrastructure eau disponible",
+            template="plotly_dark",
+            paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527",
+            font_color="#e8f4fd", showlegend=False,
+            height=300, margin=dict(t=40,b=20,l=10,r=10)
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("---")
+    st.markdown("### 🗺️ Carte du réseau hydraulique — toutes communes")
+
+    # Carte de toutes les communes avec leurs ressources en eau
+    map_data = []
+    for c, d in HYDRAULIQUE.items():
+        types_eau = " | ".join(d['eau_types'][:3])
+        map_data.append({
+            'commune': c,
+            'lat': d['lat'],
+            'lon': d['lon'],
+            'forages': d['forages'],
+            'puits': d['puits'],
+            'acces_eau': d['acces_eau'],
+            'fleuves': d['fleuves'],
+            'risque': d['risque_penurie'],
+            'types_eau': types_eau,
+            'couleur': d['couleur_eau'],
+        })
+    df_map = pd.DataFrame(map_data)
+
+    variable_carte = st.selectbox("Afficher sur la carte", [
+        "Forages disponibles",
+        "Puits disponibles",
+        "Risque de pénurie",
+    ])
+
+    color_col = {
+        "Forages disponibles": "forages",
+        "Puits disponibles": "puits",
+        "Risque de pénurie": "risque",
+    }[variable_carte]
+
+    fig_map = px.scatter_mapbox(
+        df_map,
+        lat="lat", lon="lon",
+        hover_name="commune",
+        hover_data={
+            "forages": True,
+            "puits": True,
+            "acces_eau": True,
+            "fleuves": True,
+            "types_eau": True,
+            "risque": True,
+            "lat": False, "lon": False,
+        },
+        color=color_col,
+        size="forages",
+        size_max=25,
+        color_continuous_scale="Blues" if color_col != "risque" else "RdYlGn_r",
+        zoom=5.5,
+        center={"lat": 14.5, "lon": -14.5},
+        mapbox_style="open-street-map",
+        title=f"Réseau hydraulique du Sénégal · {variable_carte}",
+    )
+    fig_map.update_layout(
+        height=600,
+        margin={"r":0,"t":40,"l":0,"b":0},
+    )
+    st.plotly_chart(fig_map, use_container_width=True)
+
+    # Légende types d'eau
+    st.markdown("### 🎨 Légende des types d'eau")
+    col1,col2,col3,col4 = st.columns(4)
+    col1.markdown("🔵 **Eau de mer** (salée)")
+    col1.markdown("🟦 **Fleuve** (douce courante)")
+    col2.markdown("🟩 **Lac** (douce stagnante)")
+    col2.markdown("🟢 **Marigot** (saisonnière)")
+    col3.markdown("🟡 **Canal irrigation**")
+    col3.markdown("🟤 **Eau souterraine**")
+    col4.markdown("🟠 **Eau saumâtre**")
+    col4.markdown("💧 **Eau de pluie**")
+
+    # Projections ressources en eau
+    st.markdown("---")
+    st.markdown("### 📉 Projection des ressources en eau 2025–2055")
+    taux_pluie = {'SSP1-1.9':0.5,'SSP2-4.5':1.0,'SSP5-8.5':1.8}
+    rate = taux_pluie.get(selected_scenario, 1.0)
+
+    annees = list(range(2025, 2056))
+    forages_proj  = [data['forages']] * len(annees)
+    puits_proj    = [max(0, data['puits'] - int(data['puits']*0.005*i*rate)) for i,_ in enumerate(annees)]
+    perimetre_proj= [max(0, data['perimetre_irrigue_ha'] - int(data['perimetre_irrigue_ha']*0.003*i*rate)) for i,_ in enumerate(annees)]
+
+    fig2 = go.Figure()
+    fig2.add_trace(go.Scatter(x=annees, y=forages_proj, name="Forages", line=dict(color="#1565C0",width=2)))
+    fig2.add_trace(go.Scatter(x=annees, y=puits_proj,   name="Puits fonctionnels", line=dict(color="#2E7D32",width=2,dash="dash")))
+    fig2.update_layout(
+        title=f"Évolution infrastructure hydraulique · {commune} · {selected_scenario}",
+        template="plotly_dark",
+        paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527",
+        font_color="#e8f4fd",
+        height=300, margin=dict(t=40,b=20,l=10,r=10),
+        legend=dict(bgcolor="#0d1527",bordercolor="#2a4a7f")
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+
+    st.info(f"""
+    💡 **Recommandations hydrauliques pour {commune} :**
+    Avec {data['forages']} forages et {data['puits']} puits actuellement disponibles,
+    la commune dispose d'une infrastructure {'solide' if data['forages']>40 else 'limitée'}.
+    Face au déficit pluviométrique projeté, il est recommandé de :
+    - **Réhabiliter et entretenir** les forages existants
+    - **Creuser de nouveaux puits** dans les zones à nappe accessible
+    - **Construire des retenues d'eau** pour stocker les pluies d'hivernage
+    - **Développer l'irrigation goutte-à-goutte** sur les {data['perimetre_irrigue_ha']} ha irrigués
+    """)
+
+
 LAYOUT = dict(paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527", font_color="#e8f4fd", margin=dict(t=40,b=20,l=10,r=10))
 
 with st.sidebar:
