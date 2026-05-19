@@ -1105,180 +1105,6 @@ HYDRAULIQUE = {
 }
 
 
-def afficher_section_hydraulique(commune, selected_scenario):
-    """Affiche la section ressources en eau et réseau hydraulique"""
-    import plotly.express as px
-    import plotly.graph_objects as go
-    import pandas as pd
-
-    data = HYDRAULIQUE.get(commune, None)
-    if not data:
-        st.warning(f"Données hydrauliques non disponibles pour {commune}")
-        return
-
-    st.markdown(f"## 💧 Ressources en eau — {commune}")
-
-    # Métriques principales
-    col1,col2,col3,col4 = st.columns(4)
-    col1.metric("🔧 Forages fonctionnels", f"{data['forages']}")
-    col2.metric("🪣 Puits disponibles", f"{data['puits']}")
-    col3.metric("🌾 Périmètre irrigué", f"{data['perimetre_irrigue_ha']} ha")
-    col4.metric("⚠️ Risque pénurie", data['risque_penurie'])
-
-    st.markdown("---")
-
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("### 🌊 Types d'eau disponibles")
-        for eau in data['eau_types']:
-            if 'Mer' in eau or 'Atlantique' in eau:
-                st.markdown(f"🔵 **{eau}** *(eau salée)*")
-            elif 'Fleuve' in eau or 'fleuve' in eau:
-                st.markdown(f"🟦 **{eau}** *(eau douce courante)*")
-            elif 'Lac' in eau or 'lac' in eau:
-                st.markdown(f"🟩 **{eau}** *(eau douce stagnante)*")
-            elif 'Marigot' in eau or 'marigot' in eau:
-                st.markdown(f"🟢 **{eau}** *(eau douce saisonnière)*")
-            elif 'Canal' in eau or 'SAED' in eau or 'irrigation' in eau:
-                st.markdown(f"🟡 **{eau}** *(eau irriguée)*")
-            elif 'souterraine' in eau or 'nappe' in eau.lower() or 'puits' in eau.lower():
-                st.markdown(f"🟤 **{eau}** *(eau souterraine)*")
-            elif 'saumâtre' in eau or 'Mangrove' in eau:
-                st.markdown(f"🟠 **{eau}** *(eau saumâtre)*")
-            else:
-                st.markdown(f"💧 **{eau}**")
-
-        st.markdown(f"\n**🪨 Nappe phréatique :** {data['nappe']}")
-        st.markdown(f"**🏞️ Fleuves/Cours eau :** {data['fleuves']}")
-        st.markdown(f"**🌊 Lacs/Zones humides :** {data['lacs']}")
-        st.markdown(f"**🐸 Mares :** {data['mares']}")
-
-    with col2:
-        st.markdown("### 📊 Infrastructure hydraulique")
-        fig = go.Figure(go.Bar(
-            x=["Forages", "Puits", "Périmètre irrigué (ha/10)"],
-            y=[data['forages'], data['puits'], data['perimetre_irrigue_ha']//10],
-            marker_color=["#1565C0","#2E7D32","#F57F17"],
-            text=[f"{data['forages']} forages", f"{data['puits']} puits", f"{data['perimetre_irrigue_ha']} ha"],
-            textposition="outside",
-        ))
-        fig.update_layout(
-            title="Infrastructure eau disponible",
-            template="plotly_dark",
-            paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527",
-            font_color="#e8f4fd", showlegend=False,
-            height=300, margin=dict(t=40,b=20,l=10,r=10)
-        )
-        st.plotly_chart(fig, use_container_width=True)
-
-    st.markdown("---")
-    st.markdown("### 🗺️ Carte du réseau hydraulique — toutes communes")
-
-    # Carte de toutes les communes avec leurs ressources en eau
-    map_data = []
-    for c, d in HYDRAULIQUE.items():
-        types_eau = " | ".join(d['eau_types'][:3])
-        map_data.append({
-            'commune': c,
-            'lat': d['lat'],
-            'lon': d['lon'],
-            'forages': d['forages'],
-            'puits': d['puits'],
-            'acces_eau': d['acces_eau'],
-            'fleuves': d['fleuves'],
-            'risque': d['risque_penurie'],
-            'types_eau': types_eau,
-            'couleur': d['couleur_eau'],
-        })
-    df_map = pd.DataFrame(map_data)
-
-    variable_carte = st.selectbox("Afficher sur la carte", [
-        "Forages disponibles",
-        "Puits disponibles",
-        "Risque de pénurie",
-    ])
-
-    color_col = {
-        "Forages disponibles": "forages",
-        "Puits disponibles": "puits",
-        "Risque de pénurie": "risque",
-    }[variable_carte]
-
-    fig_map = px.scatter_mapbox(
-        df_map,
-        lat="lat", lon="lon",
-        hover_name="commune",
-        hover_data={
-            "forages": True,
-            "puits": True,
-            "acces_eau": True,
-            "fleuves": True,
-            "types_eau": True,
-            "risque": True,
-            "lat": False, "lon": False,
-        },
-        color=color_col,
-        size="forages",
-        size_max=25,
-        color_continuous_scale="Blues" if color_col != "risque" else "RdYlGn_r",
-        zoom=5.5,
-        center={"lat": 14.5, "lon": -14.5},
-        mapbox_style="open-street-map",
-        title=f"Réseau hydraulique du Sénégal - {variable_carte}",
-    )
-    fig_map.update_layout(
-        height=600,
-        margin={"r":0,"t":40,"l":0,"b":0},
-    )
-    st.plotly_chart(fig_map, use_container_width=True)
-
-    # Légende types d'eau
-    st.markdown("### 🎨 Légende des types d'eau")
-    col1,col2,col3,col4 = st.columns(4)
-    col1.markdown("🔵 **Eau de mer** (salée)")
-    col1.markdown("🟦 **Fleuve** (douce courante)")
-    col2.markdown("🟩 **Lac** (douce stagnante)")
-    col2.markdown("🟢 **Marigot** (saisonnière)")
-    col3.markdown("🟡 **Canal irrigation**")
-    col3.markdown("🟤 **Eau souterraine**")
-    col4.markdown("🟠 **Eau saumâtre**")
-    col4.markdown("💧 **Eau de pluie**")
-
-    # Projections ressources en eau
-    st.markdown("---")
-    st.markdown("### 📉 Projection des ressources en eau 2025–2055")
-    taux_pluie = {'SSP1-1.9':0.5,'SSP2-4.5':1.0,'SSP5-8.5':1.8}
-    rate = taux_pluie.get(selected_scenario, 1.0)
-
-    annees = list(range(2025, 2056))
-    forages_proj  = [data['forages']] * len(annees)
-    puits_proj    = [max(0, data['puits'] - int(data['puits']*0.005*i*rate)) for i,_ in enumerate(annees)]
-    perimetre_proj= [max(0, data['perimetre_irrigue_ha'] - int(data['perimetre_irrigue_ha']*0.003*i*rate)) for i,_ in enumerate(annees)]
-
-    fig2 = go.Figure()
-    fig2.add_trace(go.Scatter(x=annees, y=forages_proj, name="Forages", line=dict(color="#1565C0",width=2)))
-    fig2.add_trace(go.Scatter(x=annees, y=puits_proj,   name="Puits fonctionnels", line=dict(color="#2E7D32",width=2,dash="dash")))
-    fig2.update_layout(
-        title=f"Évolution infrastructure hydraulique - {commune} - {selected_scenario}",
-        template="plotly_dark",
-        paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527",
-        font_color="#e8f4fd",
-        height=300, margin=dict(t=40,b=20,l=10,r=10),
-        legend=dict(bgcolor="#0d1527",bordercolor="#2a4a7f")
-    )
-    st.plotly_chart(fig2, use_container_width=True)
-
-    st.info(f"""
-    💡 **Recommandations hydrauliques pour {commune} :**
-    Avec {data['forages']} forages et {data['puits']} puits actuellement disponibles,
-    la commune dispose d'une infrastructure {'solide' if data['forages']>40 else 'limitée'}.
-    Face au déficit pluviométrique projeté, il est recommandé de :
-    - **Réhabiliter et entretenir** les forages existants
-    - **Creuser de nouveaux puits** dans les zones à nappe accessible
-    - **Construire des retenues d'eau** pour stocker les pluies d'hivernage
-    - **Développer l'irrigation goutte-à-goutte** sur les {data['perimetre_irrigue_ha']} ha irrigués
-    """)
-
 
 def afficher_section_hydraulique(commune, selected_scenario):
     import plotly.express as px
@@ -1873,6 +1699,117 @@ HYDRAULIQUE = {
         'lat': 12.4844, 'lon': -16.5464, 'couleur_eau': '#1B5E20',
     },
 }
+
+
+def afficher_carte_hydrographie(selected_scenario):
+    import json, os
+    import plotly.graph_objects as go
+
+    geojson_path = os.path.join(os.path.dirname(__file__), "data", "hydrographie_sn.geojson")
+    if not os.path.exists(geojson_path):
+        geojson_path = os.path.join(os.path.dirname(__file__), "..", "data", "hydrographie_sn.geojson")
+    if not os.path.exists(geojson_path):
+        st.error(f"Fichier hydrographie non trouvé")
+        return
+
+    with open(geojson_path, encoding="utf-8") as f:
+        gj = json.load(f)
+
+    COULEURS = {
+        "Main river":       ("#1565C0", 3),
+        "Secondary river":  ("#1976D2", 2),
+        "Temporary stream": ("#90CAF9", 1),
+        "Lake":             ("#0D47A1", 2),
+        "Canal":            ("#00897B", 2),
+        "Pond":             ("#26C6DA", 1),
+        "Swamp":            ("#558B2F", 1),
+        "Reservoir":        ("#1B5E20", 2),
+    }
+    LABELS = {
+        "Main river":       "Fleuve principal",
+        "Secondary river":  "Rivière secondaire",
+        "Temporary stream": "Cours d eau temporaire",
+        "Lake":             "Lac",
+        "Canal":            "Canal",
+        "Pond":             "Mare / Etang",
+        "Swamp":            "Marais / Zone humide",
+        "Reservoir":        "Réservoir",
+    }
+
+    traces_par_type = {}
+    for feat in gj["features"]:
+        props = feat["properties"]
+        t = props.get("type", "Autre")
+        coords = feat["geometry"]["coordinates"]
+        lons = [c[0] for c in coords]
+        lats = [c[1] for c in coords]
+        couleur, width = COULEURS.get(t, ("#4db8ff", 1))
+        label = LABELS.get(t, t)
+        if t not in traces_par_type:
+            traces_par_type[t] = {"lons":[],"lats":[],"couleur":couleur,"width":width,"label":label}
+        traces_par_type[t]["lons"] += lons + [None]
+        traces_par_type[t]["lats"] += lats + [None]
+
+    fig = go.Figure()
+    ordre = ["Temporary stream","Pond","Swamp","Canal","Reservoir","Secondary river","Lake","Main river"]
+    for t in ordre:
+        if t not in traces_par_type:
+            continue
+        d = traces_par_type[t]
+        fig.add_trace(go.Scattermapbox(
+            lon=d["lons"], lat=d["lats"],
+            mode="lines",
+            name=d["label"],
+            line=dict(color=d["couleur"], width=d["width"]),
+            hoverinfo="name",
+        ))
+
+    fig.update_layout(
+        mapbox=dict(style="open-street-map",center={"lat":14.5,"lon":-14.5},zoom=5.5),
+        title="Réseau Hydrographique du Sénégal",
+        height=650,
+        margin={"r":0,"t":40,"l":0,"b":0},
+        paper_bgcolor="#0a0f1e",
+        font_color="#e8f4fd",
+        legend=dict(bgcolor="#0d1527",bordercolor="#2a4a7f",borderwidth=1),
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("### Légende")
+    legende_items = [
+        ("Fleuve principal",       "#1565C0", 6),
+        ("Rivière secondaire",     "#1976D2", 4),
+        ("Cours d eau temporaire", "#90CAF9", 2),
+        ("Lac",                    "#0D47A1", 4),
+        ("Canal",                  "#00897B", 3),
+        ("Mare / Etang",           "#26C6DA", 2),
+        ("Marais / Zone humide",   "#558B2F", 2),
+        ("Réservoir",              "#1B5E20", 3),
+    ]
+    html_leg = "<div style='display:flex;flex-wrap:wrap;gap:14px;padding:12px;background:#0d1527;border-radius:8px;'>"
+    for label, couleur, ep in legende_items:
+        html_leg += f"<div style='display:flex;align-items:center;gap:8px;'><svg width='45' height='10'><line x1='0' y1='5' x2='45' y2='5' stroke='{couleur}' stroke-width='{ep}' stroke-linecap='round'/></svg><span style='color:#e8f4fd;font-size:13px;'>{label}</span></div>"
+    html_leg += "</div>"
+    st.markdown(html_leg, unsafe_allow_html=True)
+
+    from collections import Counter
+    types_count = Counter(f["properties"]["type"] for f in gj["features"])
+    st.markdown("---")
+    c1,c2,c3,c4 = st.columns(4)
+    c1.metric("Total segments", str(len(gj["features"])))
+    c2.metric("Fleuves principaux", str(types_count.get("Main river",0)))
+    c3.metric("Rivières secondaires", str(types_count.get("Secondary river",0)))
+    c4.metric("Cours temporaires", str(types_count.get("Temporary stream",0)))
+
+    noms = set()
+    for feat in gj["features"]:
+        n = feat["properties"].get("name","")
+        t = feat["properties"].get("type","")
+        if n and t in ["Main river","Secondary river","Lake","Canal"]:
+            noms.add(f"{n} ({LABELS.get(t,t)})")
+    st.markdown("### Principaux cours d eau")
+    for nom in sorted(noms):
+        st.markdown(f"- {nom}")
 
 
 LAYOUT = dict(paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527", font_color="#e8f4fd", margin=dict(t=40,b=20,l=10,r=10))
