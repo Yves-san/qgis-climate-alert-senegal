@@ -1104,6 +1104,182 @@ HYDRAULIQUE = {
     "Oussouye":{"nappe":"Continental terminal 6-20m excellente qualité","eau_types":["Marigots permanents","Eau souterraine douce","Mer proche","Mangrove"],"fleuves":"Marigots permanents bolons mangrove","lacs":"Bolons permanents mangroves étendues","mares":"Mares et bolons permanents","forages":35,"puits":200,"perimetre_irrigue_ha":600,"acces_eau":"Excellent","risque_penurie":"Très faible","lat":12.4844,"lon":-16.5464},
 }
 
+
+def afficher_section_hydraulique(commune, selected_scenario):
+    """Affiche la section ressources en eau et réseau hydraulique"""
+    import plotly.express as px
+    import plotly.graph_objects as go
+    import pandas as pd
+
+    data = HYDRAULIQUE.get(commune, None)
+    if not data:
+        st.warning(f"Données hydrauliques non disponibles pour {commune}")
+        return
+
+    st.markdown(f"## 💧 Ressources en eau — {commune}")
+
+    # Métriques principales
+    col1,col2,col3,col4 = st.columns(4)
+    col1.metric("🔧 Forages fonctionnels", f"{data['forages']}")
+    col2.metric("🪣 Puits disponibles", f"{data['puits']}")
+    col3.metric("🌾 Périmètre irrigué", f"{data['perimetre_irrigue_ha']} ha")
+    col4.metric("⚠️ Risque pénurie", data['risque_penurie'])
+
+    st.markdown("---")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("### 🌊 Types d'eau disponibles")
+        for eau in data['eau_types']:
+            if 'Mer' in eau or 'Atlantique' in eau:
+                st.markdown(f"🔵 **{eau}** *(eau salée)*")
+            elif 'Fleuve' in eau or 'fleuve' in eau:
+                st.markdown(f"🟦 **{eau}** *(eau douce courante)*")
+            elif 'Lac' in eau or 'lac' in eau:
+                st.markdown(f"🟩 **{eau}** *(eau douce stagnante)*")
+            elif 'Marigot' in eau or 'marigot' in eau:
+                st.markdown(f"🟢 **{eau}** *(eau douce saisonnière)*")
+            elif 'Canal' in eau or 'SAED' in eau or 'irrigation' in eau:
+                st.markdown(f"🟡 **{eau}** *(eau irriguée)*")
+            elif 'souterraine' in eau or 'nappe' in eau.lower() or 'puits' in eau.lower():
+                st.markdown(f"🟤 **{eau}** *(eau souterraine)*")
+            elif 'saumâtre' in eau or 'Mangrove' in eau:
+                st.markdown(f"🟠 **{eau}** *(eau saumâtre)*")
+            else:
+                st.markdown(f"💧 **{eau}**")
+
+        st.markdown(f"\n**🪨 Nappe phréatique :** {data['nappe']}")
+        st.markdown(f"**🏞️ Fleuves/Cours eau :** {data['fleuves']}")
+        st.markdown(f"**🌊 Lacs/Zones humides :** {data['lacs']}")
+        st.markdown(f"**🐸 Mares :** {data['mares']}")
+
+    with col2:
+        st.markdown("### 📊 Infrastructure hydraulique")
+        fig = go.Figure(go.Bar(
+            x=["Forages", "Puits", "Périmètre irrigué (ha/10)"],
+            y=[data['forages'], data['puits'], data['perimetre_irrigue_ha']//10],
+            marker_color=["#1565C0","#2E7D32","#F57F17"],
+            text=[f"{data['forages']} forages", f"{data['puits']} puits", f"{data['perimetre_irrigue_ha']} ha"],
+            textposition="outside",
+        ))
+        fig.update_layout(
+            title="Infrastructure eau disponible",
+            template="plotly_dark",
+            paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527",
+            font_color="#e8f4fd", showlegend=False,
+            height=300, margin=dict(t=40,b=20,l=10,r=10)
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("---")
+    st.markdown("### 🗺️ Carte du réseau hydraulique — toutes communes")
+
+    # Carte de toutes les communes avec leurs ressources en eau
+    map_data = []
+    for c, d in HYDRAULIQUE.items():
+        types_eau = " | ".join(d['eau_types'][:3])
+        map_data.append({
+            'commune': c,
+            'lat': d['lat'],
+            'lon': d['lon'],
+            'forages': d['forages'],
+            'puits': d['puits'],
+            'acces_eau': d['acces_eau'],
+            'fleuves': d['fleuves'],
+            'risque': d['risque_penurie'],
+            'types_eau': types_eau,
+            'couleur': d['couleur_eau'],
+        })
+    df_map = pd.DataFrame(map_data)
+
+    variable_carte = st.selectbox("Afficher sur la carte", [
+        "Forages disponibles",
+        "Puits disponibles",
+        "Risque de pénurie",
+    ])
+
+    color_col = {
+        "Forages disponibles": "forages",
+        "Puits disponibles": "puits",
+        "Risque de pénurie": "risque",
+    }[variable_carte]
+
+    fig_map = px.scatter_mapbox(
+        df_map,
+        lat="lat", lon="lon",
+        hover_name="commune",
+        hover_data={
+            "forages": True,
+            "puits": True,
+            "acces_eau": True,
+            "fleuves": True,
+            "types_eau": True,
+            "risque": True,
+            "lat": False, "lon": False,
+        },
+        color=color_col,
+        size="forages",
+        size_max=25,
+        color_continuous_scale="Blues" if color_col != "risque" else "RdYlGn_r",
+        zoom=5.5,
+        center={"lat": 14.5, "lon": -14.5},
+        mapbox_style="open-street-map",
+        title=f"Réseau hydraulique du Sénégal - {variable_carte}",
+    )
+    fig_map.update_layout(
+        height=600,
+        margin={"r":0,"t":40,"l":0,"b":0},
+    )
+    st.plotly_chart(fig_map, use_container_width=True)
+
+    # Légende types d'eau
+    st.markdown("### 🎨 Légende des types d'eau")
+    col1,col2,col3,col4 = st.columns(4)
+    col1.markdown("🔵 **Eau de mer** (salée)")
+    col1.markdown("🟦 **Fleuve** (douce courante)")
+    col2.markdown("🟩 **Lac** (douce stagnante)")
+    col2.markdown("🟢 **Marigot** (saisonnière)")
+    col3.markdown("🟡 **Canal irrigation**")
+    col3.markdown("🟤 **Eau souterraine**")
+    col4.markdown("🟠 **Eau saumâtre**")
+    col4.markdown("💧 **Eau de pluie**")
+
+    # Projections ressources en eau
+    st.markdown("---")
+    st.markdown("### 📉 Projection des ressources en eau 2025–2055")
+    taux_pluie = {'SSP1-1.9':0.5,'SSP2-4.5':1.0,'SSP5-8.5':1.8}
+    rate = taux_pluie.get(selected_scenario, 1.0)
+
+    annees = list(range(2025, 2056))
+    forages_proj  = [data['forages']] * len(annees)
+    puits_proj    = [max(0, data['puits'] - int(data['puits']*0.005*i*rate)) for i,_ in enumerate(annees)]
+    perimetre_proj= [max(0, data['perimetre_irrigue_ha'] - int(data['perimetre_irrigue_ha']*0.003*i*rate)) for i,_ in enumerate(annees)]
+
+    fig2 = go.Figure()
+    fig2.add_trace(go.Scatter(x=annees, y=forages_proj, name="Forages", line=dict(color="#1565C0",width=2)))
+    fig2.add_trace(go.Scatter(x=annees, y=puits_proj,   name="Puits fonctionnels", line=dict(color="#2E7D32",width=2,dash="dash")))
+    fig2.update_layout(
+        title=f"Évolution infrastructure hydraulique - {commune} - {selected_scenario}",
+        template="plotly_dark",
+        paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527",
+        font_color="#e8f4fd",
+        height=300, margin=dict(t=40,b=20,l=10,r=10),
+        legend=dict(bgcolor="#0d1527",bordercolor="#2a4a7f")
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+
+    st.info(f"""
+    💡 **Recommandations hydrauliques pour {commune} :**
+    Avec {data['forages']} forages et {data['puits']} puits actuellement disponibles,
+    la commune dispose d'une infrastructure {'solide' if data['forages']>40 else 'limitée'}.
+    Face au déficit pluviométrique projeté, il est recommandé de :
+    - **Réhabiliter et entretenir** les forages existants
+    - **Creuser de nouveaux puits** dans les zones à nappe accessible
+    - **Construire des retenues d'eau** pour stocker les pluies d'hivernage
+    - **Développer l'irrigation goutte-à-goutte** sur les {data['perimetre_irrigue_ha']} ha irrigués
+    """)
+
+
 def afficher_section_hydraulique(commune, selected_scenario):
     import plotly.express as px
     import plotly.graph_objects as go
@@ -1697,180 +1873,6 @@ HYDRAULIQUE = {
         'lat': 12.4844, 'lon': -16.5464, 'couleur_eau': '#1B5E20',
     },
 }
-
-def afficher_section_hydraulique(commune, selected_scenario):
-    """Affiche la section ressources en eau et réseau hydraulique"""
-    import plotly.express as px
-    import plotly.graph_objects as go
-    import pandas as pd
-
-    data = HYDRAULIQUE.get(commune, None)
-    if not data:
-        st.warning(f"Données hydrauliques non disponibles pour {commune}")
-        return
-
-    st.markdown(f"## 💧 Ressources en eau — {commune}")
-
-    # Métriques principales
-    col1,col2,col3,col4 = st.columns(4)
-    col1.metric("🔧 Forages fonctionnels", f"{data['forages']}")
-    col2.metric("🪣 Puits disponibles", f"{data['puits']}")
-    col3.metric("🌾 Périmètre irrigué", f"{data['perimetre_irrigue_ha']} ha")
-    col4.metric("⚠️ Risque pénurie", data['risque_penurie'])
-
-    st.markdown("---")
-
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("### 🌊 Types d'eau disponibles")
-        for eau in data['eau_types']:
-            if 'Mer' in eau or 'Atlantique' in eau:
-                st.markdown(f"🔵 **{eau}** *(eau salée)*")
-            elif 'Fleuve' in eau or 'fleuve' in eau:
-                st.markdown(f"🟦 **{eau}** *(eau douce courante)*")
-            elif 'Lac' in eau or 'lac' in eau:
-                st.markdown(f"🟩 **{eau}** *(eau douce stagnante)*")
-            elif 'Marigot' in eau or 'marigot' in eau:
-                st.markdown(f"🟢 **{eau}** *(eau douce saisonnière)*")
-            elif 'Canal' in eau or 'SAED' in eau or 'irrigation' in eau:
-                st.markdown(f"🟡 **{eau}** *(eau irriguée)*")
-            elif 'souterraine' in eau or 'nappe' in eau.lower() or 'puits' in eau.lower():
-                st.markdown(f"🟤 **{eau}** *(eau souterraine)*")
-            elif 'saumâtre' in eau or 'Mangrove' in eau:
-                st.markdown(f"🟠 **{eau}** *(eau saumâtre)*")
-            else:
-                st.markdown(f"💧 **{eau}**")
-
-        st.markdown(f"\n**🪨 Nappe phréatique :** {data['nappe']}")
-        st.markdown(f"**🏞️ Fleuves/Cours eau :** {data['fleuves']}")
-        st.markdown(f"**🌊 Lacs/Zones humides :** {data['lacs']}")
-        st.markdown(f"**🐸 Mares :** {data['mares']}")
-
-    with col2:
-        st.markdown("### 📊 Infrastructure hydraulique")
-        fig = go.Figure(go.Bar(
-            x=["Forages", "Puits", "Périmètre irrigué (ha/10)"],
-            y=[data['forages'], data['puits'], data['perimetre_irrigue_ha']//10],
-            marker_color=["#1565C0","#2E7D32","#F57F17"],
-            text=[f"{data['forages']} forages", f"{data['puits']} puits", f"{data['perimetre_irrigue_ha']} ha"],
-            textposition="outside",
-        ))
-        fig.update_layout(
-            title="Infrastructure eau disponible",
-            template="plotly_dark",
-            paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527",
-            font_color="#e8f4fd", showlegend=False,
-            height=300, margin=dict(t=40,b=20,l=10,r=10)
-        )
-        st.plotly_chart(fig, use_container_width=True)
-
-    st.markdown("---")
-    st.markdown("### 🗺️ Carte du réseau hydraulique — toutes communes")
-
-    # Carte de toutes les communes avec leurs ressources en eau
-    map_data = []
-    for c, d in HYDRAULIQUE.items():
-        types_eau = " | ".join(d['eau_types'][:3])
-        map_data.append({
-            'commune': c,
-            'lat': d['lat'],
-            'lon': d['lon'],
-            'forages': d['forages'],
-            'puits': d['puits'],
-            'acces_eau': d['acces_eau'],
-            'fleuves': d['fleuves'],
-            'risque': d['risque_penurie'],
-            'types_eau': types_eau,
-            'couleur': d['couleur_eau'],
-        })
-    df_map = pd.DataFrame(map_data)
-
-    variable_carte = st.selectbox("Afficher sur la carte", [
-        "Forages disponibles",
-        "Puits disponibles",
-        "Risque de pénurie",
-    ])
-
-    color_col = {
-        "Forages disponibles": "forages",
-        "Puits disponibles": "puits",
-        "Risque de pénurie": "risque",
-    }[variable_carte]
-
-    fig_map = px.scatter_mapbox(
-        df_map,
-        lat="lat", lon="lon",
-        hover_name="commune",
-        hover_data={
-            "forages": True,
-            "puits": True,
-            "acces_eau": True,
-            "fleuves": True,
-            "types_eau": True,
-            "risque": True,
-            "lat": False, "lon": False,
-        },
-        color=color_col,
-        size="forages",
-        size_max=25,
-        color_continuous_scale="Blues" if color_col != "risque" else "RdYlGn_r",
-        zoom=5.5,
-        center={"lat": 14.5, "lon": -14.5},
-        mapbox_style="open-street-map",
-        title=f"Réseau hydraulique du Sénégal - {variable_carte}",
-    )
-    fig_map.update_layout(
-        height=600,
-        margin={"r":0,"t":40,"l":0,"b":0},
-    )
-    st.plotly_chart(fig_map, use_container_width=True)
-
-    # Légende types d'eau
-    st.markdown("### 🎨 Légende des types d'eau")
-    col1,col2,col3,col4 = st.columns(4)
-    col1.markdown("🔵 **Eau de mer** (salée)")
-    col1.markdown("🟦 **Fleuve** (douce courante)")
-    col2.markdown("🟩 **Lac** (douce stagnante)")
-    col2.markdown("🟢 **Marigot** (saisonnière)")
-    col3.markdown("🟡 **Canal irrigation**")
-    col3.markdown("🟤 **Eau souterraine**")
-    col4.markdown("🟠 **Eau saumâtre**")
-    col4.markdown("💧 **Eau de pluie**")
-
-    # Projections ressources en eau
-    st.markdown("---")
-    st.markdown("### 📉 Projection des ressources en eau 2025–2055")
-    taux_pluie = {'SSP1-1.9':0.5,'SSP2-4.5':1.0,'SSP5-8.5':1.8}
-    rate = taux_pluie.get(selected_scenario, 1.0)
-
-    annees = list(range(2025, 2056))
-    forages_proj  = [data['forages']] * len(annees)
-    puits_proj    = [max(0, data['puits'] - int(data['puits']*0.005*i*rate)) for i,_ in enumerate(annees)]
-    perimetre_proj= [max(0, data['perimetre_irrigue_ha'] - int(data['perimetre_irrigue_ha']*0.003*i*rate)) for i,_ in enumerate(annees)]
-
-    fig2 = go.Figure()
-    fig2.add_trace(go.Scatter(x=annees, y=forages_proj, name="Forages", line=dict(color="#1565C0",width=2)))
-    fig2.add_trace(go.Scatter(x=annees, y=puits_proj,   name="Puits fonctionnels", line=dict(color="#2E7D32",width=2,dash="dash")))
-    fig2.update_layout(
-        title=f"Évolution infrastructure hydraulique - {commune} - {selected_scenario}",
-        template="plotly_dark",
-        paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527",
-        font_color="#e8f4fd",
-        height=300, margin=dict(t=40,b=20,l=10,r=10),
-        legend=dict(bgcolor="#0d1527",bordercolor="#2a4a7f")
-    )
-    st.plotly_chart(fig2, use_container_width=True)
-
-    st.info(f"""
-    💡 **Recommandations hydrauliques pour {commune} :**
-    Avec {data['forages']} forages et {data['puits']} puits actuellement disponibles,
-    la commune dispose d'une infrastructure {'solide' if data['forages']>40 else 'limitée'}.
-    Face au déficit pluviométrique projeté, il est recommandé de :
-    - **Réhabiliter et entretenir** les forages existants
-    - **Creuser de nouveaux puits** dans les zones à nappe accessible
-    - **Construire des retenues d'eau** pour stocker les pluies d'hivernage
-    - **Développer l'irrigation goutte-à-goutte** sur les {data['perimetre_irrigue_ha']} ha irrigués
-    """)
 
 
 LAYOUT = dict(paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527", font_color="#e8f4fd", margin=dict(t=40,b=20,l=10,r=10))
