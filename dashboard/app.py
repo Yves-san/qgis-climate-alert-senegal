@@ -1887,6 +1887,7 @@ with st.sidebar:
         "🗺️ Carte Interactive",
         "⚠️ Alertes & Conseils",
         "📉 Comparaison Scénarios",
+        "💧 Réseau Hydraulique",
         "💾 Export",
     ], label_visibility="collapsed")
     st.markdown("---")
@@ -2091,6 +2092,12 @@ elif page == "📉 Comparaison Scénarios":
     fig.update_layout(title=f"Comparaison - {selected_commune}",template="plotly_dark",**LAYOUT,legend=dict(bgcolor="#0d1527",bordercolor="#2a4a7f"))
     st.plotly_chart(fig,use_container_width=True)
     if summary: st.dataframe(pd.DataFrame(summary),use_container_width=True)
+
+elif page == "💧 Réseau Hydraulique":
+    st.markdown("# 💧 Réseau Hydrographique du Sénégal")
+    afficher_carte_hydrographie(selected_scenario)
+    st.markdown("---")
+    afficher_section_hydraulique(selected_commune, selected_scenario)
 
 elif page == "💾 Export":
     st.markdown(f"# 💾 Export — {selected_commune}")
