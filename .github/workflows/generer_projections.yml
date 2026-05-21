@@ -30,4 +30,5 @@ jobs:
           git config user.name "GitHub Actions"
           git add dashboard/data/projections/
           git commit -m "Mise a jour projections 2025-2055" || echo "Rien a committer"
-          git push
+          git pull --rebase origin main
+          git push origin main
