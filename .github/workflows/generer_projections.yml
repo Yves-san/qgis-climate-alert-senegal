@@ -5,11 +5,16 @@ on:
   schedule:
     - cron: '0 0 1 * *'
 
+permissions:
+  contents: write
+
 jobs:
   generer:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -24,5 +29,5 @@ jobs:
           git config user.email "action@github.com"
           git config user.name "GitHub Actions"
           git add dashboard/data/projections/
-          git commit -m "Mise à jour projections 2025-2055" || echo "Rien a committer"
+          git commit -m "Mise a jour projections 2025-2055" || echo "Rien a committer"
           git push
