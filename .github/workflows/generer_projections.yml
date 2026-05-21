@@ -1,0 +1,28 @@
+name: Générer projections climatiques 2025-2055
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *'
+
+jobs:
+  generer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Générer projections journalières
+        run: python3 scripts/generer_projections.py
+
+      - name: Commit et push
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Actions"
+          git add dashboard/data/projections/
+          git commit -m "Mise à jour projections 2025-2055" || echo "Rien a committer"
+          git push
