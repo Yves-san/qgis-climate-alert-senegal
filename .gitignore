@@ -13,7 +13,7 @@ venv/
 *.nc
 *.h5
 *.pkl
-data/projections/
+# data/projections/ - débloqué
 data/temp/
 output/
 mobile/react_native/node_modules/
