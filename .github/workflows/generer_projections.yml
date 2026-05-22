@@ -32,5 +32,5 @@ jobs:
           git fetch origin main
           git reset --soft origin/main
           git add dashboard/data/projections/
-          git commit -m "Mise a jour projections 2025-2055" || echo "Rien a committer"
+          git diff --cached --quiet || git commit -m "Mise a jour projections 2025-2055"
           git push origin main
