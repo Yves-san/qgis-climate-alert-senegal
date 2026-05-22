@@ -16,27 +16,21 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
+          ref: main
 
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      - name: Générer projections journalières
+      - name: Générer projections
         run: python3 scripts/generer_projections.py
 
-      - name: Commit et push
+      - name: Push
         run: |
           git config user.email "action@github.com"
           git config user.name "GitHub Actions"
-          git fetch origin main
-          git rebase origin/main
-          git add dashboard/data/projections/
-          git diff --cached --quiet || git commit -m "Mise a jour projections 2025-2055"
-          for i in 1 2 3; do
-            git push origin main && break
-            echo "Retry $i..."
-            git fetch origin main
-            git rebase origin/main
-            sleep 5
-          done
+          git add -A
+          git diff --cached --quiet && echo "Rien a committer" && exit 0
+          git commit -m "Projections 2025-2055 mises a jour"
+          git push --force-with-lease origin main
