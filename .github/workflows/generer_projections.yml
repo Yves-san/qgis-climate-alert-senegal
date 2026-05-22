@@ -30,7 +30,13 @@ jobs:
           git config user.email "action@github.com"
           git config user.name "GitHub Actions"
           git fetch origin main
-          git reset --soft origin/main
+          git rebase origin/main
           git add dashboard/data/projections/
           git diff --cached --quiet || git commit -m "Mise a jour projections 2025-2055"
-          git push origin main
+          for i in 1 2 3; do
+            git push origin main && break
+            echo "Retry $i..."
+            git fetch origin main
+            git rebase origin/main
+            sleep 5
+          done
