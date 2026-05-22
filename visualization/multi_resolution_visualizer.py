@@ -20,7 +20,7 @@ class MultiResolutionVisualizer:
         self.out = output_dir
         os.makedirs(output_dir, exist_ok=True)
 
-    # ── Plot helpers ─────────────────────────────────────────────────────────
+    # ── Plot helpers ────────────────────────────────────────────────────────────
     def plot_daily(self, df: pd.DataFrame, commune: str, var: str = "temperature",
                    save: Optional[str] = None) -> plt.Figure:
         fig, ax = plt.subplots(figsize=(16, 5))
@@ -90,7 +90,8 @@ class MultiResolutionVisualizer:
             d = pd.to_datetime(daily["date"])
             ax0.plot(d, daily["temperature"], linewidth=0.6, color="#1976D2")
             ax0.set_title(f"🌡️  Température journalière — {commune} {year}", fontweight="bold")
-            ax0.set_ylabel("°C"); ax0.grid(True, alpha=0.25)
+            ax0.set_ylabel("°C")
+            ax0.grid(True, alpha=0.25)
             fig.autofmt_xdate()
         # Row 1-left: daily precip
         ax1 = fig.add_subplot(gs[1, 0])
@@ -98,26 +99,28 @@ class MultiResolutionVisualizer:
             d = pd.to_datetime(daily["date"])
             ax1.bar(d, daily["precipitation"], width=1.5, color="#2196F3", alpha=0.7)
             ax1.set_title("💧 Précipitations journalières", fontweight="bold")
-            ax1.set_ylabel("mm"); ax1.grid(True, alpha=0.25, axis="y")
+            ax1.set_ylabel("mm")
+            ax1.grid(True, alpha=0.25, axis="y")
         # Row 1-right: monthly temperature
         ax2 = fig.add_subplot(gs[1, 1])
         if not monthly.empty:
             x = range(len(monthly))
             ax2.plot(x, monthly["temperature"], marker="o", linewidth=2, color="#FF9800")
             ax2.set_title("📆 Température mensuelle", fontweight="bold")
-            ax2.set_ylabel("°C"); ax2.grid(True, alpha=0.25, axis="y")
+            ax2.set_ylabel("°C")
+            ax2.grid(True, alpha=0.25, axis="y")
         # Row 2: annual summary text
         ax3 = fig.add_subplot(gs[2, :])
         ax3.axis("off")
         if not daily.empty:
-            txt = (f"RÉSUMÉ {year} — {commune}
-"
-                   f"Temp moy: {daily['temperature'].mean():.1f}°C  "
-                   f"Min: {daily['temperature'].min():.1f}°C  "
-                   f"Max: {daily['temperature'].max():.1f}°C
-"
-                   f"Précipitations totales: {daily['precipitation'].sum():.0f} mm  "
-                   f"Jours de pluie: {(daily['precipitation'] > 0).sum()}")
+            txt = (
+                f"RÉSUMÉ {year} — {commune}\n"
+                f"Temp moy: {daily['temperature'].mean():.1f}°C  "
+                f"Min: {daily['temperature'].min():.1f}°C  "
+                f"Max: {daily['temperature'].max():.1f}°C\n"
+                f"Précipitations totales: {daily['precipitation'].sum():.0f} mm  "
+                f"Jours de pluie: {(daily['precipitation'] > 0).sum()}"
+            )
             ax3.text(0.5, 0.5, txt, ha="center", va="center",
                      fontsize=13, transform=ax3.transAxes,
                      bbox=dict(boxstyle="round,pad=0.8", facecolor="#f5f5f5"))
