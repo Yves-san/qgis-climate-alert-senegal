@@ -1812,6 +1812,65 @@ def afficher_carte_hydrographie(selected_scenario):
         st.markdown(f"- {nom}")
 
 
+import json as _json
+import os as _os
+
+@st.cache_data(ttl=300)
+def get_projections(commune, scenario):
+    """Charge les projections journalières 2025-2055"""
+    path = _os.path.join(_os.path.dirname(__file__), "data", "projections_2025_2055.json")
+    if not _os.path.exists(path):
+        path = _os.path.join(_os.path.dirname(__file__), "..", "dashboard", "data", "projections", "projections_2025_2055.json")
+    if not _os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8") as f:
+        proj = _json.load(f)
+    # Mapping scénario
+    sc_map = {"SSP1-1.9":"SSP1","SSP2-4.5":"SSP2","SSP5-8.5":"SSP5"}
+    sc_key = sc_map.get(scenario, "SSP2")
+    if commune not in proj:
+        return None
+    if sc_key not in proj[commune]["scenarios"]:
+        return None
+    data = proj[commune]["scenarios"][sc_key]
+    df = pd.DataFrame({
+        "date":     data["time"],
+        "temp_mean":data["temperature_2m_mean"],
+        "temp_max": data["temperature_2m_max"],
+        "temp_min": data["temperature_2m_min"],
+        "precip":   data["precipitation_sum"],
+        "eto":      data["et0_fao_evapotranspiration"],
+        "vent":     data["windspeed_10m_max"],
+    })
+    df["date"] = pd.to_datetime(df["date"])
+    df["year"]  = df["date"].dt.year
+    df["month"] = df["date"].dt.month
+    df["year_month"] = df["date"].dt.to_period("M").astype(str)
+    return df
+
+def agreger_mensuel(df):
+    """Agrège les données journalières en mensuel"""
+    return df.groupby("year_month").agg(
+        temp_mean=("temp_mean","mean"),
+        temp_max =("temp_max","max"),
+        temp_min =("temp_min","min"),
+        precip   =("precip","sum"),
+        eto      =("eto","mean"),
+        vent     =("vent","mean"),
+    ).reset_index().round(2)
+
+def agreger_annuel(df):
+    """Agrège les données journalières en annuel"""
+    return df.groupby("year").agg(
+        temp_mean=("temp_mean","mean"),
+        temp_max =("temp_max","max"),
+        temp_min =("temp_min","min"),
+        precip   =("precip","sum"),
+        eto      =("eto","mean"),
+        vent     =("vent","mean"),
+    ).reset_index().round(2)
+
+
 LAYOUT = dict(paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527", font_color="#e8f4fd", margin=dict(t=40,b=20,l=10,r=10))
 
 with st.sidebar:
