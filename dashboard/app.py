@@ -1818,10 +1818,15 @@ import os as _os
 @st.cache_data(ttl=300)
 def get_projections(commune, scenario):
     """Charge les projections journalières 2025-2055"""
-    path = _os.path.join(_os.path.dirname(__file__), "data", "projections_2025_2055.json")
-    if not _os.path.exists(path):
-        path = _os.path.join(_os.path.dirname(__file__), "..", "dashboard", "data", "projections", "projections_2025_2055.json")
-    if not _os.path.exists(path):
+    # Cherche le fichier dans plusieurs emplacements possibles
+    chemins = [
+        _os.path.join(_os.path.dirname(__file__), "projections_2025_2055.json"),
+        _os.path.join(_os.path.dirname(__file__), "data", "projections_2025_2055.json"),
+        _os.path.join(_os.path.dirname(__file__), "data", "projections", "projections_2025_2055.json"),
+        _os.path.join(_os.path.dirname(__file__), "..", "data", "projections", "projections_2025_2055.json"),
+    ]
+    path = next((p for p in chemins if _os.path.exists(p)), None)
+    if path is None:
         return None
     with open(path, encoding="utf-8") as f:
         proj = _json.load(f)
