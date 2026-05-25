@@ -2144,6 +2144,7 @@ elif page == "🌡️ Température":
                     cols[i%6].markdown(f"<div style='background:#2d0a0a;border-radius:8px;padding:10px;text-align:center;color:#ff4444;font-weight:bold;'>{annee}</div>",unsafe_allow_html=True)
             else:
                 st.success('Pour ce scenario, les temperatures restent gerables.')
+            df_m = agreger_mensuel(df_proj)
             if 'year_month' in df_m.columns:
                 mois_chauds = df_m[df_m['temp_max']>=38][['year_month','temp_max']].head(10)
                 if not mois_chauds.empty:
