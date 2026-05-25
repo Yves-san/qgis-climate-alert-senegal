@@ -2186,6 +2186,21 @@ elif page == "🏜️ Sécheresse":
         if df["spi"].notna().any():
             fig2 = px.bar(df,x="year",y="spi",title="Indice SPI (négatif = déficit)",color="spi",color_continuous_scale=["#ff4444","#ffffff","#4db8ff"],template="plotly_dark")
             fig2.update_layout(**LAYOUT); st.plotly_chart(fig2,use_container_width=True)
+        spi_moy = df["spi"].mean() if df["spi"].notna().any() else 0
+        st.markdown("---")
+        st.markdown("### Que dit le SPI pour votre commune ?")
+        if spi_moy > 0:
+            st.success("Bonne saison des pluies prevue. Semez et plantez normalement.")
+        elif spi_moy > -0.2:
+            st.warning("Legèrement sec. Surveillez vos reserves.")
+        elif spi_moy > -0.5:
+            st.error("Secheresse moderee. Plantez mil et sorgho uniquement.")
+        else:
+            st.error("SECHERESSE SEVERE. Protegez vos reserves d eau.")
+        with st.expander("Cest quoi le SPI ? Cliquez pour comprendre"):
+            st.markdown("Le SPI mesure si les pluies sont normales ou insuffisantes par rapport aux 30 dernieres annees.")
+            st.markdown("SPI positif : bonnes pluies. SPI negatif : secheresse.")
+            st.markdown("Sources : ANACIM, NASA, Copernicus")
         annees = df[df["drought"]>0.6]["year"].tolist()
         if annees: st.error(f"⚠️ Années sécheresse sévère projetées : {', '.join(map(str,annees))}")
 
