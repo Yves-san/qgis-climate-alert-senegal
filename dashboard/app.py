@@ -1940,123 +1940,212 @@ if page == "📊 Aperçu":
 
 elif page == "🌡️ Température":
     st.markdown(f"# 🌡️ Température — {selected_commune}")
-    resolution = st.radio("Résolution", ["📅 Date exacte","📆 Mensuelle","📊 Annuelle"], horizontal=True)
+
+    resolution = st.radio("Que voulez-vous voir ?", [
+        "📅 Un jour précis",
+        "📆 Mois par mois",
+        "📊 Année par année"
+    ], horizontal=True)
+
     df_proj = get_projections(selected_commune, selected_scenario)
 
-    if resolution == "📅 Date exacte":
+    if resolution == "📅 Un jour précis":
         import datetime as dt
         from datetime import timedelta
-        col1, col2 = st.columns([2,1])
-        with col1:
-            date_choisie = st.date_input(
-                "Choisissez une date (jour · mois · année)",
-                value=dt.date(2030, 6, 15),
-                min_value=dt.date(2025, 1, 1),
-                max_value=dt.date(2055, 12, 31),
-            )
-        with col2:
-            fenetre = st.selectbox("Contexte", ["±15 jours","±1 mois","Année complète"])
+
+        st.markdown("### 📅 Choisissez votre date")
+        date_choisie = st.date_input(
+            "Jour · Mois · Année",
+            value=dt.date(2030, 6, 15),
+            min_value=dt.date(2025, 1, 1),
+            max_value=dt.date(2055, 12, 31),
+            label_visibility="collapsed"
+        )
 
         if df_proj is not None:
-            df_jour = df_proj[df_proj["date"]==pd.Timestamp(date_choisie)]
+            df_jour = df_proj[df_proj["date"] == pd.Timestamp(date_choisie)]
             if not df_jour.empty:
                 row = df_jour.iloc[0]
-                st.markdown(f"### 📅 {date_choisie.strftime('%d %B %Y')} — {selected_commune}")
-                c1,c2,c3,c4 = st.columns(4)
-                c1.metric("🌡️ T° minimale",  f"{row['temp_min']:.1f}°C")
-                c2.metric("🌡️ T° moyenne",   f"{row['temp_mean']:.1f}°C")
-                c3.metric("🔥 T° maximale",  f"{row['temp_max']:.1f}°C")
-                c4.metric("🌧️ Précipitations",f"{row['precip']:.1f} mm")
+                tmin  = row["temp_min"]
+                tmoy  = row["temp_mean"]
+                tmax  = row["temp_max"]
+                pluie = row["precip"]
 
-                # Fenêtre de contexte
-                if fenetre == "±15 jours":
-                    d1 = pd.Timestamp(date_choisie - timedelta(days=15))
-                    d2 = pd.Timestamp(date_choisie + timedelta(days=15))
-                elif fenetre == "±1 mois":
-                    d1 = pd.Timestamp(date_choisie - timedelta(days=30))
-                    d2 = pd.Timestamp(date_choisie + timedelta(days=30))
+                # Titre principal
+                mois_fr = ["Janvier","Février","Mars","Avril","Mai","Juin",
+                           "Juillet","Août","Septembre","Octobre","Novembre","Décembre"]
+                date_str = f"{date_choisie.day} {mois_fr[date_choisie.month-1]} {date_choisie.year}"
+                st.markdown(f"## 📅 {date_str} — {selected_commune}")
+                st.markdown("---")
+
+                # Températures matin / après-midi / nuit
+                st.markdown("### 🕐 Températures de la journée")
+                c1,c2,c3 = st.columns(3)
+                with c1:
+                    st.markdown(f"""
+                    <div style='background:#1a2744;border-radius:12px;padding:20px;text-align:center;'>
+                        <div style='font-size:40px;'>🌅</div>
+                        <div style='color:#8ab4d4;font-size:14px;'>Matin (6h-10h)</div>
+                        <div style='font-size:32px;font-weight:bold;color:#4db8ff;'>{tmin:.0f}°C</div>
+                        <div style='color:#8ab4d4;font-size:12px;'>Température minimale</div>
+                    </div>""", unsafe_allow_html=True)
+                with c2:
+                    couleur_aprem = "#ff4444" if tmax>=38 else "#FF9800" if tmax>=35 else "#ffd700"
+                    st.markdown(f"""
+                    <div style='background:#1a2744;border-radius:12px;padding:20px;text-align:center;'>
+                        <div style='font-size:40px;'>🌞</div>
+                        <div style='color:#8ab4d4;font-size:14px;'>Après-midi (12h-16h)</div>
+                        <div style='font-size:32px;font-weight:bold;color:{couleur_aprem};'>{tmax:.0f}°C</div>
+                        <div style='color:#8ab4d4;font-size:12px;'>Température maximale</div>
+                    </div>""", unsafe_allow_html=True)
+                with c3:
+                    st.markdown(f"""
+                    <div style='background:#1a2744;border-radius:12px;padding:20px;text-align:center;'>
+                        <div style='font-size:40px;'>🌙</div>
+                        <div style='color:#8ab4d4;font-size:14px;'>Nuit (20h-6h)</div>
+                        <div style='font-size:32px;font-weight:bold;color:#4db8ff;'>{(tmin-2):.0f}°C</div>
+                        <div style='color:#8ab4d4;font-size:12px;'>Température nocturne</div>
+                    </div>""", unsafe_allow_html=True)
+
+                st.markdown("<br>", unsafe_allow_html=True)
+
+                # Pluie
+                st.markdown("### 🌧️ Pluie prévue ce jour")
+                if pluie >= 20:
+                    st.success(f"🌧️ **Forte pluie : {pluie:.1f} mm** — Bonne journée pour les cultures ! Pas besoin d arroser.")
+                elif pluie >= 5:
+                    st.info(f"🌦️ **Pluie modérée : {pluie:.1f} mm** — Les plantes seront bien arrosées naturellement.")
+                elif pluie >= 1:
+                    st.warning(f"🌂 **Petite pluie : {pluie:.1f} mm** — Insuffisant pour les cultures. Arrosage complémentaire conseillé.")
                 else:
-                    d1 = pd.Timestamp(dt.date(date_choisie.year,1,1))
-                    d2 = pd.Timestamp(dt.date(date_choisie.year,12,31))
+                    st.error(f"☀️ **Pas de pluie : {pluie:.1f} mm** — Pensez à arroser vos cultures.")
 
-                df_ctx = df_proj[(df_proj["date"]>=d1)&(df_proj["date"]<=d2)]
-                fig = go.Figure()
-                fig.add_trace(go.Scatter(x=df_ctx["date"],y=df_ctx["temp_max"],name="T° max",line=dict(color="#ff4444",width=1.5)))
-                fig.add_trace(go.Scatter(x=df_ctx["date"],y=df_ctx["temp_mean"],name="T° moy",line=dict(color="#ffd700",width=1.5)))
-                fig.add_trace(go.Scatter(x=df_ctx["date"],y=df_ctx["temp_min"],name="T° min",line=dict(color="#4db8ff",width=1.5)))
-                fig.add_vline(x=pd.Timestamp(date_choisie).timestamp()*1000,
-                              line_dash="dash",line_color="white",
-                              annotation_text=str(date_choisie),annotation_position="top")
-                fig.add_hline(y=38,line_dash="dot",line_color="red",annotation_text="Seuil 38°C")
-                fig.update_layout(title=f"Températures autour du {date_choisie} · {selected_commune}",
-                                  template="plotly_dark",**LAYOUT)
-                st.plotly_chart(fig,use_container_width=True)
+                st.markdown("---")
 
-                tmax = row["temp_max"]
+                # Message principal selon température
+                st.markdown("### 💡 Que faire ce jour-là ?")
                 if tmax >= 42:
-                    st.error("🔴 Chaleur extrême — risque critique pour les cultures et la santé")
+                    st.markdown(f"""
+                    <div style='background:#2d0a0a;border-left:6px solid #ff4444;border-radius:8px;padding:20px;'>
+                        <h3 style='color:#ff4444;'>🔴 CHALEUR EXTRÊME — DANGER</h3>
+                        <p style='color:#e8f4fd;font-size:16px;'>La température atteindra <b>{tmax:.0f}°C</b> ce jour à {selected_commune}.</p>
+                        <ul style='color:#e8f4fd;font-size:15px;line-height:2;'>
+                            <li>🚫 Ne travaillez PAS aux champs entre 10h et 18h</li>
+                            <li>💧 Arrosez vos cultures très tôt le matin (avant 7h)</li>
+                            <li>🐄 Mettez les animaux à l ombre avec de l eau fraîche</li>
+                            <li>🧴 Protégez-vous du soleil si vous devez sortir</li>
+                            <li>💊 Buvez beaucoup d eau — au moins 3 litres par jour</li>
+                        </ul>
+                    </div>""", unsafe_allow_html=True)
                 elif tmax >= 38:
-                    st.warning("🟠 Chaleur élevée — stress thermique probable sur les cultures")
+                    st.markdown(f"""
+                    <div style='background:#2d1a0a;border-left:6px solid #FF9800;border-radius:8px;padding:20px;'>
+                        <h3 style='color:#FF9800;'>🟠 JOURNÉE TRÈS CHAUDE — ATTENTION</h3>
+                        <p style='color:#e8f4fd;font-size:16px;'>La température atteindra <b>{tmax:.0f}°C</b> ce jour à {selected_commune}.</p>
+                        <ul style='color:#e8f4fd;font-size:15px;line-height:2;'>
+                            <li>⏰ Travaillez aux champs tôt le matin (6h-10h) ou en soirée (17h-19h)</li>
+                            <li>💧 Arrosez vos cultures le matin et le soir</li>
+                            <li>🌿 Couvrez le sol avec de la paille pour garder l humidité</li>
+                            <li>🐄 Surveillez vos animaux — donnez leur de l eau fraîche</li>
+                            <li>💧 Buvez régulièrement de l eau</li>
+                        </ul>
+                    </div>""", unsafe_allow_html=True)
                 elif tmax >= 35:
-                    st.info("🟡 Chaleur modérée — surveiller l irrigation")
+                    st.markdown(f"""
+                    <div style='background:#2d2a0a;border-left:6px solid #ffd700;border-radius:8px;padding:20px;'>
+                        <h3 style='color:#ffd700;'>🟡 JOURNÉE CHAUDE — NORMALE POUR LA SAISON</h3>
+                        <p style='color:#e8f4fd;font-size:16px;'>La température atteindra <b>{tmax:.0f}°C</b> ce jour à {selected_commune}.</p>
+                        <ul style='color:#e8f4fd;font-size:15px;line-height:2;'>
+                            <li>✅ Vous pouvez travailler normalement aux champs</li>
+                            <li>⏰ Évitez quand même les heures les plus chaudes (13h-15h)</li>
+                            <li>💧 Arrosez le matin de préférence</li>
+                            <li>🎯 Bonne journée pour semer ou planter</li>
+                        </ul>
+                    </div>""", unsafe_allow_html=True)
                 else:
-                    st.success("🟢 Température normale — conditions favorables")
+                    st.markdown(f"""
+                    <div style='background:#0a2d1a;border-left:6px solid #44ff88;border-radius:8px;padding:20px;'>
+                        <h3 style='color:#44ff88;'>🟢 BONNE JOURNÉE — CONDITIONS FAVORABLES</h3>
+                        <p style='color:#e8f4fd;font-size:16px;'>La température atteindra <b>{tmax:.0f}°C</b> ce jour à {selected_commune}.</p>
+                        <ul style='color:#e8f4fd;font-size:15px;line-height:2;'>
+                            <li>✅ Excellente journée pour travailler aux champs</li>
+                            <li>🌱 Bonne journée pour semer, planter ou récolter</li>
+                            <li>💧 Arrosez normalement selon vos habitudes</li>
+                            <li>🐄 Vos animaux seront à l aise</li>
+                        </ul>
+                    </div>""", unsafe_allow_html=True)
             else:
                 st.warning("Données non disponibles pour cette date.")
         else:
-            st.warning("Fichier de projections non trouvé.")
+            st.warning("Données de projection non disponibles.")
 
-    elif resolution == "📆 Mensuelle":
+    elif resolution == "📆 Mois par mois":
         if df_proj is not None:
             df_m = agreger_mensuel(df_proj)
+            st.markdown("### 📆 Températures mois par mois (2025-2055)")
+            st.caption("Passez la souris sur le graphique pour voir les valeurs exactes")
             fig = go.Figure()
-            fig.add_trace(go.Scatter(x=df_m["year_month"],y=df_m["temp_max"],name="T° max",line=dict(color="#ff4444",width=1.5)))
-            fig.add_trace(go.Scatter(x=df_m["year_month"],y=df_m["temp_mean"],name="T° moy",line=dict(color="#ffd700",width=1.5)))
-            fig.add_trace(go.Scatter(x=df_m["year_month"],y=df_m["temp_min"],name="T° min",line=dict(color="#4db8ff",width=1.5)))
-            fig.add_hline(y=38,line_dash="dash",line_color="red",annotation_text="Seuil 38°C")
-            fig.update_layout(title=f"Températures mensuelles 2025-2055 · {selected_commune}",
-                              template="plotly_dark",**LAYOUT)
+            fig.add_trace(go.Scatter(x=df_m["year_month"],y=df_m["temp_max"],
+                name="Chaleur max (°C)",line=dict(color="#ff4444",width=1.5)))
+            fig.add_trace(go.Scatter(x=df_m["year_month"],y=df_m["temp_mean"],
+                name="Chaleur moyenne (°C)",line=dict(color="#ffd700",width=1.5)))
+            fig.add_trace(go.Scatter(x=df_m["year_month"],y=df_m["temp_min"],
+                name="Fraîcheur minimale (°C)",line=dict(color="#4db8ff",width=1.5)))
+            fig.add_hline(y=38,line_dash="dash",line_color="red",
+                annotation_text="⚠️ Seuil de chaleur dangereuse (38°C)")
+            fig.update_layout(
+                title=f"Évolution de la chaleur mois par mois · {selected_commune}",
+                template="plotly_dark",**LAYOUT,
+                xaxis_title="Mois et Année",
+                yaxis_title="Température (°C)",
+            )
             st.plotly_chart(fig,use_container_width=True)
             c1,c2,c3 = st.columns(3)
-            c1.metric("T° min",f"{df_m['temp_min'].min():.1f}°C")
-            c2.metric("T° moy",f"{df_m['temp_mean'].mean():.1f}°C")
-            c3.metric("T° max",f"{df_m['temp_max'].max():.1f}°C")
+            c1.metric("🌙 Nuit la plus fraîche",f"{df_m['temp_min'].min():.0f}°C")
+            c2.metric("🌞 Chaleur moyenne",f"{df_m['temp_mean'].mean():.0f}°C")
+            c3.metric("🔥 Journée la plus chaude",f"{df_m['temp_max'].max():.0f}°C")
         else:
-            st.warning("Fichier de projections non trouvé.")
+            st.warning("Données non disponibles.")
 
     else:
         if df_proj is not None:
             df_a = agreger_annuel(df_proj)
+            st.markdown("### 📊 Évolution de la chaleur année par année (2025-2055)")
+            st.caption("Plus les années passent, plus il fera chaud")
             fig = go.Figure()
-            fig.add_trace(go.Scatter(x=df_a["year"],y=df_a["temp_max"],name="T° max",line=dict(color="#ff4444",width=2)))
-            fig.add_trace(go.Scatter(x=df_a["year"],y=df_a["temp_mean"],name="T° moy",line=dict(color="#ffd700",width=2)))
-            fig.add_trace(go.Scatter(x=df_a["year"],y=df_a["temp_min"],name="T° min",line=dict(color="#4db8ff",width=2)))
-            fig.add_hline(y=38,line_dash="dash",line_color="red",annotation_text="Seuil stress 38°C")
-            fig.update_layout(title=f"Températures annuelles 2025-2055 · {selected_commune}",
-                              template="plotly_dark",**LAYOUT)
+            fig.add_trace(go.Scatter(x=df_a["year"],y=df_a["temp_max"],
+                name="Chaleur max (°C)",line=dict(color="#ff4444",width=2)))
+            fig.add_trace(go.Scatter(x=df_a["year"],y=df_a["temp_mean"],
+                name="Chaleur moyenne (°C)",line=dict(color="#ffd700",width=2)))
+            fig.add_trace(go.Scatter(x=df_a["year"],y=df_a["temp_min"],
+                name="Fraîcheur minimale (°C)",line=dict(color="#4db8ff",width=2)))
+            fig.add_hline(y=38,line_dash="dash",line_color="red",
+                annotation_text="⚠️ Seuil de chaleur dangereuse (38°C)")
+            fig.update_layout(
+                title=f"Comment la chaleur va évoluer à {selected_commune} d ici 2055",
+                template="plotly_dark",**LAYOUT,
+                xaxis_title="Année",
+                yaxis_title="Température (°C)",
+            )
             st.plotly_chart(fig,use_container_width=True)
             c1,c2,c3 = st.columns(3)
-            c1.metric("T° min projetée",f"{df_a['temp_min'].min():.1f}°C")
-            c2.metric("T° moy 2055",f"{df_a['temp_mean'].iloc[-1]:.1f}°C",
-                      f"+{df_a['temp_mean'].iloc[-1]-df_a['temp_mean'].iloc[0]:.1f}°C")
-            c3.metric("T° max projetée",f"{df_a['temp_max'].max():.1f}°C")
-            df_a["jours_chauds"] = ((df_a["temp_max"]-38)*8).clip(lower=0).round().astype(int)
-            fig2 = px.bar(df_a,x="year",y="jours_chauds",title="🔥 Jours T°>38°C estimés/an",
-                          color="jours_chauds",color_continuous_scale=["#ffd700","#ff4444"],
-                          template="plotly_dark")
-            fig2.update_layout(**LAYOUT)
-            st.plotly_chart(fig2,use_container_width=True)
+            c1.metric("🌙 Nuit la plus fraîche",f"{df_a['temp_min'].min():.0f}°C")
+            c2.metric("🌞 Chaleur en 2055",f"{df_a['temp_mean'].iloc[-1]:.0f}°C",
+                      f"+{df_a['temp_mean'].iloc[-1]-df_a['temp_mean'].iloc[0]:.1f}°C vs 2025")
+            c3.metric("🔥 Journée la plus chaude",f"{df_a['temp_max'].max():.0f}°C")
+
+            # Tableau simple années dangereuses
+            annees_chaudes = df_a[df_a["temp_max"]>=38]["year"].tolist()
+            if annees_chaudes:
+                st.markdown("### ⚠️ Années où il fera très chaud (T° > 38°C)")
+                st.markdown("Ces années-là, faites très attention pendant les travaux agricoles :")
+                cols = st.columns(min(len(annees_chaudes),6))
+                for i,annee in enumerate(annees_chaudes[:6]):
+                    cols[i%6].markdown(f"<div style='background:#2d0a0a;border-radius:8px;padding:10px;text-align:center;color:#ff4444;font-weight:bold;'>{annee}</div>",unsafe_allow_html=True)
+            else:
+                st.success("✅ Pour ce scénario, les températures restent gérables jusqu en 2055.")
         else:
-            df = get_annual(selected_commune, selected_scenario)
-            if not df.empty:
-                fig = go.Figure()
-                fig.add_trace(go.Scatter(x=df["year"],y=df["temp_max"],name="T° max",line=dict(color="#ff4444",width=2)))
-                fig.add_trace(go.Scatter(x=df["year"],y=df["temp_mean"],name="T° moy",line=dict(color="#ffd700",width=2)))
-                fig.add_trace(go.Scatter(x=df["year"],y=df["temp_min"],name="T° min",line=dict(color="#4db8ff",width=2)))
-                fig.add_hline(y=38,line_dash="dash",line_color="red",annotation_text="Seuil stress 38°C")
-                fig.update_layout(title=f"Températures 2025-2055 · {selected_commune}",
-                                  template="plotly_dark",**LAYOUT)
-                st.plotly_chart(fig,use_container_width=True)
+            st.warning("Données non disponibles.")
 
 elif page == "🌧️ Précipitations":
     region, sol, cal, conseil = get_info(selected_commune)
