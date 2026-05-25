@@ -242,7 +242,7 @@ def generer_conseil_detaille(commune, region, sol, cal, df_climate=None, scenari
 
 {commune} est une commune de {region}, située en **{zone}**, {zone_conseil}. 
 Le sol dominant est de type **{sol}**, ce qui conditionne directement les types de cultures possibles, 
-la capacité de rétention d eau et la résistance aux sécheresses.
+la capacité de rétention d'eau et la résistance aux sécheresses.
 
 Actuellement, la commune reçoit en moyenne **{pluie} mm de pluie par an**, avec des températures 
 moyennes autour de **{temp}°C**. La saison des pluies (hivernage) s'étend de **{hivernage}**, 
@@ -257,7 +257,7 @@ agricoles de {commune}. Voici pourquoi :
 
 - 🌡️ **Hausse de température de +{hausse_temp}°C** : Les températures passeront de {temp}°C à environ 
   {temp_2055}°C d'ici 2055. Cette hausse provoque une **évapotranspiration accrue** — les plantes 
-  perdent plus d eau, les sols s'assèchent plus vite, et les besoins en eau des cultures augmentent. 
+  perdent plus d'eau, les sols s'assèchent plus vite, et les besoins en eau des cultures augmentent. 
   Au-delà de 38°C, la plupart des cultures céréalières subissent un **stress thermique** qui réduit 
   leur rendement de 20 à 50%.
 
@@ -292,10 +292,10 @@ Passer progressivement aux variétés améliorées résistantes à la sécheress
 Pour {commune}, privilégier les variétés de **{cultures.split(",")[0].strip()}** à cycle court 
 (moins de 90 jours) qui permettent de terminer la culture avant la fin de la saison des pluies.
 
-**2. Gérer l eau de façon optimale**
-- Construire des **demi-lunes et des zaï** pour capter et retenir l eau de pluie
+**2. Gérer l'eau de façon optimale**
+- Construire des **demi-lunes et des zaï** pour capter et retenir l'eau de pluie
 - Installer des **cordons pierreux** perpendiculaires à la pente pour réduire le ruissellement
-- Développer des **mares artificielles** et des retenues d eau pour l'irrigation d'appoint
+- Développer des **mares artificielles** et des retenues d'eau pour l'irrigation d'appoint
 - Pratiquer le **paillage** (mulching) pour limiter l'évaporation du sol
 
 **3. Protéger et améliorer le sol**
@@ -484,7 +484,7 @@ def generer_conseil_detaille(commune, region, sol, cal, scenario="SSP2-4.5"):
 
 {commune} est une commune de la région de {region}, localisée en **{zone}**, {zone_c}.
 Le sol dominant est de type **{sol}**.
-Ce type de sol conditionne directement les cultures possibles, la capacité à retenir l eau et
+Ce type de sol conditionne directement les cultures possibles, la capacité à retenir l'eau et
 la résistance naturelle aux périodes de sécheresse.
 
 Aujourd'hui, {commune} reçoit en moyenne **{pluie} mm de pluie par an**, avec des températures
@@ -519,7 +519,7 @@ dépasse 30%, les récoltes peuvent être catastrophiques.
 🏜️ **Dégradation progressive du sol**
 Le sol de {commune} ({sol}) est sensible à ce double stress thermique et hydrique.
 Sans couverture végétale suffisante, les pluies intenses lessivent les éléments nutritifs,
-l'érosion s'accélère, et la croûte du sol se durcit, réduisant l'infiltration de l eau.
+l'érosion s'accélère, et la croûte du sol se durcit, réduisant l'infiltration de l'eau.
 Un sol dégradé produit moins, nécessite plus d'intrants, et devient moins rentable à cultiver.
 
 ---
@@ -542,11 +542,11 @@ Adopter des variétés de **{culture1}** à cycle court (60-90 jours) et résist
 Ces variétés terminent leur cycle avant la fin de l'hivernage, réduisant le risque de perte.
 Des semences certifiées sont disponibles auprès de l'ISRA et des coopératives locales.
 
-**2. Mieux gérer chaque goutte d eau**
-- Creuser des **demi-lunes et des zaï** autour des pieds de plantes pour concentrer l eau
+**2. Mieux gérer chaque goutte d'eau**
+- Creuser des **demi-lunes et des zaï** autour des pieds de plantes pour concentrer l'eau
 - Construire des **cordons pierreux** le long des courbes de niveau pour stopper le ruissellement
 - Pratiquer le **paillage (mulching)** avec des résidus de récolte pour limiter l'évaporation
-- Récupérer l eau de pluie dans des **bassins ou des jarres** pour l'irrigation d'appoint
+- Récupérer l'eau de pluie dans des **bassins ou des jarres** pour l'irrigation d'appoint
 
 **3. Nourrir et protéger le sol de {commune}**
 Le sol de type **{sol}** nécessite un apport régulier en matière organique.
@@ -742,7 +742,7 @@ def generer_conseil_detaille(commune, region, sol, cal, df_climate=None, scenari
 
 {commune} est une commune de {region}, située en **{zone}**, {zone_conseil}. 
 Le sol dominant est de type **{sol}**, ce qui conditionne directement les types de cultures possibles, 
-la capacité de rétention d eau et la résistance aux sécheresses.
+la capacité de rétention d'eau et la résistance aux sécheresses.
 
 Actuellement, la commune reçoit en moyenne **{pluie} mm de pluie par an**, avec des températures 
 moyennes autour de **{temp}°C**. La saison des pluies (hivernage) s'étend de **{hivernage}**, 
@@ -757,7 +757,7 @@ agricoles de {commune}. Voici pourquoi :
 
 - 🌡️ **Hausse de température de +{hausse_temp}°C** : Les températures passeront de {temp}°C à environ 
   {temp_2055}°C d'ici 2055. Cette hausse provoque une **évapotranspiration accrue** — les plantes 
-  perdent plus d eau, les sols s'assèchent plus vite, et les besoins en eau des cultures augmentent. 
+  perdent plus d'eau, les sols s'assèchent plus vite, et les besoins en eau des cultures augmentent. 
   Au-delà de 38°C, la plupart des cultures céréalières subissent un **stress thermique** qui réduit 
   leur rendement de 20 à 50%.
 
@@ -792,10 +792,10 @@ Passer progressivement aux variétés améliorées résistantes à la sécheress
 Pour {commune}, privilégier les variétés de **{cultures.split(",")[0].strip()}** à cycle court 
 (moins de 90 jours) qui permettent de terminer la culture avant la fin de la saison des pluies.
 
-**2. Gérer l eau de façon optimale**
-- Construire des **demi-lunes et des zaï** pour capter et retenir l eau de pluie
+**2. Gérer l'eau de façon optimale**
+- Construire des **demi-lunes et des zaï** pour capter et retenir l'eau de pluie
 - Installer des **cordons pierreux** perpendiculaires à la pente pour réduire le ruissellement
-- Développer des **mares artificielles** et des retenues d eau pour l'irrigation d'appoint
+- Développer des **mares artificielles** et des retenues d'eau pour l'irrigation d'appoint
 - Pratiquer le **paillage** (mulching) pour limiter l'évaporation du sol
 
 **3. Protéger et améliorer le sol**
@@ -2181,10 +2181,10 @@ elif page == "🏜️ Sécheresse":
     # ── Expandeur pédagogique ─────────────────────────────────────────
     with st.expander("📖 C'est quoi l'Indice SPI ? (cliquez pour comprendre)"):
         st.markdown("""
-        ## 🌧️ Le SPI, c est quoi en langage simple ?
+        ## 🌧️ Le SPI, c'est quoi en langage simple ?
 
         **SPI** veut dire *Standardized Precipitation Index* —
-        c est un chiffre qui dit si les pluies ont été **normales, trop faibles ou trop fortes**
+        c'est un chiffre qui dit si les pluies ont été **normales, trop faibles ou trop fortes**
         par rapport aux 30 dernières années dans votre région.
 
         ---
@@ -2202,8 +2202,8 @@ elif page == "🏜️ Sécheresse":
 
         ### 🎯 À quoi ça sert concrètement ?
         - Savoir **à l'avance** si la saison des pluies sera bonne ou mauvaise
-        - Décider **quoi planter** selon la quantité d eau disponible
-        - Gérer **les réserves d eau** des puits, forages et mares
+        - Décider **quoi planter** selon la quantité d'eau disponible
+        - Gérer **les réserves d'eau** des puits, forages et mares
         - Alerter les autorités et les agriculteurs **avant** une crise
 
         ---
@@ -2234,18 +2234,18 @@ elif page == "🏜️ Sécheresse":
             return "🟢", "BONNE SAISON DES PLUIES", "#0a2d1a", "#44ff88", [
                 "✅ Les pluies seront normales ou abondantes cette période.",
                 "🌱 Bonne période pour semer et planter.",
-                "💧 Vos réserves d eau seront bien alimentées.",
-                "🐄 Vos animaux auront assez d eau et de pâturages.",
+                "💧 Vos réserves d'eau seront bien alimentées.",
+                "🐄 Vos animaux auront assez d'eau et de pâturages.",
             ]
         elif spi_val > -0.2:
             return "🟡", "LÉGÈREMENT SEC — RESTEZ VIGILANT", "#2d2a0a", "#ffd700", [
                 "⚠️ Les pluies seront un peu en dessous de la normale.",
-                "💧 Évitez de gaspiller l eau — arrosez tôt le matin.",
+                "💧 Évitez de gaspiller l'eau — arrosez tôt le matin.",
                 "🌾 Privilégiez les cultures peu gourmandes en eau (mil, niébé).",
                 "📋 Vérifiez le niveau de vos puits et réserves.",
             ]
         elif spi_val > -0.5:
-            return "🟠", "SÉCHERESSE MODÉRÉE — ÉCONOMISEZ L EAU", "#2d1a0a", "#FF9800", [
+            return "🟠", "SÉCHERESSE MODÉRÉE — ÉCONOMISEZ L'EAU", "#2d1a0a", "#FF9800", [
                 "🚫 Les pluies seront nettement insuffisantes cette période.",
                 "💧 Remplissez vos réservoirs et citernes dès que possible.",
                 "🌾 Plantez uniquement des cultures résistantes à la sécheresse.",
@@ -2255,11 +2255,11 @@ elif page == "🏜️ Sécheresse":
         else:
             return "🔴", "SÉCHERESSE SÉVÈRE — DANGER POUR LES CULTURES", "#2d0a0a", "#ff4444", [
                 "🚨 Les pluies seront très insuffisantes — risque de perte de récolte.",
-                "💧 Protégez en priorité vos réserves d eau potable.",
+                "💧 Protégez en priorité vos réserves d'eau potable.",
                 "🌾 Ne plantez que du mil ou du sorgho — les autres cultures risquent de mourir.",
                 "🐄 Réduisez le nombre d'animaux si les pâturages s'assèchent.",
-                "🏘️ Contactez les services agricoles locaux pour une aide d urgence.",
-                "🚰 Utilisez chaque goutte d eau avec précaution.",
+                "🏘️ Contactez les services agricoles locaux pour une aide d'urgence.",
+                "🚰 Utilisez chaque goutte d'eau avec précaution.",
             ]
 
     if resolution == "📅 Un jour précis":
@@ -2430,7 +2430,7 @@ ce jour-là
                 annees_critiques = df_a[df_a["spi"] < -0.5]["year"].tolist()
                 if annees_critiques:
                     st.markdown("### 🔴 Années de sécheresse sévère")
-                    st.markdown("Ces années-là, préparez vos semences résistantes et vos réserves d eau :")
+                    st.markdown("Ces années-là, préparez vos semences résistantes et vos réserves d'eau :")
                     cols = st.columns(min(len(annees_critiques), 6))
                     for i, annee in enumerate(annees_critiques[:6]):
                         cols[i % 6].markdown(
