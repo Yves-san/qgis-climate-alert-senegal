@@ -1940,22 +1940,123 @@ if page == "📊 Aperçu":
 
 elif page == "🌡️ Température":
     st.markdown(f"# 🌡️ Température — {selected_commune}")
-    df = get_annual(selected_commune, selected_scenario)
-    if not df.empty:
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=df["year"],y=df["temp_max"],name="T° max",line=dict(color="#ff4444",width=2)))
-        fig.add_trace(go.Scatter(x=df["year"],y=df["temp_mean"],name="T° moy",line=dict(color="#ffd700",width=2)))
-        fig.add_trace(go.Scatter(x=df["year"],y=df["temp_min"],name="T° min",line=dict(color="#4db8ff",width=2)))
-        fig.add_hline(y=38,line_dash="dash",line_color="red",annotation_text="Seuil stress 38°C")
-        fig.update_layout(title=f"Températures 2025–2055 - {selected_commune}",template="plotly_dark",**LAYOUT)
-        st.plotly_chart(fig,use_container_width=True)
-        c1,c2,c3 = st.columns(3)
-        c1.metric("T° min projetée",f"{df['temp_min'].min():.1f}°C")
-        c2.metric("T° moy 2055",f"{df['temp_mean'].iloc[-1]:.1f}°C",f"+{df['temp_mean'].iloc[-1]-df['temp_mean'].iloc[0]:.1f}°C")
-        c3.metric("T° max projetée",f"{df['temp_max'].max():.1f}°C")
-        df["jours_chauds"] = ((df["temp_max"]-38)*8).clip(lower=0).round().astype(int)
-        fig2 = px.bar(df,x="year",y="jours_chauds",title="🔥 Jours T°>38°C estimés/an",color="jours_chauds",color_continuous_scale=["#ffd700","#ff4444"],template="plotly_dark")
-        fig2.update_layout(**LAYOUT); st.plotly_chart(fig2,use_container_width=True)
+    resolution = st.radio("Résolution", ["📅 Date exacte","📆 Mensuelle","📊 Annuelle"], horizontal=True)
+    df_proj = get_projections(selected_commune, selected_scenario)
+
+    if resolution == "📅 Date exacte":
+        import datetime as dt
+        from datetime import timedelta
+        col1, col2 = st.columns([2,1])
+        with col1:
+            date_choisie = st.date_input(
+                "Choisissez une date (jour · mois · année)",
+                value=dt.date(2030, 6, 15),
+                min_value=dt.date(2025, 1, 1),
+                max_value=dt.date(2055, 12, 31),
+            )
+        with col2:
+            fenetre = st.selectbox("Contexte", ["±15 jours","±1 mois","Année complète"])
+
+        if df_proj is not None:
+            df_jour = df_proj[df_proj["date"]==pd.Timestamp(date_choisie)]
+            if not df_jour.empty:
+                row = df_jour.iloc[0]
+                st.markdown(f"### 📅 {date_choisie.strftime('%d %B %Y')} — {selected_commune}")
+                c1,c2,c3,c4 = st.columns(4)
+                c1.metric("🌡️ T° minimale",  f"{row['temp_min']:.1f}°C")
+                c2.metric("🌡️ T° moyenne",   f"{row['temp_mean']:.1f}°C")
+                c3.metric("🔥 T° maximale",  f"{row['temp_max']:.1f}°C")
+                c4.metric("🌧️ Précipitations",f"{row['precip']:.1f} mm")
+
+                # Fenêtre de contexte
+                if fenetre == "±15 jours":
+                    d1 = pd.Timestamp(date_choisie - timedelta(days=15))
+                    d2 = pd.Timestamp(date_choisie + timedelta(days=15))
+                elif fenetre == "±1 mois":
+                    d1 = pd.Timestamp(date_choisie - timedelta(days=30))
+                    d2 = pd.Timestamp(date_choisie + timedelta(days=30))
+                else:
+                    d1 = pd.Timestamp(dt.date(date_choisie.year,1,1))
+                    d2 = pd.Timestamp(dt.date(date_choisie.year,12,31))
+
+                df_ctx = df_proj[(df_proj["date"]>=d1)&(df_proj["date"]<=d2)]
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(x=df_ctx["date"],y=df_ctx["temp_max"],name="T° max",line=dict(color="#ff4444",width=1.5)))
+                fig.add_trace(go.Scatter(x=df_ctx["date"],y=df_ctx["temp_mean"],name="T° moy",line=dict(color="#ffd700",width=1.5)))
+                fig.add_trace(go.Scatter(x=df_ctx["date"],y=df_ctx["temp_min"],name="T° min",line=dict(color="#4db8ff",width=1.5)))
+                fig.add_vline(x=pd.Timestamp(date_choisie).timestamp()*1000,
+                              line_dash="dash",line_color="white",
+                              annotation_text=str(date_choisie),annotation_position="top")
+                fig.add_hline(y=38,line_dash="dot",line_color="red",annotation_text="Seuil 38°C")
+                fig.update_layout(title=f"Températures autour du {date_choisie} · {selected_commune}",
+                                  template="plotly_dark",**LAYOUT)
+                st.plotly_chart(fig,use_container_width=True)
+
+                tmax = row["temp_max"]
+                if tmax >= 42:
+                    st.error("🔴 Chaleur extrême — risque critique pour les cultures et la santé")
+                elif tmax >= 38:
+                    st.warning("🟠 Chaleur élevée — stress thermique probable sur les cultures")
+                elif tmax >= 35:
+                    st.info("🟡 Chaleur modérée — surveiller l irrigation")
+                else:
+                    st.success("🟢 Température normale — conditions favorables")
+            else:
+                st.warning("Données non disponibles pour cette date.")
+        else:
+            st.warning("Fichier de projections non trouvé.")
+
+    elif resolution == "📆 Mensuelle":
+        if df_proj is not None:
+            df_m = agreger_mensuel(df_proj)
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=df_m["year_month"],y=df_m["temp_max"],name="T° max",line=dict(color="#ff4444",width=1.5)))
+            fig.add_trace(go.Scatter(x=df_m["year_month"],y=df_m["temp_mean"],name="T° moy",line=dict(color="#ffd700",width=1.5)))
+            fig.add_trace(go.Scatter(x=df_m["year_month"],y=df_m["temp_min"],name="T° min",line=dict(color="#4db8ff",width=1.5)))
+            fig.add_hline(y=38,line_dash="dash",line_color="red",annotation_text="Seuil 38°C")
+            fig.update_layout(title=f"Températures mensuelles 2025-2055 · {selected_commune}",
+                              template="plotly_dark",**LAYOUT)
+            st.plotly_chart(fig,use_container_width=True)
+            c1,c2,c3 = st.columns(3)
+            c1.metric("T° min",f"{df_m['temp_min'].min():.1f}°C")
+            c2.metric("T° moy",f"{df_m['temp_mean'].mean():.1f}°C")
+            c3.metric("T° max",f"{df_m['temp_max'].max():.1f}°C")
+        else:
+            st.warning("Fichier de projections non trouvé.")
+
+    else:
+        if df_proj is not None:
+            df_a = agreger_annuel(df_proj)
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=df_a["year"],y=df_a["temp_max"],name="T° max",line=dict(color="#ff4444",width=2)))
+            fig.add_trace(go.Scatter(x=df_a["year"],y=df_a["temp_mean"],name="T° moy",line=dict(color="#ffd700",width=2)))
+            fig.add_trace(go.Scatter(x=df_a["year"],y=df_a["temp_min"],name="T° min",line=dict(color="#4db8ff",width=2)))
+            fig.add_hline(y=38,line_dash="dash",line_color="red",annotation_text="Seuil stress 38°C")
+            fig.update_layout(title=f"Températures annuelles 2025-2055 · {selected_commune}",
+                              template="plotly_dark",**LAYOUT)
+            st.plotly_chart(fig,use_container_width=True)
+            c1,c2,c3 = st.columns(3)
+            c1.metric("T° min projetée",f"{df_a['temp_min'].min():.1f}°C")
+            c2.metric("T° moy 2055",f"{df_a['temp_mean'].iloc[-1]:.1f}°C",
+                      f"+{df_a['temp_mean'].iloc[-1]-df_a['temp_mean'].iloc[0]:.1f}°C")
+            c3.metric("T° max projetée",f"{df_a['temp_max'].max():.1f}°C")
+            df_a["jours_chauds"] = ((df_a["temp_max"]-38)*8).clip(lower=0).round().astype(int)
+            fig2 = px.bar(df_a,x="year",y="jours_chauds",title="🔥 Jours T°>38°C estimés/an",
+                          color="jours_chauds",color_continuous_scale=["#ffd700","#ff4444"],
+                          template="plotly_dark")
+            fig2.update_layout(**LAYOUT)
+            st.plotly_chart(fig2,use_container_width=True)
+        else:
+            df = get_annual(selected_commune, selected_scenario)
+            if not df.empty:
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(x=df["year"],y=df["temp_max"],name="T° max",line=dict(color="#ff4444",width=2)))
+                fig.add_trace(go.Scatter(x=df["year"],y=df["temp_mean"],name="T° moy",line=dict(color="#ffd700",width=2)))
+                fig.add_trace(go.Scatter(x=df["year"],y=df["temp_min"],name="T° min",line=dict(color="#4db8ff",width=2)))
+                fig.add_hline(y=38,line_dash="dash",line_color="red",annotation_text="Seuil stress 38°C")
+                fig.update_layout(title=f"Températures 2025-2055 · {selected_commune}",
+                                  template="plotly_dark",**LAYOUT)
+                st.plotly_chart(fig,use_container_width=True)
 
 elif page == "🌧️ Précipitations":
     region, sol, cal, conseil = get_info(selected_commune)
