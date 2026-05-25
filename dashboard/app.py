@@ -2177,17 +2177,273 @@ elif page == "🌧️ Précipitations":
 
 elif page == "🏜️ Sécheresse":
     st.markdown(f"# 🏜️ Sécheresse — {selected_commune}")
-    df = get_annual(selected_commune, selected_scenario)
-    if not df.empty:
-        fig = px.line(df,x="year",y="drought",title="Indice de sécheresse (0=normal - 1=sévère)",color_discrete_sequence=["#ffd700"],template="plotly_dark")
-        fig.add_hline(y=0.3,line_dash="dot",line_color="orange",annotation_text="Modéré")
-        fig.add_hline(y=0.6,line_dash="dash",line_color="red",annotation_text="Critique")
-        fig.update_layout(**LAYOUT); st.plotly_chart(fig,use_container_width=True)
-        if df["spi"].notna().any():
-            fig2 = px.bar(df,x="year",y="spi",title="Indice SPI (négatif = déficit)",color="spi",color_continuous_scale=["#ff4444","#ffffff","#4db8ff"],template="plotly_dark")
-            fig2.update_layout(**LAYOUT); st.plotly_chart(fig2,use_container_width=True)
-        annees = df[df["drought"]>0.6]["year"].tolist()
-        if annees: st.error(f"⚠️ Années sécheresse sévère projetées : {', '.join(map(str,annees))}")
+
+    # ── Expandeur pédagogique ─────────────────────────────────────────
+    with st.expander("📖 C'est quoi l'Indice SPI ? (cliquez pour comprendre)"):
+        st.markdown("""
+        ## 🌧️ Le SPI, c'est quoi en langage simple ?
+
+        **SPI** veut dire *Standardized Precipitation Index* —
+        c'est un chiffre qui dit si les pluies ont été **normales, trop faibles ou trop fortes**
+        par rapport aux 30 dernières années dans votre région.
+
+        ---
+
+        ### 📊 Comment lire le chiffre ?
+
+        | Valeur SPI | Ce que ça veut dire | Couleur |
+        |---|---|---|
+        | > 0 | Pluies normales ou abondantes | 🟢 Vert |
+        | 0 à -0.2 | Légèrement sec — restez vigilant | 🟡 Jaune |
+        | -0.2 à -0.5 | Sécheresse modérée | 🟠 Orange |
+        | < -0.5 | Sécheresse sévère — danger pour les cultures | 🔴 Rouge |
+
+        ---
+
+        ### 🎯 À quoi ça sert concrètement ?
+        - Savoir **à l'avance** si la saison des pluies sera bonne ou mauvaise
+        - Décider **quoi planter** selon la quantité d'eau disponible
+        - Gérer **les réserves d'eau** des puits, forages et mares
+        - Alerter les autorités et les agriculteurs **avant** une crise
+
+        ---
+
+        ### 📡 Comment on l'obtient ?
+        - Calculé à partir des **données de pluie des 30 dernières années** dans votre région
+        - Sources utilisées dans ce dashboard :
+            - **ANACIM** — Agence Nationale de l'Aviation Civile et de la Météorologie du Sénégal
+            - **NASA POWER** — données satellitaires mondiales
+            - **Copernicus / ERA5** — service météo européen
+        - Ces projections sont mises à jour selon les scénarios climatiques **SSP1-1.9, SSP2-4.5, SSP5-8.5**
+        """)
+
+    st.markdown("---")
+
+    # ── Sélection du mode d'affichage ────────────────────────────────
+    resolution = st.radio("Que voulez-vous voir ?", [
+        "📅 Un jour précis",
+        "📆 Mois par mois",
+        "📊 Année par année"
+    ], horizontal=True)
+
+    df_proj = get_projections(selected_commune, selected_scenario)
+
+    def spi_message(spi_val):
+        """Traduit une valeur SPI en message lisible."""
+        if spi_val > 0:
+            return "🟢", "BONNE SAISON DES PLUIES", "#0a2d1a", "#44ff88", [
+                "✅ Les pluies seront normales ou abondantes cette période.",
+                "🌱 Bonne période pour semer et planter.",
+                "💧 Vos réserves d'eau seront bien alimentées.",
+                "🐄 Vos animaux auront assez d'eau et de pâturages.",
+            ]
+        elif spi_val > -0.2:
+            return "🟡", "LÉGÈREMENT SEC — RESTEZ VIGILANT", "#2d2a0a", "#ffd700", [
+                "⚠️ Les pluies seront un peu en dessous de la normale.",
+                "💧 Évitez de gaspiller l'eau — arrosez tôt le matin.",
+                "🌾 Privilégiez les cultures peu gourmandes en eau (mil, niébé).",
+                "📋 Vérifiez le niveau de vos puits et réserves.",
+            ]
+        elif spi_val > -0.5:
+            return "🟠", "SÉCHERESSE MODÉRÉE — ÉCONOMISEZ L'EAU", "#2d1a0a", "#FF9800", [
+                "🚫 Les pluies seront nettement insuffisantes cette période.",
+                "💧 Remplissez vos réservoirs et citernes dès que possible.",
+                "🌾 Plantez uniquement des cultures résistantes à la sécheresse.",
+                "🐄 Prévoyez du fourrage pour vos animaux.",
+                "🚰 Réduisez les arrosages — utilisez le goutte-à-goutte si possible.",
+            ]
+        else:
+            return "🔴", "SÉCHERESSE SÉVÈRE — DANGER POUR LES CULTURES", "#2d0a0a", "#ff4444", [
+                "🚨 Les pluies seront très insuffisantes — risque de perte de récolte.",
+                "💧 Protégez en priorité vos réserves d'eau potable.",
+                "🌾 Ne plantez que du mil ou du sorgho — les autres cultures risquent de mourir.",
+                "🐄 Réduisez le nombre d'animaux si les pâturages s'assèchent.",
+                "🏘️ Contactez les services agricoles locaux pour une aide d'urgence.",
+                "🚰 Utilisez chaque goutte d'eau avec précaution.",
+            ]
+
+    if resolution == "📅 Un jour précis":
+        import datetime as dt
+        st.markdown("### 📅 Choisissez votre date")
+        date_choisie = st.date_input(
+            "Jour · Mois · Année",
+            value=dt.date(2030, 6, 15),
+            min_value=dt.date(2025, 1, 1),
+            max_value=dt.date(2055, 12, 31),
+            label_visibility="collapsed"
+        )
+        if df_proj is not None:
+            df_jour = df_proj[df_proj["date"] == pd.Timestamp(date_choisie)]
+            if not df_jour.empty:
+                row = df_jour.iloc[0]
+                spi = row.get("spi", -0.1)
+                pluie = row["precip"]
+
+                mois_fr = ["Janvier","Février","Mars","Avril","Mai","Juin",
+                           "Juillet","Août","Septembre","Octobre","Novembre","Décembre"]
+                date_str = f"{date_choisie.day} {mois_fr[date_choisie.month-1]} {date_choisie.year}"
+                st.markdown(f"## 📅 {date_str} — {selected_commune}")
+                st.markdown("---")
+
+                icone, titre, bg, couleur, conseils = spi_message(spi)
+
+                c1, c2 = st.columns(2)
+                with c1:
+                    st.markdown(f"""
+                    
+
+                        
+📊
+
+                        
+Indice SPI
+
+                        
+{spi:.2f}
+
+                        
+0 = normal · négatif = sec
+
+                    
+""", unsafe_allow_html=True)
+                with c2:
+                    st.markdown(f"""
+                    
+
+                        
+🌧️
+
+                        
+Pluie prévue
+
+                        
+{pluie:.1f} mm
+
+                        
+ce jour-là
+
+                    
+""", unsafe_allow_html=True)
+
+                st.markdown("
+", unsafe_allow_html=True)
+                st.markdown("### 💡 Que faire ce jour-là ?")
+                st.markdown(f"""
+                
+
+                    
+{icone} {titre}
+
+                    
+
+                        {"".join(f"
+{c}
+" for c in conseils)}
+                    
+
+                
+""", unsafe_allow_html=True)
+            else:
+                st.warning("Données non disponibles pour cette date.")
+        else:
+            st.warning("Données de projection non disponibles.")
+
+    elif resolution == "📆 Mois par mois":
+        if df_proj is not None:
+            df_m = agreger_mensuel(df_proj)
+            st.markdown("### 📆 Sécheresse mois par mois (2025-2055)")
+            st.caption("Plus les barres sont rouges et basses, plus la sécheresse sera sévère")
+
+            def spi_color(v):
+                if v > 0: return "#44ff88"
+                elif v > -0.2: return "#ffd700"
+                elif v > -0.5: return "#FF9800"
+                else: return "#ff4444"
+
+            if "spi" in df_m.columns:
+                colors = [spi_color(v) for v in df_m["spi"]]
+                fig = go.Figure()
+                fig.add_trace(go.Bar(
+                    x=df_m["year_month"], y=df_m["spi"],
+                    marker_color=colors, name="Indice SPI"
+                ))
+                fig.add_hline(y=-0.5, line_dash="dash", line_color="red",
+                    annotation_text="⚠️ Seuil de sécheresse sévère")
+                fig.add_hline(y=-0.2, line_dash="dot", line_color="orange",
+                    annotation_text="Sécheresse modérée")
+                fig.update_layout(
+                    title=f"Évolution de la sécheresse mois par mois · {selected_commune}",
+                    template="plotly_dark", **LAYOUT,
+                    xaxis_title="Mois et Année",
+                    yaxis_title="Indice SPI (0=normal · négatif=sec)",
+                )
+                st.plotly_chart(fig, use_container_width=True)
+
+                spi_min = df_m["spi"].min()
+                spi_moy = df_m["spi"].mean()
+                mois_critiques = (df_m["spi"] < -0.5).sum()
+                c1, c2, c3 = st.columns(3)
+                c1.metric("🔴 Pire mois", f"{spi_min:.2f}")
+                c2.metric("📊 SPI moyen", f"{spi_moy:.2f}")
+                c3.metric("⚠️ Mois critiques", f"{mois_critiques}")
+            else:
+                st.warning("Colonne SPI non disponible dans les données.")
+        else:
+            st.warning("Données non disponibles.")
+
+    else:
+        if df_proj is not None:
+            df_a = agreger_annuel(df_proj)
+            st.markdown("### 📊 Évolution de la sécheresse année par année (2025-2055)")
+            st.caption("Les années en rouge sont celles où les agriculteurs devront faire très attention")
+
+            if "spi" in df_a.columns:
+                def spi_color(v):
+                    if v > 0: return "#44ff88"
+                    elif v > -0.2: return "#ffd700"
+                    elif v > -0.5: return "#FF9800"
+                    else: return "#ff4444"
+
+                colors = [spi_color(v) for v in df_a["spi"]]
+                fig = go.Figure()
+                fig.add_trace(go.Bar(
+                    x=df_a["year"], y=df_a["spi"],
+                    marker_color=colors, name="Indice SPI annuel"
+                ))
+                fig.add_hline(y=-0.5, line_dash="dash", line_color="red",
+                    annotation_text="⚠️ Seuil de sécheresse sévère")
+                fig.update_layout(
+                    title=f"Comment la sécheresse va évoluer à {selected_commune} d'ici 2055",
+                    template="plotly_dark", **LAYOUT,
+                    xaxis_title="Année",
+                    yaxis_title="Indice SPI (0=normal · négatif=sec)",
+                )
+                st.plotly_chart(fig, use_container_width=True)
+
+                c1, c2, c3 = st.columns(3)
+                c1.metric("🔴 Pire année", f"{df_a['spi'].min():.2f}")
+                c2.metric("📊 SPI en 2055", f"{df_a['spi'].iloc[-1]:.2f}",
+                          f"{df_a['spi'].iloc[-1]-df_a['spi'].iloc[0]:+.2f} vs 2025")
+                c3.metric("⚠️ Années critiques",
+                          f"{(df_a['spi'] < -0.5).sum()}")
+
+                annees_critiques = df_a[df_a["spi"] < -0.5]["year"].tolist()
+                if annees_critiques:
+                    st.markdown("### 🔴 Années de sécheresse sévère")
+                    st.markdown("Ces années-là, préparez vos semences résistantes et vos réserves d'eau :")
+                    cols = st.columns(min(len(annees_critiques), 6))
+                    for i, annee in enumerate(annees_critiques[:6]):
+                        cols[i % 6].markdown(
+                            f"
+{annee}
+",
+                            unsafe_allow_html=True)
+                else:
+                    st.success("✅ Pour ce scénario, la sécheresse reste gérable jusqu'en 2055.")
+            else:
+                st.warning("Colonne SPI non disponible dans les données.")
+        else:
+            st.warning("Données non disponibles.")
 
 elif page == "💧 Ressources en eau":
     afficher_section_hydraulique(selected_commune, selected_scenario)
