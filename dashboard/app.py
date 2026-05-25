@@ -2143,6 +2143,11 @@ elif page == "🌡️ Température":
                 for i,annee in enumerate(annees_chaudes[:6]):
                     cols[i%6].markdown(f"<div style='background:#2d0a0a;border-radius:8px;padding:10px;text-align:center;color:#ff4444;font-weight:bold;'>{annee}</div>",unsafe_allow_html=True)
             else:
+            mois_chauds = df_m[df_m["temp_max"]>=38][["year_month","temp_max"]].head(10) if "year_month" in df_m.columns else None
+            if mois_chauds is not None and not mois_chauds.empty:
+                st.markdown("### Mois les plus caniculaires (T max superieure a 38 C)")
+                for _,row in mois_chauds.iterrows():
+                    st.error(f"Mois {row[\"year_month\"]} : {row[\"temp_max\"]:.0f} C — Ne travaillez pas aux champs en journee")
                 st.success("✅ Pour ce scénario, les températures restent gérables jusqu en 2055.")
         else:
             st.warning("Données non disponibles.")
