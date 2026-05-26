@@ -1876,6 +1876,90 @@ def agreger_annuel(df):
     ).reset_index().round(2)
 
 
+def afficher_carte_forages():
+    import json, os
+    import plotly.graph_objects as go
+    import streamlit as st
+
+    path = os.path.join(os.path.dirname(__file__), "data", "forages_senegal.geojson")
+    if not os.path.exists(path):
+        path = os.path.join(os.path.dirname(__file__), "..", "data", "forages_senegal.geojson")
+    if not os.path.exists(path):
+        st.error("Fichier forages non trouve")
+        return
+
+    with open(path, encoding="utf-8") as f:
+        gj = json.load(f)
+
+    COULEURS = {
+        "Maastrichtien":   "#0D47A1",
+        "Eocene":          "#1565C0",
+        "Socle paleocene": "#1976D2",
+        "Paleocene":       "#1E88E5",
+        "Continental":     "#42A5F5",
+        "Quaternaire":     "#90CAF9",
+        "Oligo-miocene":   "#0097A7",
+        "Infrabasalt":     "#00695C",
+    }
+
+    # Regroupe par nappe
+    traces = {}
+    for feat in gj["features"]:
+        p   = feat["properties"]
+        nappe = p.get("nappe","Autre")
+        lon = feat["geometry"]["coordinates"][0]
+        lat = feat["geometry"]["coordinates"][1]
+        if nappe not in traces:
+            traces[nappe] = {"lons":[],"lats":[],"noms":[],"couleur":p.get("couleur","#4db8ff")}
+        traces[nappe]["lons"].append(lon)
+        traces[nappe]["lats"].append(lat)
+        traces[nappe]["noms"].append(p.get("nom",""))
+
+    fig = go.Figure()
+    for nappe, d in sorted(traces.items()):
+        fig.add_trace(go.Scattermapbox(
+            lon=d["lons"], lat=d["lats"],
+            mode="markers",
+            name=f"{nappe} ({len(d['lons'])})",
+            marker=dict(size=5, color=d["couleur"], opacity=0.8),
+            text=d["noms"],
+            hovertemplate="<b>%{text}</b><br>Nappe: " + nappe + "<extra></extra>",
+        ))
+
+    fig.update_layout(
+        mapbox=dict(style="open-street-map",center={"lat":14.5,"lon":-14.5},zoom=6),
+        title="Forages du Sénégal — 4218 points d eau officiels (PNADT)",
+        height=650,
+        margin={"r":0,"t":40,"l":0,"b":0},
+        paper_bgcolor="#0a0f1e",
+        font_color="#e8f4fd",
+        legend=dict(bgcolor="#0d1527",bordercolor="#2a4a7f",borderwidth=1,
+                   title=dict(text="Type de nappe")),
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Légende avec traits
+    st.markdown("### Légende — Types de nappes")
+    html = "<div style='display:flex;flex-wrap:wrap;gap:12px;padding:10px;background:#0d1527;border-radius:8px;'>"
+    for nappe, couleur in COULEURS.items():
+        nb = len(traces.get(nappe, {}).get("lons", []))
+        html += f"""<div style='display:flex;align-items:center;gap:6px;'>
+            <div style='width:12px;height:12px;border-radius:50%;background:{couleur};'></div>
+            <span style='color:#e8f4fd;font-size:13px;'>{nappe} ({nb})</span>
+        </div>"""
+    html += "</div>"
+    st.markdown(html, unsafe_allow_html=True)
+
+    # Stats
+    st.markdown("---")
+    st.markdown("### Statistiques des forages")
+    c1,c2,c3,c4 = st.columns(4)
+    c1.metric("Total forages", "4 218")
+    c2.metric("Nappe principale", "Maastrichtien")
+    c3.metric("Plus profonde", "300m (Maastrichtien)")
+    c4.metric("Plus accessible", "Quaternaire (5-20m)")
+
+
 LAYOUT = dict(paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527", font_color="#e8f4fd", margin=dict(t=40,b=20,l=10,r=10))
 
 with st.sidebar:
@@ -2418,10 +2502,17 @@ elif page == "📉 Comparaison Scénarios":
     if summary: st.dataframe(pd.DataFrame(summary),use_container_width=True)
 
 elif page == "💧 Réseau Hydraulique":
-    st.markdown("# 💧 Réseau Hydrographique du Sénégal")
-    afficher_carte_hydrographie(selected_scenario)
-    st.markdown("---")
-    afficher_section_hydraulique(selected_commune, selected_scenario)
+    st.markdown("# 💧 Ressources en Eau du Sénégal")
+    sous_page = st.radio("", ["🗺️ Réseau hydrographique","🔵 Forages officiels (4218)","📊 Ressources par commune"], horizontal=True)
+
+    if sous_page == "🗺️ Réseau hydrographique":
+        afficher_carte_hydrographie(selected_scenario)
+    elif sous_page == "🔵 Forages officiels (4218)":
+        st.markdown("### 🔵 Carte des 4218 forages officiels du Sénégal")
+        st.caption("Source : Base de données PNADT — Programme National d Aménagement du Territoire")
+        afficher_carte_forages()
+    else:
+        afficher_section_hydraulique(selected_commune, selected_scenario)
 
 elif page == "💾 Export":
     st.markdown(f"# 💾 Export — {selected_commune}")
