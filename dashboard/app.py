@@ -1985,10 +1985,37 @@ def agreger_annuel(df):
     ).reset_index().round(2)
 
 
-def afficher_carte_forages():
+@st.cache_data(ttl=3600)
+def charger_forages():
     import json, os
+    chemins = [
+        os.path.join(os.path.dirname(__file__), "data", "forages_senegal.geojson"),
+        os.path.join(os.path.dirname(__file__), "..", "data", "forages_senegal.geojson"),
+    ]
+    path = next((p for p in chemins if os.path.exists(p)), None)
+    if path is None: return None
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+@st.cache_data(ttl=3600)
+def charger_hydrographie():
+    import json, os
+    chemins = [
+        os.path.join(os.path.dirname(__file__), "..", "data", "hydrographie_sn.geojson"),
+        os.path.join(os.path.dirname(__file__), "data", "hydrographie_sn.geojson"),
+    ]
+    path = next((p for p in chemins if os.path.exists(p)), None)
+    if path is None: return None
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+def afficher_carte_forages():
     import plotly.graph_objects as go
     import streamlit as st
+    gj = charger_forages()
+    if gj is None:
+        st.error("Fichier forages non trouve")
+        return
 
     path = os.path.join(os.path.dirname(__file__), "data", "forages_senegal.geojson")
     if not os.path.exists(path):
