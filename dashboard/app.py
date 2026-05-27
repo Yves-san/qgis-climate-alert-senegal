@@ -1905,7 +1905,7 @@ def afficher_carte_hydrographie(selected_scenario):
             fig_sup.add_trace(go.Scattermapbox(
                 lon=d["lons"], lat=d["lats"], mode="markers",
                 name=f"{nappe} ({len(d['lons'])})",
-                marker=dict(size=4, color=COULEURS_NAPPE.get(nappe,"#4db8ff"), opacity=0.7),
+                marker=dict(size=7, color=COULEURS_NAPPE.get(nappe,"#4db8ff"), opacity=0.9),
                 text=d["noms"],
                 hovertemplate="<b>%{text}</b><br>" + nappe + "<extra></extra>",
             ))
