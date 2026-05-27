@@ -2012,12 +2012,12 @@ with st.sidebar:
         "🌡️ Température",
         "🌧️ Précipitations",
         "🏜️ Sécheresse",
+        "💧 Réseau Hydraulique",
         "💧 Ressources en eau",
         "🌱 Sols & Calendrier Cultural",
         "🗺️ Carte Interactive",
         "⚠️ Alertes & Conseils",
         "📉 Comparaison Scénarios",
-        "💧 Réseau Hydraulique",
         "💾 Export",
     ], label_visibility="collapsed")
     st.markdown("---")
