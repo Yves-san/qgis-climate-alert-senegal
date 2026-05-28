@@ -1960,8 +1960,9 @@ def afficher_carte_forages():
         st.error("Fichier forages non trouve")
         return
 
+    import json as _json_f
     with open(path, encoding="utf-8") as f:
-        gj = json.load(f)
+        gj = _json_f.load(f)
 
     COULEURS = {
         "Maastrichtien":   "#0D47A1",
