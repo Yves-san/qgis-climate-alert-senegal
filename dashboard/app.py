@@ -1183,7 +1183,8 @@ def afficher_section_hydraulique(commune, selected_scenario):
     st.markdown("---")
     st.markdown("### 🗺️ Carte des 4218 forages officiels du Sénégal")
     st.caption("Source : Base de données PNADT — Programme National d Aménagement du Territoire")
-    afficher_carte_forages()
+    if st.button("🗺️ Afficher la carte des forages (peut prendre quelques secondes)"):
+        afficher_carte_forages()
 
     st.markdown("### 🗺️ Carte des types d eau par commune")
     st.caption("Chaque commune est colorée selon son type d eau principal")
@@ -1857,6 +1858,9 @@ def afficher_carte_hydrographie(selected_scenario):
     st.markdown("---")
     st.markdown("### Carte superposee — Reseau hydraulique et forages")
     st.caption("Traits bleus = cours d eau. Points = 4218 forages officiels PNADT")
+    if not st.button("🗺️ Afficher la carte superposee (peut prendre quelques secondes)"):
+        st.info("Cliquez sur le bouton pour afficher la carte")
+        return
     import json as __json2
     import os as __os2
     chemin_forages = __os2.path.join(__os2.path.dirname(__file__), "data", "forages_senegal.geojson")
