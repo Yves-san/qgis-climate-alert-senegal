@@ -1960,6 +1960,8 @@ def get_bbox_commune(commune_name):
     ]
     path = next((p for p in chemins if os.path.exists(p)), None)
     if path is None:
+        import streamlit as st
+        st.error("Chemins testes: " + str(chemins))
         return None
     with open(path, encoding="utf-8") as f:
         communes = json.load(f)
