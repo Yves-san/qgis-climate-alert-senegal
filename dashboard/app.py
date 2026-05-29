@@ -1193,9 +1193,7 @@ def afficher_section_hydraulique(commune, selected_scenario):
         "🗺️ OpenStreetMap": "open-street-map",
         "🌙 Sombre (Carto)": "carto-darkmatter",
         "⬜ Clair (Carto)": "carto-positron",
-        "🏔️ Terrain (Stamen)": "stamen-terrain",
-        "🖤 Contraste (Stamen)": "stamen-toner",
-        "🎨 Aquarelle (Stamen)": "stamen-watercolor",
+        "🔵 Fond blanc": "white-bg",
     }
     _fond_choisi = st.selectbox("🗺️ Fond de carte", list(_FONDS.keys()), key="fond_carte_select")
     _style = _FONDS[_fond_choisi]
