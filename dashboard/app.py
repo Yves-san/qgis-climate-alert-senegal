@@ -1972,7 +1972,12 @@ def get_bbox_commune(commune_name):
             if geom_type == "Point":
                 lon, lat = coords
                 delta = 0.15
-                return (lon - delta, lat - delta, lon + delta, lat + delta)
+                return {
+                    "minlon": lon - delta, "maxlon": lon + delta,
+                    "minlat": lat - delta, "maxlat": lat + delta,
+                    "centerlon": lon, "centerlat": lat,
+                    "coords": [[lon-delta,lat-delta],[lon+delta,lat-delta],[lon+delta,lat+delta],[lon-delta,lat+delta]]
+                }
             if geom_type == "Polygon":
                 for ring in coords:
                     all_coords.extend(ring)
@@ -2000,10 +2005,10 @@ def afficher_carte_commune_eau(commune_name):
         return
 
     marge = 0.3
-    minlon = bbox[0] - marge
-    maxlon = bbox[2] + marge
-    minlat = bbox[1] - marge
-    maxlat = bbox[3] + marge
+    minlon = bbox["minlon"] - marge
+    maxlon = bbox["maxlon"] + marge
+    minlat = bbox["minlat"] - marge
+    maxlat = bbox["maxlat"] + marge
 
     hydro = charger_hydrographie()
     forages = charger_forages()
@@ -2082,7 +2087,7 @@ def afficher_carte_commune_eau(commune_name):
         st.metric("Forages dans la zone", nb_forages)
 
     # bbox = (minlon, minlat, maxlon, maxlat)
-    minlon, minlat, maxlon, maxlat = bbox[0], bbox[1], bbox[2], bbox[3]
+    minlon, minlat, maxlon, maxlat = bbox["minlon"], bbox["minlat"], bbox["maxlon"], bbox["maxlat"]
     lons_poly = [minlon, maxlon, maxlon, minlon, minlon]
     lats_poly = [minlat, minlat, maxlat, maxlat, minlat]
     fig.add_trace(go.Scattermapbox(
@@ -2097,7 +2102,7 @@ def afficher_carte_commune_eau(commune_name):
     fig.update_layout(
         mapbox=dict(
             style="open-street-map",
-            center={"lat": (bbox[1]+bbox[3])/2, "lon": (bbox[0]+bbox[2])/2},
+            center={"lat": (bbox["minlat"]+bbox["maxlat"])/2, "lon": (bbox["minlon"]+bbox["maxlon"])/2},
             zoom=9,
         ),
         title=f"Reseau hydraulique et forages — {commune_name}",
