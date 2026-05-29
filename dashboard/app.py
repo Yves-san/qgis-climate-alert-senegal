@@ -1954,9 +1954,9 @@ def charger_hydrographie():
 def get_bbox_commune(commune_name):
     import json, os
     chemins = [
+        os.path.join(os.path.dirname(__file__), "data", "senegal_communes.geojson"),
         os.path.join(os.path.dirname(__file__), "..", "data", "communes", "senegal_communes.geojson"),
         os.path.join(os.path.dirname(__file__), "data", "communes", "senegal_communes.geojson"),
-        "/sdcard/Documents/qgis-climate-alert-senegal/data/communes/senegal_communes.geojson",
     ]
     path = next((p for p in chemins if os.path.exists(p)), None)
     if path is None:
