@@ -2000,10 +2000,10 @@ def afficher_carte_commune_eau(commune_name):
         return
 
     marge = 0.3
-    minlon = bbox["minlon"] - marge
-    maxlon = bbox["maxlon"] + marge
-    minlat = bbox["minlat"] - marge
-    maxlat = bbox["maxlat"] + marge
+    minlon = bbox[0] - marge
+    maxlon = bbox[2] + marge
+    minlat = bbox[1] - marge
+    maxlat = bbox[3] + marge
 
     hydro = charger_hydrographie()
     forages = charger_forages()
