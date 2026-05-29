@@ -2081,11 +2081,13 @@ def afficher_carte_commune_eau(commune_name):
 
         st.metric("Forages dans la zone", nb_forages)
 
-    lons_poly = [c[0] for c in bbox["coords"]]
-    lats_poly = [c[1] for c in bbox["coords"]]
+    # bbox = (minlon, minlat, maxlon, maxlat)
+    minlon, minlat, maxlon, maxlat = bbox[0], bbox[1], bbox[2], bbox[3]
+    lons_poly = [minlon, maxlon, maxlon, minlon, minlon]
+    lats_poly = [minlat, minlat, maxlat, maxlat, minlat]
     fig.add_trace(go.Scattermapbox(
-        lon=lons_poly + [lons_poly[0]],
-        lat=lats_poly + [lats_poly[0]],
+        lon=lons_poly,
+        lat=lats_poly,
         mode="lines",
         line=dict(color="#ff4444", width=2),
         name="Limite commune",
@@ -2095,7 +2097,7 @@ def afficher_carte_commune_eau(commune_name):
     fig.update_layout(
         mapbox=dict(
             style="open-street-map",
-            center={"lat": bbox["centerlat"], "lon": bbox["centerlon"]},
+            center={"lat": (bbox[1]+bbox[3])/2, "lon": (bbox[0]+bbox[2])/2},
             zoom=9,
         ),
         title=f"Reseau hydraulique et forages — {commune_name}",
