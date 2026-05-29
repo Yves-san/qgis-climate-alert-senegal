@@ -1950,7 +1950,7 @@ def charger_hydrographie():
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=1)
 def get_bbox_commune(commune_name):
     import json, os
     chemins = [
