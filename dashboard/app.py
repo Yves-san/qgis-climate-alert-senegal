@@ -1189,8 +1189,18 @@ def afficher_section_hydraulique(commune, selected_scenario):
         _geo = json.load(_f)
     _dept_list = sorted([f["properties"]["name"] for f in _geo["features"]])
     _dept_sel = st.selectbox("🏘️ Département", _dept_list, key="eau_dept_select")
+    _FONDS = {
+        "🗺️ OpenStreetMap": "open-street-map",
+        "🌙 Sombre (Carto)": "carto-darkmatter",
+        "⬜ Clair (Carto)": "carto-positron",
+        "🏔️ Terrain (Stamen)": "stamen-terrain",
+        "🖤 Contraste (Stamen)": "stamen-toner",
+        "🎨 Aquarelle (Stamen)": "stamen-watercolor",
+    }
+    _fond_choisi = st.selectbox("🗺️ Fond de carte", list(_FONDS.keys()), key="fond_carte_select")
+    _style = _FONDS[_fond_choisi]
     if st.button("🗺️ Afficher la carte de " + _dept_sel):
-        afficher_carte_commune_eau(_dept_sel)
+        afficher_carte_commune_eau(_dept_sel, map_style=_style)
     st.markdown("---")
     st.markdown("### 🗺️ Carte des 4218 forages officiels du Sénégal")
     st.caption("Source : Base de données PNADT — Programme National d Aménagement du Territoire")
@@ -2003,7 +2013,7 @@ def get_bbox_commune(commune_name):
                 }
     return None
 
-def afficher_carte_commune_eau(commune_name):
+def afficher_carte_commune_eau(commune_name, map_style="open-street-map"):
     import plotly.graph_objects as go
     bbox = get_bbox_commune(commune_name)
     if bbox is None:
@@ -2117,22 +2127,6 @@ def afficher_carte_commune_eau(commune_name):
         hoverinfo="skip",
     ))
 
-    # Sélecteur fond de carte
-    FONDS_CARTE = {
-        "🗺️ OpenStreetMap": "open-street-map",
-        "🌙 Sombre (Carto)": "carto-darkmatter",
-        "⬜ Clair (Carto)": "carto-positron",
-        "🏔️ Terrain (Stamen)": "stamen-terrain",
-        "🖤 Contraste (Stamen)": "stamen-toner",
-        "🎨 Aquarelle (Stamen)": "stamen-watercolor",
-    }
-    fond_choisi = st.selectbox(
-        "🗺️ Fond de carte",
-        list(FONDS_CARTE.keys()),
-        key="fond_carte_select"
-    )
-    style_carte = FONDS_CARTE[fond_choisi]
-
     # Zoom adaptatif selon la taille du département
     import math
     lat_range = bbox["maxlat"] - bbox["minlat"]
@@ -2146,7 +2140,7 @@ def afficher_carte_commune_eau(commune_name):
 
     fig.update_layout(
         mapbox=dict(
-            style=style_carte,
+            style=map_style,
             center={"lat": (bbox["minlat"]+bbox["maxlat"])/2, "lon": (bbox["minlon"]+bbox["maxlon"])/2},
             zoom=zoom_auto,
         ),
