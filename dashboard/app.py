@@ -2117,6 +2117,22 @@ def afficher_carte_commune_eau(commune_name):
         hoverinfo="skip",
     ))
 
+    # Sélecteur fond de carte
+    FONDS_CARTE = {
+        "🗺️ OpenStreetMap": "open-street-map",
+        "🌙 Sombre (Carto)": "carto-darkmatter",
+        "⬜ Clair (Carto)": "carto-positron",
+        "🏔️ Terrain (Stamen)": "stamen-terrain",
+        "🖤 Contraste (Stamen)": "stamen-toner",
+        "🎨 Aquarelle (Stamen)": "stamen-watercolor",
+    }
+    fond_choisi = st.selectbox(
+        "🗺️ Fond de carte",
+        list(FONDS_CARTE.keys()),
+        key="fond_carte_select"
+    )
+    style_carte = FONDS_CARTE[fond_choisi]
+
     # Zoom adaptatif selon la taille du département
     import math
     lat_range = bbox["maxlat"] - bbox["minlat"]
@@ -2130,7 +2146,7 @@ def afficher_carte_commune_eau(commune_name):
 
     fig.update_layout(
         mapbox=dict(
-            style="open-street-map",
+            style=style_carte,
             center={"lat": (bbox["minlat"]+bbox["maxlat"])/2, "lon": (bbox["minlon"]+bbox["maxlon"])/2},
             zoom=zoom_auto,
         ),
