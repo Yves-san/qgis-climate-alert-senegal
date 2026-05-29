@@ -1181,9 +1181,14 @@ def afficher_section_hydraulique(commune, selected_scenario):
         st.plotly_chart(fig,use_container_width=True)
 
     st.markdown("---")
+    st.markdown("### 🗺️ Carte hydraulique de " + selected_commune)
+    st.caption("Reseau hydraulique + forages PNADT filtrés pour la commune selectionnee")
+    if st.button("🗺️ Afficher la carte de " + selected_commune):
+        afficher_carte_commune_eau(selected_commune)
+    st.markdown("---")
     st.markdown("### 🗺️ Carte des 4218 forages officiels du Sénégal")
     st.caption("Source : Base de données PNADT — Programme National d Aménagement du Territoire")
-    if st.button("🗺️ Afficher la carte des forages (peut prendre quelques secondes)"):
+    if st.button("🗺️ Afficher tous les forages du Senegal"):
         afficher_carte_forages()
 
     st.markdown("### 🗺️ Carte des types d eau par commune")
