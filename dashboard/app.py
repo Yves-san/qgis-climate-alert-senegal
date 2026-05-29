@@ -1969,6 +1969,10 @@ def get_bbox_commune(commune_name):
             coords = feat["geometry"]["coordinates"]
             geom_type = feat["geometry"]["type"]
             all_coords = []
+            if geom_type == "Point":
+                lon, lat = coords
+                delta = 0.15
+                return (lon - delta, lat - delta, lon + delta, lat + delta)
             if geom_type == "Polygon":
                 for ring in coords:
                     all_coords.extend(ring)
