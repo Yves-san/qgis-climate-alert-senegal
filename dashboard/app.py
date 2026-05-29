@@ -2797,7 +2797,7 @@ elif page == "💧 Réseau Hydraulique":
         afficher_carte_forages()
     else:
         import json, os
-        _path2 = os.path.join(os.path.dirname("dashboard/app.py"), "dashboard", "data", "senegal_communes.geojson")
+        _path2 = os.path.join(os.path.dirname(__file__), "data", "senegal_communes.geojson")
         with open(_path2, encoding="utf-8") as _f2:
             _geo2 = json.load(_f2)
         _dept_list2 = sorted([f["properties"]["name"] for f in _geo2["features"]])
