@@ -1966,6 +1966,34 @@ def charger_hydrographie():
 
 def get_bbox_commune(commune_name):
     import json, os
+    MAPPING = {
+        'Mbacke': 'Mbacke',
+        'Kedougou': 'Kedougou',
+        'Salemata': 'Salekata',
+        'Medina Yoro Fula': 'Medina Yoro Foulah',
+        'Velingara': 'Velingara',
+        'Kebemer': 'Kebemer',
+        'Linguere': 'Linguere',
+        'Sedhiou': 'Sedhiou',
+        'Mekhe': 'Mekhe',
+        'Thies': 'Thies',
+        'Guediawaye': 'Guediawaye',
+    }
+    commune_name = MAPPING.get(commune_name, commune_name)
+    MAPPING = {
+        'Mbacke': 'Mbacke',
+        'Kedougou': 'Kedougou',
+        'Salemata': 'Salekata',
+        'Medina Yoro Fula': 'Medina Yoro Foulah',
+        'Velingara': 'Velingara',
+        'Kebemer': 'Kebemer',
+        'Linguere': 'Linguere',
+        'Sedhiou': 'Sedhiou',
+        'Mekhe': 'Mekhe',
+        'Thies': 'Thies',
+        'Guediawaye': 'Guediawaye',
+    }
+    commune_name = MAPPING.get(commune_name, commune_name)
     chemins = [
         os.path.join(os.path.dirname(__file__), "data", "senegal_communes.geojson"),
         os.path.join(os.path.dirname(__file__), "..", "data", "communes", "senegal_communes.geojson"),
