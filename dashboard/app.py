@@ -1881,6 +1881,20 @@ import os as _os
 
 @st.cache_data(ttl=300)
 def get_projections(commune, scenario):
+    MAPPING = {
+        'Kebemer': 'Kébémer',
+        'Kedougou': 'Kédougou',
+        'Linguere': 'Linguère',
+        'Mbacke': 'Mbacké',
+        'Medina Yoro Fula': 'Médina Yoro Foulah',
+        'Mekhe': 'Mékhe',
+        'Salemata': 'Salékata',
+        'Sedhiou': 'Sédhiou',
+        'Thies': 'Thiès',
+        'Velingara': 'Vélingara',
+        'Guediawaye': 'Guédiawaye',
+    }
+    commune = MAPPING.get(commune, commune)
     """Charge les projections journalières 2025-2055"""
     # Cherche le fichier dans plusieurs emplacements possibles
     chemins = [
