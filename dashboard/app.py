@@ -29,6 +29,37 @@ st.markdown("""
     .alert-low      { background:#0a2d1a; border-left:4px solid #44ff88; padding:12px; border-radius:6px; margin:6px 0; }
     .info-card { background:#0d1e3d; border:1px solid #2a4a7f; border-radius:8px; padding:12px; margin:6px 0; }
     h1,h2,h3 { color:#e8f4fd !important; }
+
+    /* ===== RESPONSIVE MOBILE ===== */
+    @media (max-width: 768px) {
+        /* Graphiques pleine largeur */
+        .js-plotly-plot, .plotly, .plot-container {
+            width: 100% !important;
+            min-width: 0 !important;
+        }
+        /* Colonnes empilées sur mobile */
+        [data-testid="column"] {
+            width: 100% !important;
+            flex: 1 1 100% !important;
+            min-width: 100% !important;
+        }
+        /* Titres plus petits sur mobile */
+        h1 { font-size: 1.6rem !important; }
+        h2 { font-size: 1.3rem !important; }
+        h3 { font-size: 1.1rem !important; }
+        /* Métriques adaptées */
+        .metric-value { font-size: 1.4rem !important; }
+        .metric-card { padding: 12px !important; }
+        /* Sidebar plus étroite */
+        [data-testid="stSidebar"] { min-width: 200px !important; }
+    }
+    /* Cartes Plotly toujours pleine largeur */
+    .stPlotlyChart {
+        width: 100% !important;
+    }
+    .stPlotlyChart > div {
+        width: 100% !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
