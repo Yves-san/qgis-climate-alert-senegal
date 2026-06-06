@@ -1892,7 +1892,7 @@ def get_projections(commune, scenario):
         'Sedhiou': 'Sédhiou',
         'Thies': 'Thiès',
         'Velingara': 'Vélingara',
-        'Guediawaye': 'Guédiawaye',
+        'Guediawaye': 'Guediawaye',
     }
     commune = MAPPING.get(commune, commune)
     """Charge les projections journalières 2025-2055"""
@@ -2766,7 +2766,7 @@ elif page == "🗺️ Carte Interactive":
     NOM_MAP = {
         'Thies': 'Thiès', 'Kebemer': 'Kébémer', 'Kedougou': 'Kédougou',
         'Linguere': 'Linguère', 'Mbacke': 'Mbacké', 'Sedhiou': 'Sédhiou',
-        'Guediawaye': 'Guédiawaye', 'Medina Yoro Fula': 'Médina Yoro Foulah',
+        'Guediawaye': 'Guediawaye', 'Medina Yoro Fula': 'Médina Yoro Foulah',
         'Velingara': 'Vélingara', 'Ranérou': 'Ranérou',
         'Bargny': 'Rufisque', 'Khombole': 'Thiès',
         'Mekhe': 'Tivaouane', 'Richard-Toll': 'Dagana',
