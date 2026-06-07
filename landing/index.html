@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORACLE AI — Plateforme Prédictive Climatique Sénégal</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --blue:#00d4ff;
+  --blue2:#0066ff;
+  --green:#00ff88;
+  --orange:#ff6b00;
+  --red:#ff2244;
+  --dark:#010a14;
+  --dark2:#021020;
+  --glass:rgba(0,212,255,0.05);
+  --border:rgba(0,212,255,0.2);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--dark);
+  color:#fff;
+  font-family:'Rajdhani',sans-serif;
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* Custom cursor */
+#cursor{
+  width:12px;height:12px;
+  background:var(--blue);
+  border-radius:50%;
+  position:fixed;top:0;left:0;
+  pointer-events:none;
+  z-index:9999;
+  transition:transform 0.1s;
+  mix-blend-mode:screen;
+}
+#cursor-ring{
+  width:36px;height:36px;
+  border:1px solid var(--blue);
+  border-radius:50%;
+  position:fixed;top:0;left:0;
+  pointer-events:none;
+  z-index:9998;
+  transition:transform 0.15s, opacity 0.15s;
+  opacity:0.5;
+}
+
+/* Canvas particles */
+#particles{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  z-index:0;
+  pointer-events:none;
+}
+
+/* Grid lines background */
+.grid-bg{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size:60px 60px;
+  z-index:0;
+  pointer-events:none;
+}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 60px;
+  background:rgba(1,10,20,0.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-family:'Orbitron',sans-serif;
+  font-size:22px;font-weight:900;
+  color:var(--blue);
+  letter-spacing:4px;
+  text-shadow:0 0 20px rgba(0,212,255,0.5);
+}
+.nav-logo span{color:#fff}
+.nav-links{display:flex;gap:40px}
+.nav-links a{
+  font-size:13px;letter-spacing:2px;
+  color:rgba(255,255,255,0.6);
+  text-decoration:none;
+  text-transform:uppercase;
+  transition:color 0.3s;
+}
+.nav-links a:hover{color:var(--blue)}
+.nav-btn{
+  background:transparent;
+  border:1px solid var(--blue);
+  color:var(--blue);
+  padding:10px 28px;
+  font-family:'Rajdhani',sans-serif;
+  font-size:13px;letter-spacing:2px;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all 0.3s;
+  text-decoration:none;
+  display:inline-block;
+}
+.nav-btn:hover{background:var(--blue);color:#000}
+
+/* HERO */
+#hero{
+  position:relative;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  z-index:1;
+  overflow:hidden;
+}
+.hero-content{
+  text-align:center;
+  z-index:2;
+  position:relative;
+}
+.hero-tag{
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;letter-spacing:4px;
+  color:var(--blue);
+  margin-bottom:24px;
+  opacity:0;
+  animation:fadeUp 0.8s 0.5s forwards;
+}
+.hero-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(60px,10vw,120px);
+  font-weight:900;
+  line-height:1;
+  letter-spacing:-2px;
+  margin-bottom:8px;
+  opacity:0;
+  animation:fadeUp 0.8s 0.7s forwards;
+}
+.hero-title .o1{color:var(--blue);text-shadow:0 0 40px rgba(0,212,255,0.6)}
+.hero-title .o2{color:#fff}
+.hero-sub{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(14px,2.5vw,22px);
+  font-weight:400;
+  letter-spacing:8px;
+  color:rgba(255,255,255,0.5);
+  margin-bottom:16px;
+  opacity:0;
+  animation:fadeUp 0.8s 0.9s forwards;
+}
+.hero-desc{
+  font-size:18px;
+  color:rgba(255,255,255,0.6);
+  max-width:600px;
+  margin:0 auto 48px;
+  line-height:1.8;
+  opacity:0;
+  animation:fadeUp 0.8s 1.1s forwards;
+}
+.hero-cta{
+  display:flex;gap:20px;justify-content:center;flex-wrap:wrap;
+  opacity:0;
+  animation:fadeUp 0.8s 1.3s forwards;
+}
+.btn-primary{
+  position:relative;
+  background:var(--blue);
+  color:#000;
+  padding:16px 48px;
+  font-family:'Orbitron',sans-serif;
+  font-size:13px;font-weight:700;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  border:none;cursor:pointer;
+  text-decoration:none;
+  display:inline-block;
+  overflow:hidden;
+  transition:all 0.3s;
+}
+.btn-primary::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(45deg,transparent 30%,rgba(255,255,255,0.3) 50%,transparent 70%);
+  transform:translateX(-100%);
+  transition:transform 0.6s;
+}
+.btn-primary:hover::before{transform:translateX(100%)}
+.btn-primary:hover{box-shadow:0 0 40px rgba(0,212,255,0.6);transform:translateY(-2px)}
+.btn-secondary{
+  background:transparent;
+  color:#fff;
+  padding:16px 48px;
+  font-family:'Orbitron',sans-serif;
+  font-size:13px;font-weight:700;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  border:1px solid rgba(255,255,255,0.3);
+  cursor:pointer;text-decoration:none;
+  display:inline-block;
+  transition:all 0.3s;
+}
+.btn-secondary:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-2px)}
+
+/* Senegal SVG map */
+.map-wrapper{
+  position:absolute;
+  right:-100px;top:50%;
+  transform:translateY(-50%);
+  width:500px;height:500px;
+  opacity:0;
+  animation:mapReveal 2s 1.5s forwards;
+  z-index:1;
+}
+@keyframes mapReveal{
+  0%{opacity:0;transform:translateY(-50%) scale(0.8)}
+  100%{opacity:0.15;transform:translateY(-50%) scale(1)}
+}
+.map-wrapper svg{width:100%;height:100%}
+
+/* Scroll indicator */
+.scroll-hint{
+  position:absolute;bottom:40px;left:50%;
+  transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;
+  gap:8px;
+  opacity:0;
+  animation:fadeUp 0.8s 2s forwards;
+  z-index:2;
+}
+.scroll-hint span{
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:3px;
+  color:rgba(255,255,255,0.3);
+}
+.scroll-line{
+  width:1px;height:60px;
+  background:linear-gradient(to bottom,var(--blue),transparent);
+  animation:scrollDown 2s infinite;
+}
+@keyframes scrollDown{
+  0%{transform:scaleY(0);transform-origin:top}
+  50%{transform:scaleY(1);transform-origin:top}
+  51%{transform:scaleY(1);transform-origin:bottom}
+  100%{transform:scaleY(0);transform-origin:bottom}
+}
+
+/* STATS */
+#stats{
+  position:relative;z-index:1;
+  padding:60px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:1px;
+  background:var(--border);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.stat{
+  background:var(--dark);
+  padding:40px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.stat::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg,transparent,var(--blue),transparent);
+  animation:scanLine 3s infinite;
+  opacity:0;
+}
+.stat:nth-child(2)::before{animation-delay:0.5s}
+.stat:nth-child(3)::before{animation-delay:1s}
+.stat:nth-child(4)::before{animation-delay:1.5s}
+.stat-initialized::before{opacity:1}
+@keyframes scanLine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.stat-num{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(32px,5vw,56px);
+  font-weight:900;
+  color:var(--blue);
+  display:block;
+  text-shadow:0 0 20px rgba(0,212,255,0.4);
+}
+.stat-label{
+  font-size:12px;
+  letter-spacing:3px;
+  color:rgba(255,255,255,0.4);
+  text-transform:uppercase;
+  margin-top:8px;
+  display:block;
+}
+
+/* MODULES */
+#modules{
+  position:relative;z-index:1;
+  padding:120px 60px;
+  max-width:1400px;
+  margin:0 auto;
+}
+.section-header{
+  text-align:center;
+  margin-bottom:80px;
+}
+.section-tag{
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:4px;
+  color:var(--blue);
+  margin-bottom:16px;
+  display:block;
+}
+.section-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(28px,4vw,48px);
+  font-weight:700;
+  line-height:1.2;
+  margin-bottom:16px;
+}
+.section-sub{
+  font-size:16px;
+  color:rgba(255,255,255,0.5);
+  max-width:500px;
+  margin:0 auto;
+  line-height:1.8;
+}
+.modules-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:2px;
+  background:var(--border);
+  border:1px solid var(--border);
+}
+.module-card{
+  background:var(--dark2);
+  padding:50px 40px;
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
+  transition:background 0.3s;
+}
+.module-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:var(--mod-color,var(--blue));
+  opacity:0;
+  transition:opacity 0.3s;
+}
+.module-card:hover{background:rgba(0,212,255,0.03)}
+.module-card:hover::before{opacity:0.03}
+.module-icon{
+  font-size:48px;
+  margin-bottom:24px;
+  display:block;
+  position:relative;z-index:1;
+}
+.module-name{
+  font-family:'Orbitron',sans-serif;
+  font-size:13px;font-weight:700;
+  letter-spacing:4px;
+  color:var(--mod-color,var(--blue));
+  text-transform:uppercase;
+  margin-bottom:8px;
+  position:relative;z-index:1;
+}
+.module-title{
+  font-size:22px;font-weight:600;
+  margin-bottom:16px;
+  position:relative;z-index:1;
+}
+.module-desc{
+  font-size:15px;line-height:1.8;
+  color:rgba(255,255,255,0.5);
+  position:relative;z-index:1;
+}
+.module-bar{
+  position:absolute;left:0;top:0;bottom:0;
+  width:3px;
+  background:var(--mod-color,var(--blue));
+  transform:scaleY(0);
+  transform-origin:bottom;
+  transition:transform 0.4s;
+}
+.module-card:hover .module-bar{transform:scaleY(1)}
+.module-corner{
+  position:absolute;bottom:20px;right:20px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:2px;
+  color:rgba(255,255,255,0.15);
+}
+.m1{--mod-color:#00d4ff}
+.m2{--mod-color:#00ff88}
+.m3{--mod-color:#ff6b00}
+.m4{--mod-color:#ff2244}
+
+/* MAP SECTION */
+#map-section{
+  position:relative;z-index:1;
+  padding:120px 60px;
+  background:var(--dark2);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.map-section-inner{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:80px;align-items:center;
+}
+.map-info{order:1}
+.map-visual{order:2;display:flex;justify-content:center}
+.senegal-map-container{
+  position:relative;
+  width:400px;height:400px;
+}
+.senegal-svg{
+  width:100%;height:100%;
+  filter:drop-shadow(0 0 20px rgba(0,212,255,0.3));
+}
+.dept-dot{
+  animation:deptPulse 2s infinite;
+  animation-delay:var(--delay,0s);
+}
+@keyframes deptPulse{
+  0%,100%{opacity:0.6}
+  50%{opacity:1}
+}
+.map-info-list{
+  list-style:none;
+  margin-top:40px;
+}
+.map-info-list li{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 0;
+  border-bottom:1px solid var(--border);
+  font-size:15px;color:rgba(255,255,255,0.6);
+}
+.map-info-list li span:first-child{
+  font-family:'Orbitron',sans-serif;
+  font-size:20px;font-weight:700;
+  color:var(--blue);
+  min-width:60px;
+}
+
+/* TECH SECTION */
+#tech{
+  position:relative;z-index:1;
+  padding:120px 60px;
+  max-width:1400px;margin:0 auto;
+}
+.tech-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+  margin-top:60px;
+}
+.tech-item{
+  border:1px solid var(--border);
+  padding:32px 24px;
+  text-align:center;
+  transition:all 0.3s;
+  background:var(--glass);
+}
+.tech-item:hover{
+  border-color:var(--blue);
+  background:rgba(0,212,255,0.05);
+  transform:translateY(-4px);
+}
+.tech-icon{font-size:32px;margin-bottom:12px;display:block}
+.tech-name{
+  font-family:'Orbitron',sans-serif;
+  font-size:11px;letter-spacing:2px;
+  color:var(--blue);margin-bottom:8px;
+}
+.tech-desc{font-size:13px;color:rgba(255,255,255,0.4);line-height:1.6}
+
+/* CTA SECTION */
+#cta{
+  position:relative;z-index:1;
+  padding:120px 60px;
+  text-align:center;
+  background:var(--dark2);
+  border-top:1px solid var(--border);
+  overflow:hidden;
+}
+.cta-glow{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(0,212,255,0.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.cta-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(28px,4vw,56px);
+  font-weight:900;
+  line-height:1.2;
+  margin-bottom:24px;
+  position:relative;z-index:1;
+}
+.cta-sub{
+  font-size:18px;
+  color:rgba(255,255,255,0.5);
+  max-width:500px;
+  margin:0 auto 48px;
+  line-height:1.8;
+  position:relative;z-index:1;
+}
+
+/* FOOTER */
+footer{
+  position:relative;z-index:1;
+  padding:40px 60px;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:20px;
+}
+.footer-logo{
+  font-family:'Orbitron',sans-serif;
+  font-size:16px;font-weight:900;
+  color:var(--blue);letter-spacing:3px;
+}
+.footer-copy{
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:2px;
+  color:rgba(255,255,255,0.3);
+}
+.footer-links{display:flex;gap:30px}
+.footer-links a{
+  font-size:12px;letter-spacing:2px;
+  color:rgba(255,255,255,0.3);
+  text-decoration:none;
+  text-transform:uppercase;
+  transition:color 0.3s;
+}
+.footer-links a:hover{color:var(--blue)}
+
+/* Animations */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.reveal{
+  opacity:0;transform:translateY(40px);
+  transition:opacity 0.8s, transform 0.8s;
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* Scanline overlay */
+.scanlines{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events:none;
+  z-index:50;
+}
+
+/* Loading screen */
+#loader{
+  position:fixed;inset:0;
+  background:var(--dark);
+  z-index:1000;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:24px;
+  transition:opacity 0.8s, visibility 0.8s;
+}
+#loader.hidden{opacity:0;visibility:hidden}
+.loader-text{
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;letter-spacing:4px;
+  color:var(--blue);
+}
+.loader-bar-bg{
+  width:300px;height:2px;
+  background:rgba(0,212,255,0.1);
+  position:relative;
+  overflow:hidden;
+}
+.loader-bar{
+  height:100%;
+  background:var(--blue);
+  box-shadow:0 0 10px rgba(0,212,255,0.8);
+  width:0%;
+  transition:width 0.1s;
+}
+.loader-logo{
+  font-family:'Orbitron',sans-serif;
+  font-size:48px;font-weight:900;
+  color:var(--blue);
+  letter-spacing:8px;
+  text-shadow:0 0 40px rgba(0,212,255,0.8);
+  animation:glitch 0.5s infinite;
+}
+@keyframes glitch{
+  0%,90%,100%{text-shadow:0 0 40px rgba(0,212,255,0.8)}
+  92%{text-shadow:-2px 0 rgba(255,0,100,0.8),2px 0 rgba(0,212,255,0.8)}
+  96%{text-shadow:2px 0 rgba(255,0,100,0.8),-2px 0 rgba(0,212,255,0.8)}
+}
+
+@media(max-width:768px){
+  nav{padding:16px 24px}
+  .nav-links{display:none}
+  #hero,#modules,#map-section,#tech,#cta{padding:80px 24px}
+  #stats{padding:0;grid-template-columns:1fr 1fr}
+  .stat{padding:30px 20px}
+  .map-section-inner{grid-template-columns:1fr;gap:40px}
+  .map-visual{order:1}
+  .senegal-map-container{width:280px;height:280px}
+  footer{padding:30px 24px;flex-direction:column;text-align:center}
+  .footer-links{flex-wrap:wrap;justify-content:center}
+  .map-wrapper{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="loader-logo">ORACLE</div>
+  <div class="loader-text" id="loader-msg">INITIALISATION SYSTÈME...</div>
+  <div class="loader-bar-bg"><div class="loader-bar" id="loader-bar"></div></div>
+</div>
+
+<div class="scanlines"></div>
+<div class="grid-bg"></div>
+<canvas id="particles"></canvas>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<nav>
+  <div class="nav-logo">ORACLE <span>AI</span></div>
+  <div class="nav-links">
+    <a href="#modules">Modules</a>
+    <a href="#map-section">Couverture</a>
+    <a href="#tech">Technologies</a>
+  </div>
+  <a href="https://alerte-climatique-senegal-2025-2055.streamlit.app" class="nav-btn" target="_blank">Accéder →</a>
+</nav>
+
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-tag">// SYSTÈME D'INTELLIGENCE CLIMATIQUE — SÉNÉGAL 2025–2055</div>
+    <h1 class="hero-title">
+      <span class="o1">ORACLE</span><span class="o2"> AI</span>
+    </h1>
+    <div class="hero-sub">PLATEFORME PRÉDICTIVE CLIMATIQUE</div>
+    <p class="hero-desc">
+      4 modules intégrés. 46 départements. 30 ans de projections climatiques.<br>
+      Powered by CMIP6 — SSP1.9 · SSP2.4.5 · SSP5.8.5
+    </p>
+    <div class="hero-cta">
+      <a href="https://alerte-climatique-senegal-2025-2055.streamlit.app" class="btn-primary" target="_blank">ACCÉDER À LA PLATEFORME</a>
+      <a href="#modules" class="btn-secondary">DÉCOUVRIR</a>
+    </div>
+  </div>
+
+  <!-- Senegal silhouette background -->
+  <div class="map-wrapper">
+    <svg viewBox="0 0 400 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60,40 L80,30 L120,25 L160,20 L200,18 L240,22 L280,28 L320,35 L350,45 L370,60 L375,80 L370,100 L360,120 L345,140 L330,155 L310,165 L290,170 L270,175 L260,185 L250,200 L240,215 L225,225 L210,230 L195,235 L180,240 L165,245 L150,250 L135,255 L120,258 L105,255 L90,248 L75,238 L65,225 L55,210 L45,195 L38,178 L35,160 L32,140 L33,120 L38,100 L45,80 L52,60 Z"
+        stroke="#00d4ff" stroke-width="1.5" fill="rgba(0,212,255,0.05)"
+        stroke-dasharray="5 3">
+        <animate attributeName="stroke-dashoffset" from="0" to="200" dur="8s" repeatCount="indefinite"/>
+      </path>
+      <!-- Department dots -->
+      <circle cx="200" cy="100" r="3" fill="#00d4ff" opacity="0.8" style="--delay:0s" class="dept-dot"/>
+      <circle cx="160" cy="80" r="2.5" fill="#00d4ff" opacity="0.6" style="--delay:0.3s" class="dept-dot"/>
+      <circle cx="240" cy="90" r="2.5" fill="#00d4ff" opacity="0.7" style="--delay:0.6s" class="dept-dot"/>
+      <circle cx="180" cy="130" r="2" fill="#00ff88" opacity="0.6" style="--delay:0.9s" class="dept-dot"/>
+      <circle cx="220" cy="140" r="2" fill="#00ff88" opacity="0.5" style="--delay:1.2s" class="dept-dot"/>
+      <circle cx="140" cy="110" r="2" fill="#00d4ff" opacity="0.5" style="--delay:1.5s" class="dept-dot"/>
+      <circle cx="280" cy="120" r="2.5" fill="#ff6b00" opacity="0.6" style="--delay:1.8s" class="dept-dot"/>
+      <circle cx="100" cy="130" r="2" fill="#00d4ff" opacity="0.4" style="--delay:2.1s" class="dept-dot"/>
+      <circle cx="300" cy="100" r="2" fill="#00d4ff" opacity="0.5" style="--delay:2.4s" class="dept-dot"/>
+      <circle cx="170" cy="160" r="2" fill="#ff2244" opacity="0.6" style="--delay:2.7s" class="dept-dot"/>
+      <circle cx="130" cy="170" r="2" fill="#00d4ff" opacity="0.4" style="--delay:0.5s" class="dept-dot"/>
+      <circle cx="250" cy="165" r="2" fill="#00ff88" opacity="0.5" style="--delay:1.0s" class="dept-dot"/>
+      <!-- Lines between dots -->
+      <line x1="200" y1="100" x2="160" y2="80" stroke="#00d4ff" stroke-width="0.5" opacity="0.2"/>
+      <line x1="200" y1="100" x2="240" y2="90" stroke="#00d4ff" stroke-width="0.5" opacity="0.2"/>
+      <line x1="200" y1="100" x2="180" y2="130" stroke="#00d4ff" stroke-width="0.5" opacity="0.2"/>
+      <line x1="180" y1="130" x2="220" y2="140" stroke="#00d4ff" stroke-width="0.5" opacity="0.2"/>
+      <line x1="160" y1="80" x2="140" y2="110" stroke="#00d4ff" stroke-width="0.5" opacity="0.2"/>
+      <line x1="240" y1="90" x2="280" y2="120" stroke="#00d4ff" stroke-width="0.5" opacity="0.15"/>
+    </svg>
+  </div>
+
+  <div class="scroll-hint">
+    <span>DÉFILER</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div id="stats">
+  <div class="stat">
+    <span class="stat-num" data-target="46" data-suffix="">0</span>
+    <span class="stat-label">Départements couverts</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num" data-target="4218" data-suffix="">0</span>
+    <span class="stat-label">Forages PNADT</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num" data-target="30" data-suffix=" ans">0</span>
+    <span class="stat-label">Horizon de projection</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num" data-target="3" data-suffix="">0</span>
+    <span class="stat-label">Scénarios CMIP6</span>
+  </div>
+</div>
+
+<!-- MODULES -->
+<section id="modules">
+  <div class="section-header reveal">
+    <span class="section-tag">// ARCHITECTURE MODULAIRE</span>
+    <h2 class="section-title">4 Modules Intégrés</h2>
+    <p class="section-sub">Chaque module couvre un domaine critique du changement climatique au Sénégal</p>
+  </div>
+
+  <div class="modules-grid">
+    <div class="module-card m1 reveal">
+      <div class="module-bar"></div>
+      <span class="module-icon">🌡️</span>
+      <div class="module-name">Oracle Climat</div>
+      <h3 class="module-title">Températures & Précipitations</h3>
+      <p class="module-desc">Projections journalières 2025–2055. Évolution des températures, déficit pluviométrique, stress thermique par commune.</p>
+      <div class="module-corner">MOD-01</div>
+    </div>
+    <div class="module-card m2 reveal" style="transition-delay:0.1s">
+      <div class="module-bar"></div>
+      <span class="module-icon">💧</span>
+      <div class="module-name">Oracle Eau</div>
+      <h3 class="module-title">Ressources Hydrauliques</h3>
+      <p class="module-desc">4218 forages PNADT géolocalisés. Réseau hydrographique. Nappes souterraines. Risques de pénurie d'eau.</p>
+      <div class="module-corner">MOD-02</div>
+    </div>
+    <div class="module-card m3 reveal" style="transition-delay:0.2s">
+      <div class="module-bar"></div>
+      <span class="module-icon">🌱</span>
+      <div class="module-name">Oracle Agri</div>
+      <h3 class="module-title">Agriculture & Calendrier Cultural</h3>
+      <p class="module-desc">Calendriers de semis adaptés. Types de sols par département. Impact climatique sur les cultures traditionnelles.</p>
+      <div class="module-corner">MOD-03</div>
+    </div>
+    <div class="module-card m4 reveal" style="transition-delay:0.3s">
+      <div class="module-bar"></div>
+      <span class="module-icon">⚠️</span>
+      <div class="module-name">Oracle Alert</div>
+      <h3 class="module-title">Alertes & Conseils</h3>
+      <p class="module-desc">Alertes automatiques chaleur extrême, sécheresse critique. Conseils personnalisés pour agriculteurs et éleveurs.</p>
+      <div class="module-corner">MOD-04</div>
+    </div>
+  </div>
+</section>
+
+<!-- MAP SECTION -->
+<section id="map-section">
+  <div class="map-section-inner">
+    <div class="map-info reveal">
+      <span class="section-tag">// COUVERTURE GÉOGRAPHIQUE</span>
+      <h2 class="section-title" style="font-size:clamp(24px,3vw,40px)">Tout le Sénégal,<br>département par département</h2>
+      <ul class="map-info-list">
+        <li><span>46</span> départements avec données climatiques complètes</li>
+        <li><span>3</span> scénarios d'émissions SSP1.9 · SSP2.4.5 · SSP5.8.5</li>
+        <li><span>31</span> années de projections 2025 → 2055</li>
+        <li><span>GPS</span> Détection automatique de votre position</li>
+      </ul>
+    </div>
+    <div class="map-visual reveal" style="transition-delay:0.2s">
+      <div class="senegal-map-container">
+        <svg class="senegal-svg" viewBox="0 0 400 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Sénégal shape approximatif -->
+          <path d="M55,45 C70,30 100,20 140,15 C180,10 220,12 260,18 C300,24 335,35 355,52 C375,68 382,88 378,110 C374,132 362,150 345,165 C328,180 308,190 288,198 C268,206 258,215 248,228 C238,241 225,252 210,260 C195,268 178,272 162,275 C146,278 130,278 115,273 C100,268 85,258 73,244 C61,230 50,212 43,192 C36,172 33,150 33,128 C33,106 37,84 44,66 Z"
+            stroke="#00d4ff" stroke-width="1.5" fill="rgba(0,212,255,0.04)"
+            stroke-dasharray="8 4" filter="url(#glow)">
+            <animate attributeName="stroke-dashoffset" from="0" to="-400" dur="15s" repeatCount="indefinite"/>
+          </path>
+
+          <!-- Intérieur du pays rempli légèrement -->
+          <path d="M55,45 C70,30 100,20 140,15 C180,10 220,12 260,18 C300,24 335,35 355,52 C375,68 382,88 378,110 C374,132 362,150 345,165 C328,180 308,190 288,198 C268,206 258,215 248,228 C238,241 225,252 210,260 C195,268 178,272 162,275 C146,278 130,278 115,273 C100,268 85,258 73,244 C61,230 50,212 43,192 C36,172 33,150 33,128 C33,106 37,84 44,66 Z"
+            fill="rgba(0,212,255,0.02)"/>
+
+          <!-- Lignes de département internes (simplifiées) -->
+          <line x1="140" y1="15" x2="140" y2="275" stroke="rgba(0,212,255,0.1)" stroke-width="0.5"/>
+          <line x1="220" y1="12" x2="210" y2="260" stroke="rgba(0,212,255,0.1)" stroke-width="0.5"/>
+          <line x1="33" y1="128" x2="382" y2="110" stroke="rgba(0,212,255,0.08)" stroke-width="0.5"/>
+          <line x1="40" y1="170" x2="345" y2="155" stroke="rgba(0,212,255,0.08)" stroke-width="0.5"/>
+
+          <!-- Points départements animés -->
+          <g filter="url(#glow)">
+            <!-- Dakar zone -->
+            <circle cx="68" cy="145" r="5" fill="#00d4ff" opacity="0.9">
+              <animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.9;0.4;0.9" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <text x="80" y="142" fill="#00d4ff" font-size="9" font-family="'Share Tech Mono'" opacity="0.8">DAKAR</text>
+
+            <!-- Saint-Louis -->
+            <circle cx="120" cy="35" r="4" fill="#00d4ff" opacity="0.7">
+              <animate attributeName="r" values="3;5;3" dur="2.5s" repeatCount="indefinite" begin="0.5s"/>
+            </circle>
+            <text x="130" y="38" fill="rgba(0,212,255,0.7)" font-size="8" font-family="'Share Tech Mono'">ST-LOUIS</text>
+
+            <!-- Thiès -->
+            <circle cx="115" cy="130" r="3.5" fill="#00ff88" opacity="0.8">
+              <animate attributeName="r" values="3;5;3" dur="3s" repeatCount="indefinite" begin="1s"/>
+            </circle>
+            <text x="126" y="133" fill="rgba(0,255,136,0.7)" font-size="8" font-family="'Share Tech Mono'">THIÈS</text>
+
+            <!-- Kaolack -->
+            <circle cx="175" cy="185" r="3.5" fill="#00ff88" opacity="0.7">
+              <animate attributeName="r" values="3;5;3" dur="2.8s" repeatCount="indefinite" begin="1.5s"/>
+            </circle>
+            <text x="186" y="188" fill="rgba(0,255,136,0.6)" font-size="8" font-family="'Share Tech Mono'">KAOLACK</text>
+
+            <!-- Tambacounda -->
+            <circle cx="285" cy="175" r="4" fill="#ff6b00" opacity="0.8">
+              <animate attributeName="r" values="3;6;3" dur="3.2s" repeatCount="indefinite" begin="0.8s"/>
+            </circle>
+            <text x="230" y="172" fill="rgba(255,107,0,0.7)" font-size="8" font-family="'Share Tech Mono'">TAMBA</text>
+
+            <!-- Ziguinchor -->
+            <circle cx="100" cy="255" r="3.5" fill="#ff2244" opacity="0.8">
+              <animate attributeName="r" values="3;5;3" dur="2.6s" repeatCount="indefinite" begin="2s"/>
+            </circle>
+            <text x="112" y="258" fill="rgba(255,34,68,0.7)" font-size="8" font-family="'Share Tech Mono'">ZIGCHOR</text>
+
+            <!-- Kédougou -->
+            <circle cx="310" cy="240" r="3.5" fill="#ff6b00" opacity="0.7">
+              <animate attributeName="r" values="3;5;3" dur="3.5s" repeatCount="indefinite" begin="1.2s"/>
+            </circle>
+            <text x="255" y="243" fill="rgba(255,107,0,0.6)" font-size="8" font-family="'Share Tech Mono'">KÉDOUGOU</text>
+
+            <!-- Matam -->
+            <circle cx="270" cy="75" r="3.5" fill="#00d4ff" opacity="0.7">
+              <animate attributeName="r" values="3;5;3" dur="2.9s" repeatCount="indefinite" begin="0.3s"/>
+            </circle>
+            <text x="280" y="78" fill="rgba(0,212,255,0.6)" font-size="8" font-family="'Share Tech Mono'">MATAM</text>
+
+            <!-- Louga -->
+            <circle cx="175" cy="80" r="3" fill="#00d4ff" opacity="0.6">
+              <animate attributeName="r" values="2.5;4.5;2.5" dur="3.1s" repeatCount="indefinite" begin="0.7s"/>
+            </circle>
+
+            <!-- Fatick -->
+            <circle cx="145" cy="185" r="3" fill="#00ff88" opacity="0.6">
+              <animate attributeName="r" values="2.5;4.5;2.5" dur="2.7s" repeatCount="indefinite" begin="1.8s"/>
+            </circle>
+
+            <!-- Kolda -->
+            <circle cx="195" cy="248" r="3" fill="#ff2244" opacity="0.6">
+              <animate attributeName="r" values="2.5;4.5;2.5" dur="3.3s" repeatCount="indefinite" begin="2.5s"/>
+            </circle>
+
+            <!-- Diourbel -->
+            <circle cx="165" cy="140" r="3" fill="#00ff88" opacity="0.6">
+              <animate attributeName="r" values="2.5;4;2.5" dur="2.4s" repeatCount="indefinite" begin="1.1s"/>
+            </circle>
+          </g>
+
+          <!-- Connexions animées -->
+          <line x1="68" y1="145" x2="115" y2="130" stroke="rgba(0,212,255,0.15)" stroke-width="0.5" stroke-dasharray="4 3">
+            <animate attributeName="stroke-dashoffset" from="0" to="-50" dur="3s" repeatCount="indefinite"/>
+          </line>
+          <line x1="115" y1="130" x2="175" y2="185" stroke="rgba(0,255,136,0.1)" stroke-width="0.5" stroke-dasharray="4 3">
+            <animate attributeName="stroke-dashoffset" from="0" to="-50" dur="4s" repeatCount="indefinite"/>
+          </line>
+
+          <!-- Légende -->
+          <circle cx="33" cy="310" r="4" fill="#00d4ff"/>
+          <text x="45" y="314" fill="rgba(255,255,255,0.5)" font-size="10" font-family="'Rajdhani'">Zone Nord</text>
+          <circle cx="33" cy="330" r="4" fill="#00ff88"/>
+          <text x="45" y="334" fill="rgba(255,255,255,0.5)" font-size="10" font-family="'Rajdhani'">Zone Centre</text>
+          <circle cx="33" cy="350" r="4" fill="#ff6b00"/>
+          <text x="45" y="354" fill="rgba(255,255,255,0.5)" font-size="10" font-family="'Rajdhani'">Zone Est</text>
+          <circle cx="143" cy="310" r="4" fill="#ff2244"/>
+          <text x="155" y="314" fill="rgba(255,255,255,0.5)" font-size="10" font-family="'Rajdhani'">Zone Sud</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH -->
+<section id="tech">
+  <div class="section-header reveal">
+    <span class="section-tag">// STACK TECHNOLOGIQUE</span>
+    <h2 class="section-title">Construit avec des technologies<br>de pointe</h2>
+  </div>
+  <div class="tech-grid">
+    <div class="tech-item reveal">
+      <span class="tech-icon">🐍</span>
+      <div class="tech-name">Python</div>
+      <div class="tech-desc">Backend & traitement des données climatiques</div>
+    </div>
+    <div class="tech-item reveal" style="transition-delay:0.05s">
+      <span class="tech-icon">⚡</span>
+      <div class="tech-name">Streamlit</div>
+      <div class="tech-desc">Interface interactive temps réel</div>
+    </div>
+    <div class="tech-item reveal" style="transition-delay:0.1s">
+      <span class="tech-icon">📊</span>
+      <div class="tech-name">Plotly</div>
+      <div class="tech-desc">Visualisations et cartes choroplèthes</div>
+    </div>
+    <div class="tech-item reveal" style="transition-delay:0.15s">
+      <span class="tech-icon">🗄️</span>
+      <div class="tech-name">SQLite</div>
+      <div class="tech-desc">4743 enregistrements climatiques</div>
+    </div>
+    <div class="tech-item reveal" style="transition-delay:0.2s">
+      <span class="tech-icon">🌍</span>
+      <div class="tech-name">GeoJSON</div>
+      <div class="tech-desc">Polygones UTM28N → WGS84</div>
+    </div>
+    <div class="tech-item reveal" style="transition-delay:0.25s">
+      <span class="tech-icon">🛰️</span>
+      <div class="tech-name">CMIP6</div>
+      <div class="tech-desc">Modèles climatiques internationaux</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-glow"></div>
+  <div class="reveal">
+    <h2 class="cta-title">Prêt à explorer<br><span style="color:var(--blue)">le futur climatique</span><br>du Sénégal ?</h2>
+    <p class="cta-sub">Accédez gratuitement à la plateforme. Aucune installation requise.</p>
+    <a href="https://alerte-climatique-senegal-2025-2055.streamlit.app" class="btn-primary" target="_blank" style="font-size:14px;padding:20px 60px">
+      LANCER ORACLE AI →
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">ORACLE AI</div>
+  <div class="footer-copy">© 2025 ORACLE AI — SÉNÉGAL 2025–2055</div>
+  <div class="footer-links">
+    <a href="#modules">Modules</a>
+    <a href="https://github.com/Yves-san/qgis-climate-alert-senegal" target="_blank">GitHub</a>
+    <a href="https://alerte-climatique-senegal-2025-2055.streamlit.app" target="_blank">Plateforme</a>
+  </div>
+</footer>
+
+<script>
+// LOADER
+const msgs = [
+  'INITIALISATION SYSTÈME...',
+  'CHARGEMENT DES DONNÉES CMIP6...',
+  'CONNEXION AUX 46 DÉPARTEMENTS...',
+  'CALIBRATION DES MODÈLES...',
+  'ORACLE AI PRÊT'
+];
+const bar = document.getElementById('loader-bar');
+const msg = document.getElementById('loader-msg');
+let p = 0;
+const iv = setInterval(() => {
+  p += Math.random() * 25 + 5;
+  if(p > 100) p = 100;
+  bar.style.width = p + '%';
+  const idx = Math.floor((p/100) * (msgs.length-1));
+  msg.textContent = msgs[Math.min(idx, msgs.length-1)];
+  if(p >= 100){
+    clearInterval(iv);
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('hidden');
+    }, 600);
+  }
+}, 200);
+
+// CURSOR
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0, my=0, rx=0, ry=0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.transform = `translate(${mx-6}px, ${my-6}px)`;
+});
+(function animRing(){
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.transform = `translate(${rx-18}px, ${ry-18}px)`;
+  requestAnimationFrame(animRing);
+})();
+
+// PARTICLES
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+function resize(){
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+class Particle{
+  constructor(){this.reset()}
+  reset(){
+    this.x = Math.random()*W;
+    this.y = Math.random()*H;
+    this.vx = (Math.random()-0.5)*0.3;
+    this.vy = (Math.random()-0.5)*0.3;
+    this.size = Math.random()*1.5+0.5;
+    this.opacity = Math.random()*0.4+0.1;
+    this.color = Math.random() > 0.7 ? '#00ff88' : '#00d4ff';
+  }
+  update(){
+    this.x += this.vx; this.y += this.vy;
+    if(this.x<0||this.x>W||this.y<0||this.y>H) this.reset();
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.fillStyle = this.color;
+    ctx.globalAlpha = this.opacity;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+for(let i=0;i<120;i++) particles.push(new Particle());
+
+// Draw connections between close particles
+function drawConnections(){
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const d = Math.sqrt(dx*dx+dy*dy);
+      if(d < 100){
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = '#00d4ff';
+        ctx.globalAlpha = (1 - d/100) * 0.08;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+}
+
+function animParticles(){
+  ctx.clearRect(0,0,W,H);
+  drawConnections();
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+// COUNTERS
+function animCounter(el){
+  const target = parseInt(el.dataset.target);
+  const suffix = el.dataset.suffix || '';
+  let current = 0;
+  const step = target / 60;
+  const iv = setInterval(() => {
+    current += step;
+    if(current >= target){
+      current = target;
+      clearInterval(iv);
+    }
+    el.textContent = Math.floor(current).toLocaleString() + suffix;
+  }, 16);
+  el.closest('.stat').classList.add('stat-initialized');
+}
+
+// SCROLL REVEAL
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      // Trigger counters
+      const nums = e.target.querySelectorAll ? e.target.querySelectorAll('.stat-num') : [];
+      nums.forEach(animCounter);
+    }
+  });
+}, {threshold: 0.15});
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Stats counter observer
+const statsObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.stat-num').forEach(animCounter);
+      statsObs.disconnect();
+    }
+  });
+}, {threshold: 0.3});
+statsObs.observe(document.getElementById('stats'));
+</script>
+</body>
+</html>
