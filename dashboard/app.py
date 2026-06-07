@@ -31,6 +31,76 @@ st.markdown("""
     .info-card { background:#0d1e3d; border:1px solid #2a4a7f; border-radius:8px; padding:12px; margin:6px 0; }
     h1,h2,h3 { color:#e8f4fd !important; }
 
+    /* ANIMATION 1 - FONDU DES PAGES */
+    [data-testid="stMainBlockContainer"] > div {
+        animation: fadeInUp 0.5s ease-out;
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ANIMATION 2 - CARTES HOVER */
+    .metric-card {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .metric-card:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow: 0 12px 40px rgba(77,184,255,0.25);
+    }
+    .info-card {
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .info-card:hover {
+        transform: translateY(-3px);
+        border-color: #4db8ff !important;
+    }
+
+    /* ANIMATION 3 - ALERTES PULSANTES */
+    .alert-critical { animation: pulseCritical 2s infinite; }
+    @keyframes pulseCritical {
+        0%,100% { box-shadow: 0 0 0 0 rgba(255,68,68,0.4); }
+        50%     { box-shadow: 0 0 0 8px rgba(255,68,68,0); }
+    }
+    .alert-high { animation: pulseHigh 2.5s infinite; }
+    @keyframes pulseHigh {
+        0%,100% { box-shadow: 0 0 0 0 rgba(255,140,0,0.4); }
+        50%     { box-shadow: 0 0 0 8px rgba(255,140,0,0); }
+    }
+
+    /* ANIMATION 4 - SIDEBAR */
+    [data-testid="stSidebar"] label {
+        transition: color 0.2s ease, padding-left 0.2s ease;
+    }
+    [data-testid="stSidebar"] label:hover {
+        color: #4db8ff !important;
+        padding-left: 6px;
+    }
+
+    /* ANIMATION 5 - BOUTONS */
+    .stButton > button {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(77,184,255,0.3);
+    }
+    .stButton > button:active { transform: translateY(0px); }
+
+    /* ANIMATION 6 - TITRE SHIMMER */
+    h1 {
+        background: linear-gradient(90deg, #4db8ff, #ffffff, #4db8ff);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 3s linear infinite;
+    }
+    @keyframes shimmer {
+        0%   { background-position: 0% center; }
+        100% { background-position: 200% center; }
+    }
+
     /* ===== RESPONSIVE MOBILE ===== */
     @media (max-width: 768px) {
         /* Graphiques pleine largeur */
