@@ -2504,9 +2504,11 @@ elif page == "🌡️ Température":
         from datetime import timedelta
 
         st.markdown("### 📅 Choisissez votre date")
+        _today = dt.date.today()
+        _default = _today if dt.date(2025,1,1) <= _today <= dt.date(2055,12,31) else dt.date(2025,1,1)
         date_choisie = st.date_input(
             "Jour · Mois · Année",
-            value=dt.date(2030, 6, 15),
+            value=_default,
             min_value=dt.date(2025, 1, 1),
             max_value=dt.date(2055, 12, 31),
             label_visibility="collapsed"
