@@ -10,12 +10,74 @@ import plotly.express as px
 import plotly.graph_objects as go
 import os
 
+# Animations JavaScript
+import streamlit.components.v1 as components
+
+def inject_animations():
+    components.html("""
+    <script>
+    const style = document.createElement('style');
+    style.textContent = `
+        /* Fondu pages */
+        section.main > div { animation: fadeInUp 0.4s ease-out; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        /* Hover boutons */
+        .stButton > button {
+            transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+        }
+        .stButton > button:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 8px 25px rgba(77,184,255,0.4) !important;
+        }
+        /* Shimmer titres */
+        h1 {
+            background: linear-gradient(90deg,#4db8ff,#fff,#4db8ff) !important;
+            background-size: 200% auto !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            animation: shimmer 3s linear infinite !important;
+        }
+        @keyframes shimmer {
+            0%   { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        /* Pulse alertes */
+        .alert-critical { animation: pulse 2s infinite !important; }
+        @keyframes pulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(255,68,68,0.5); }
+            50%     { box-shadow: 0 0 0 10px rgba(255,68,68,0); }
+        }
+        /* Compteurs animés */
+        .metric-value {
+            animation: countUp 1s ease-out !important;
+        }
+        @keyframes countUp {
+            from { opacity: 0; transform: scale(0.5); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Observer pour réappliquer après rechargement Streamlit
+    const observer = new MutationObserver(() => {
+        if (!document.head.contains(style)) {
+            document.head.appendChild(style);
+        }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    </script>
+    """, height=0)
+
 st.set_page_config(
     page_title="🌍 Sénégal Climate Alert",
     page_icon="🌦️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
+inject_animations()
 
 st.markdown("""
 <style>
