@@ -1269,7 +1269,7 @@ def afficher_section_hydraulique(commune, selected_scenario):
             font_color="#e8f4fd",showlegend=False,
             height=300,margin=dict(t=40,b=20,l=10,r=10)
         )
-        st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
 
     st.markdown("---")
     st.markdown("### 🗺️ Carte hydraulique par département")
@@ -1366,7 +1366,7 @@ def afficher_section_hydraulique(commune, selected_scenario):
         legend=dict(bgcolor="#0d1527", bordercolor="#2a4a7f", borderwidth=1,
                    title=dict(text="Type d eau principal")),
     )
-    st.plotly_chart(fig_types, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig_types, use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
 
     st.markdown("### 🎨 Légende types d eau")
     col1,col2,col3,col4 = st.columns(4)
@@ -1927,7 +1927,7 @@ def afficher_carte_hydrographie(selected_scenario):
         font_color="#e8f4fd",
         legend=dict(bgcolor="#0d1527",bordercolor="#2a4a7f",borderwidth=1),
     )
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
 
     st.markdown("### Légende")
     legende_items = [
@@ -2353,7 +2353,7 @@ def afficher_carte_forages():
         legend=dict(bgcolor="#0d1527",bordercolor="#2a4a7f",borderwidth=1,
                    title=dict(text="Type de nappe")),
     )
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
 
     # Légende avec traits
     st.markdown("### Légende — Types de nappes")
@@ -2431,10 +2431,10 @@ if page == "📊 Aperçu":
         c1,c2 = st.columns(2)
         with c1:
             fig = px.line(df,x="year",y="temp_mean",title="🌡️ Température moyenne (°C)",color_discrete_sequence=["#ff6b6b"],template="plotly_dark")
-            fig.update_layout(**LAYOUT); st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False})
+            fig.update_layout(**LAYOUT); st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
         with c2:
             fig2 = px.bar(df,x="year",y="precip_total",title="🌧️ Précipitations (mm/an)",color_discrete_sequence=["#4db8ff"],template="plotly_dark")
-            fig2.update_layout(**LAYOUT); st.plotly_chart(fig2,use_container_width=True, config={"displayModeBar": False})
+            fig2.update_layout(**LAYOUT); st.plotly_chart(fig2,use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
     if cal:
         st.info(f"💧 **Début des pluies :** {cal.get('debut_pluies','N/A')} - **Hivernage :** {cal.get('hivernage','N/A')} - **Cultures :** {cal.get('cultures','N/A')}")
     st.markdown(f'<div class="info-card">💡 <b>Conseil :</b> {conseil}</div>', unsafe_allow_html=True)
@@ -2600,7 +2600,7 @@ elif page == "🌡️ Température":
                 xaxis_title="Mois et Année",
                 yaxis_title="Température (°C)",
             )
-            st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
             c1,c2,c3 = st.columns(3)
             c1.metric("🌙 Nuit la plus fraîche",f"{df_m['temp_min'].min():.0f}°C")
             c2.metric("🌞 Chaleur moyenne",f"{df_m['temp_mean'].mean():.0f}°C")
@@ -2628,7 +2628,7 @@ elif page == "🌡️ Température":
                 xaxis_title="Année",
                 yaxis_title="Température (°C)",
             )
-            st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
             c1,c2,c3 = st.columns(3)
             c1.metric("🌙 Nuit la plus fraîche",f"{df_a['temp_min'].min():.0f}°C")
             c2.metric("🌞 Chaleur en 2055",f"{df_a['temp_mean'].iloc[-1]:.0f}°C",
@@ -2662,7 +2662,7 @@ elif page == "🌧️ Précipitations":
     df = get_annual(selected_commune, selected_scenario)
     if not df.empty:
         fig = px.bar(df,x="year",y="precip_total",title=f"Précipitations annuelles (mm) - {selected_commune}",color="precip_total",color_continuous_scale=["#ff4444","#ffd700","#4db8ff"],template="plotly_dark")
-        fig.update_layout(**LAYOUT); st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False})
+        fig.update_layout(**LAYOUT); st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
         c1,c2,c3,c4 = st.columns(4)
         c1.metric("Précip. 2025",f"{df['precip_total'].iloc[0]:.0f} mm")
         c2.metric("Moy. 30 ans",f"{df['precip_total'].mean():.0f} mm")
@@ -2676,7 +2676,7 @@ elif page == "🌧️ Précipitations":
             if not dsc.empty:
                 fig2.add_trace(go.Scatter(x=dsc["year"],y=dsc["precip_total"],name=sc,line=dict(color=colors_sc.get(sc,"#fff"),width=2)))
         fig2.update_layout(title="Précipitations par scénario",template="plotly_dark",**LAYOUT)
-        st.plotly_chart(fig2,use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig2,use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
         st.markdown("### 📋 Début des pluies — toutes communes")
         cal_rows = [{"Commune":c,"Début des pluies":v.get("debut_pluies","N/A"),"Hivernage":v.get("hivernage","N/A"),"Cultures":v.get("cultures","N/A")} for c,v in CALENDRIER.items()]
         st.dataframe(pd.DataFrame(cal_rows),use_container_width=True,height=400)
@@ -2693,7 +2693,7 @@ elif page == "🏜️ Sécheresse":
         fig.add_hline(y=0.3,line_dash="dot",line_color="orange",annotation_text="Attention : commence a secher")
         fig.add_hline(y=0.6,line_dash="dash",line_color="red",annotation_text="DANGER : secheresse critique")
         fig.update_layout(**LAYOUT,xaxis_title="Annee",yaxis_title="Niveau de secheresse (0=normal, 1=severe)")
-        st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
         drought_2025 = df["drought"].iloc[0]
         drought_2055 = df["drought"].iloc[-1]
         hausse = drought_2055 - drought_2025
@@ -2748,7 +2748,7 @@ elif page == "🏜️ Sécheresse":
             st.caption("Barres bleues = bonnes pluies. Barres rouges = manque de pluie. Plus les barres rouges sont grandes, plus c est sec.")
             fig2 = px.bar(df,x="year",y="spi",title="Deficit de pluie annee par annee (barres rouges = manque de pluie)",color="spi",color_continuous_scale=["#ff4444","#ffffff","#4db8ff"],template="plotly_dark")
             fig2.update_layout(**LAYOUT,xaxis_title="Annee",yaxis_title="Niveau de pluie (positif=abondant, negatif=deficit)")
-            st.plotly_chart(fig2,use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig2,use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
         spi_moy = df["spi"].mean() if df["spi"].notna().any() else 0
         st.markdown("---")
         st.markdown("### Que dit le SPI pour votre commune ?")
@@ -2985,7 +2985,7 @@ elif page == "📉 Comparaison Scénarios":
             v2040 = df[df["year"]==2040][variable].values
             summary.append({"Scénario":sc,"2025":round(df[variable].iloc[0],2),"2040":round(v2040[0],2) if len(v2040) else "N/A","2055":round(df[variable].iloc[-1],2),"Variation":round(df[variable].iloc[-1]-df[variable].iloc[0],2)})
     fig.update_layout(title=f"Comparaison - {selected_commune}",template="plotly_dark",**LAYOUT,legend=dict(bgcolor="#0d1527",bordercolor="#2a4a7f"))
-    st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
     if summary: st.dataframe(pd.DataFrame(summary),use_container_width=True)
 
 elif page == "💧 Réseau Hydraulique":
