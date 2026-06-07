@@ -3,6 +3,7 @@ Senegal Climate Alert — Dashboard Complet 9 pages
 46 communes - Sols - Calendrier - Précipitations - Conseils - Export
 """
 import streamlit as st
+from streamlit_js_eval import get_geolocation
 import pandas as pd
 import sqlite3
 import plotly.express as px
@@ -2379,6 +2380,42 @@ def afficher_carte_forages():
 
 LAYOUT = dict(paper_bgcolor="#0a0f1e", plot_bgcolor="#0d1527", font_color="#e8f4fd", margin=dict(t=40,b=20,l=10,r=10))
 
+# Géolocalisation automatique
+def commune_la_plus_proche(lat, lon, geojson_path):
+    import json, math
+    with open(geojson_path, encoding='utf-8') as f:
+        geo = json.load(f)
+    min_dist = float('inf')
+    commune_proche = None
+    for feat in geo['features']:
+        geom = feat['geometry']
+        coords = geom['coordinates']
+        if geom['type'] == 'Point':
+            clon, clat = coords
+        elif geom['type'] == 'Polygon':
+            all_c = [c for ring in coords for c in ring]
+            clon = sum(c[0] for c in all_c) / len(all_c)
+            clat = sum(c[1] for c in all_c) / len(all_c)
+        elif geom['type'] == 'MultiPolygon':
+            all_c = [c for poly in coords for ring in poly for c in ring]
+            clon = sum(c[0] for c in all_c) / len(all_c)
+            clat = sum(c[1] for c in all_c) / len(all_c)
+        else:
+            continue
+        dist = math.sqrt((lat - clat)**2 + (lon - clon)**2)
+        if dist < min_dist:
+            min_dist = dist
+            commune_proche = feat['properties']['name']
+    return commune_proche
+
+_geo_path = os.path.join(os.path.dirname(__file__), "data", "senegal_communes.geojson")
+_location = get_geolocation()
+_commune_auto = None
+if _location and _location.get('coords'):
+    _lat = _location['coords']['latitude']
+    _lon = _location['coords']['longitude']
+    _commune_auto = commune_la_plus_proche(_lat, _lon, _geo_path)
+
 with st.sidebar:
     st.markdown("## 🌍 Navigation")
     page = st.radio("", [
@@ -2398,7 +2435,19 @@ with st.sidebar:
     st.markdown("### ⚙️ Paramètres")
     communes_df = get_communes()
     commune_list = communes_df["commune_name"].tolist()
-    selected_commune = st.selectbox("🏘️ Commune", commune_list)
+    # Sélection auto par géolocalisation
+    default_idx = 0
+    if _commune_auto and _commune_auto in commune_list:
+        default_idx = commune_list.index(_commune_auto)
+    elif _commune_auto:
+        # Chercher la commune DB la plus proche du nom GeoJSON
+        for i, c in enumerate(commune_list):
+            if c.lower() in _commune_auto.lower() or _commune_auto.lower() in c.lower():
+                default_idx = i
+                break
+    selected_commune = st.selectbox("🏘️ Commune", commune_list, index=default_idx)
+    if _commune_auto:
+        st.caption(f"📍 Position détectée : {_commune_auto}")
     scenarios = get_scenarios() or ["SSP1-1.9","SSP2-4.5","SSP5-8.5"]
     selected_scenario = st.selectbox("🌡️ Scénario", scenarios)
     st.markdown("---")
