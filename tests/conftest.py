@@ -13,4 +13,5 @@ def db(tmp_path_factory):
 def session(db):
     s = db.get_session()
     yield s
+    s.rollback()
     s.close()

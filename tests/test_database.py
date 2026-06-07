@@ -18,7 +18,7 @@ def test_insert_commune_metadata(session):
     )
     session.add(meta)
     session.commit()
-    fetched = session.get(CommuneMetadata, "TST001")
+    fetched = session.query(CommuneMetadata).filter_by(commune_id="TST001").first()
     assert fetched.commune_name == "TestCommune"
     assert fetched.region == "TestRegion"
 
