@@ -1,0 +1,15 @@
+        spi_moy = df["spi"].mean() if df["spi"].notna().any() else 0
+        st.markdown("---")
+        st.markdown("### Que dit le SPI pour votre commune ?")
+        if spi_moy > 0:
+            st.success("Bonne saison des pluies prevue. Semez et plantez normalement.")
+        elif spi_moy > -0.2:
+            st.warning("Legèrement sec. Surveillez vos reserves.")
+        elif spi_moy > -0.5:
+            st.error("Secheresse moderee. Plantez mil et sorgho uniquement.")
+        else:
+            st.error("SECHERESSE SEVERE. Protegez vos reserves d eau.")
+        with st.expander("Cest quoi le SPI ? Cliquez pour comprendre"):
+            st.markdown("Le SPI mesure si les pluies sont normales ou insuffisantes par rapport aux 30 dernieres annees.")
+            st.markdown("SPI positif : bonnes pluies. SPI negatif : secheresse.")
+            st.markdown("Sources : ANACIM, NASA, Copernicus")

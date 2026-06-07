@@ -1,0 +1,5 @@
+            mois_chauds = df_m[df_m["temp_max"]>=38][["year_month","temp_max"]].head(10) if "year_month" in df_m.columns else None
+            if mois_chauds is not None and not mois_chauds.empty:
+                st.markdown("### Mois les plus caniculaires (T max superieure a 38 C)")
+                for _,row in mois_chauds.iterrows():
+                    st.error(f"Mois {row[\"year_month\"]} : {row[\"temp_max\"]:.0f} C — Ne travaillez pas aux champs en journee")
