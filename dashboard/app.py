@@ -3,6 +3,10 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import date
+import os
+
+# Chemin absolu vers le dossier dashboard
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 st.set_page_config(page_title="Climate Alert Sénégal", page_icon="🌍", layout="wide")
 
@@ -26,19 +30,19 @@ model_names = ["CMCC_CM2_VHR4", "FGOALS_f3_H", "HiRAM_SIT_HR", "MRI_AGCM3_2_S", 
 
 @st.cache_data
 def load_spi():
-    return pd.read_csv("spi_mensuel.csv")
+    return pd.read_csv(os.path.join(BASE_DIR, "spi_mensuel.csv"))
 
 @st.cache_data
 def load_temperature(model):
-    return pd.read_csv(f"temperature_{model}.csv", parse_dates=["date"])
+    return pd.read_csv(os.path.join(BASE_DIR, f"temperature_{model}.csv"), parse_dates=["date"])
 
 @st.cache_data
 def load_precipitation(model):
-    return pd.read_csv(f"precipitation_{model}.csv", parse_dates=["date"])
+    return pd.read_csv(os.path.join(BASE_DIR, f"precipitation_{model}.csv"), parse_dates=["date"])
 
 spi_df = load_spi()
 
-st.sidebar.header("⚙️ Paramètres")
+st.sidebar.header("Paramètres")
 selected_model = st.sidebar.selectbox("Modèle climatique", model_names, index=3)
 selected_year = st.sidebar.slider("Année", 2025, 2050, date.today().year)
 selected_date = st.sidebar.date_input("Date précise", value=date.today(), min_value=date(2025,1,1), max_value=date(2050,12,31))
@@ -89,46 +93,38 @@ with tab1:
     st.plotly_chart(fig_spi, use_container_width=True)
 
 with tab2:
-    st.subheader(f"🌡️ Températures — {selected_date.strftime('%d %B %Y')}")
-
-    # Données du jour sélectionné
+    st.subheader(f"Températures — {selected_date.strftime('%d %B %Y')}")
     temp_day = temp_df[temp_df["date"].dt.date == selected_date]
     if not temp_day.empty:
         t_min = float(temp_day["temperature_2m_min"].values[0])
-        t_max = float(temp_day["temperature_2m_max"].values[0])
-        t_mean = float(temp_day["temperature_2m_mean"].values[0])
+        t_max_day = float(temp_day["temperature_2m_max"].values[0])
         t_nuit = round(t_min - 2, 1)
     else:
-        t_min = temp_mean - 5 if temp_mean else 20.0
-        t_max = temp_max if temp_max else 35.0
-        t_mean = temp_mean if temp_mean else 27.0
+        t_min = round(float(temp_mean) - 5, 1) if temp_mean else 20.0
+        t_max_day = round(float(temp_max), 1) if temp_max else 35.0
         t_nuit = round(t_min - 2, 1)
-        st.info(f"Données interpolées pour {selected_date} — sélectionnez une date entre 2025 et 2050")
+        st.info("Données interpolées — date hors plage 2025-2050")
 
-    st.markdown(f"### 🕐 Températures de la journée")
     c1, c2, c3 = st.columns(3)
     with c1:
         icon = "🌅" if t_min < 25 else "☀️"
-        st.markdown(f"""
-        <div class="card-temp">
+        st.markdown(f"""<div class="card-temp">
             <div class="card-icon">{icon}</div>
             <div class="card-label">Matin (6h-10h)</div>
             <div class="card-value">{t_min:.0f}°C</div>
             <div class="card-sub">Température minimale</div>
         </div>""", unsafe_allow_html=True)
     with c2:
-        icon = "🥵" if t_max > 38 else "😎" if t_max > 32 else "🌤️"
-        st.markdown(f"""
-        <div class="card-temp">
+        icon = "🥵" if t_max_day > 38 else "😎" if t_max_day > 32 else "🌤️"
+        st.markdown(f"""<div class="card-temp">
             <div class="card-icon">{icon}</div>
             <div class="card-label">Après-midi (12h-16h)</div>
-            <div class="card-value" style="color:#FF6B6B">{t_max:.0f}°C</div>
+            <div class="card-value" style="color:#FF6B6B">{t_max_day:.0f}°C</div>
             <div class="card-sub">Température maximale</div>
         </div>""", unsafe_allow_html=True)
     with c3:
         icon = "🌙" if t_nuit < 22 else "🌛"
-        st.markdown(f"""
-        <div class="card-temp">
+        st.markdown(f"""<div class="card-temp">
             <div class="card-icon">{icon}</div>
             <div class="card-label">Nuit (20h-6h)</div>
             <div class="card-value" style="color:#00D4AA">{t_nuit:.0f}°C</div>
@@ -136,9 +132,6 @@ with tab2:
         </div>""", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("### 📈 Évolution annuelle")
-
-    # Graphe annuel
     temp_df2 = temp_df.copy()
     temp_df2["year"] = temp_df2["date"].dt.year
     temp_annual = temp_df2.groupby("year").agg(
