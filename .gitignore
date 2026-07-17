@@ -32,3 +32,6 @@ logs/
 data/senegal_climate_2025_2055.db
 data/senegal_climate_2025_2055.db-shm
 data/senegal_climate_2025_2055.db-wal
+.cache.sqlite
+dashboard/projections_2025_2055.json.bak
+dashboard/contexte_precipitation*.txt

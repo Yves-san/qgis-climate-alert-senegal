@@ -2228,14 +2228,17 @@ def get_projections(commune, scenario):
     if sc_key not in proj[commune]["scenarios"]:
         return None
     data = proj[commune]["scenarios"][sc_key]
+    # Precipitation limitee a 2025-2050 (donnees reelles Open-Meteo) :
+    # on tronque tout le reste a la meme longueur pour rester aligne.
+    n = len(data["precipitation_sum"])
     df = pd.DataFrame({
-        "date":     data["time"],
-        "temp_mean":data["temperature_2m_mean"],
-        "temp_max": data["temperature_2m_max"],
-        "temp_min": data["temperature_2m_min"],
-        "precip":   data["precipitation_sum"],
-        "eto":      data["et0_fao_evapotranspiration"],
-        "vent":     data["windspeed_10m_max"],
+        "date":     data.get("time_precipitation", data["time"])[:n],
+        "temp_mean":data["temperature_2m_mean"][:n],
+        "temp_max": data["temperature_2m_max"][:n],
+        "temp_min": data["temperature_2m_min"][:n],
+        "precip":   data["precipitation_sum"][:n],
+        "eto":      data["et0_fao_evapotranspiration"][:n],
+        "vent":     data["windspeed_10m_max"][:n],
     })
     df["date"] = pd.to_datetime(df["date"])
     df["year"]  = df["date"].dt.year
