@@ -79,90 +79,18 @@ st.set_page_config(
 )
 inject_animations()
 
-# ===== LANDING PAGE ORACLE AI =====
-if 'entered' not in st.session_state:
-    st.session_state.entered = False
-
-if not st.session_state.entered:
-    components.html("""
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#010a14;color:#fff;font-family:'Rajdhani',sans-serif;overflow:hidden;height:100vh}
-.grid-bg{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none}
-.hero{position:relative;z-index:10;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
-.tag{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:#00d4ff;margin-bottom:20px;opacity:0;animation:fadeUp 0.8s 0.5s forwards}
-.title{font-family:'Orbitron',sans-serif;font-size:clamp(50px,10vw,110px);font-weight:900;line-height:1;letter-spacing:-2px;margin-bottom:8px;opacity:0;animation:fadeUp 0.8s 0.7s forwards}
-.title .o1{color:#00d4ff;text-shadow:0 0 40px rgba(0,212,255,0.6)}
-.sub{font-family:'Orbitron',sans-serif;font-size:clamp(12px,2vw,18px);letter-spacing:8px;color:rgba(255,255,255,0.4);margin-bottom:40px;opacity:0;animation:fadeUp 0.8s 0.9s forwards}
-.modules{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:48px;opacity:0;animation:fadeUp 0.8s 1.1s forwards}
-.mod{border:1px solid rgba(0,212,255,0.2);padding:10px 20px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.5);transition:all 0.3s}
-.mod:hover{border-color:#00d4ff;color:#00d4ff}
-.m1{--c:#00d4ff}.m2{--c:#00ff88}.m3{--c:#ff6b00}.m4{--c:#ff2244}
-.mod{border-color:rgba(var(--c),0.2)}
-.btn{background:#00d4ff;color:#000;padding:18px 56px;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;border:none;cursor:pointer;transition:all 0.3s;opacity:0;animation:fadeUp 0.8s 1.3s forwards;position:relative;overflow:hidden}
-.btn::before{content:'';position:absolute;inset:0;background:linear-gradient(45deg,transparent 30%,rgba(255,255,255,0.3) 50%,transparent 70%);transform:translateX(-100%);transition:0.6s}
-.btn:hover::before{transform:translateX(100%)}
-.btn:hover{box-shadow:0 0 40px rgba(0,212,255,0.6);transform:translateY(-2px)}
-.stats{display:flex;gap:40px;margin-top:40px;opacity:0;animation:fadeUp 0.8s 1.5s forwards}
-.stat{text-align:center}
-.stat-n{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:700;color:#00d4ff}
-.stat-l{font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.3);text-transform:uppercase}
-@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-.scanlines{position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:5}
-</style>
-</head>
-<body>
-<div class="grid-bg"></div>
-<div class="scanlines"></div>
-<canvas id="c"></canvas>
-<div class="hero">
-  <div class="tag">// PLATEFORME PRÉDICTIVE CLIMATIQUE — SÉNÉGAL 2025–2055</div>
-  <h1 class="title"><span class="o1">ORACLE</span> AI</h1>
-  <div class="sub">INTELLIGENCE CLIMATIQUE DU SÉNÉGAL</div>
-  <div class="modules">
-    <div class="mod m1">🌡️ ORACLE CLIMAT</div>
-    <div class="mod m2">💧 ORACLE EAU</div>
-    <div class="mod m3">🌱 ORACLE AGRI</div>
-    <div class="mod m4">⚠️ ORACLE ALERT</div>
-  </div>
-  <button class="btn" onclick="enter()">ENTRER DANS LA PLATEFORME →</button>
-  <div class="stats">
-    <div class="stat"><div class="stat-n" id="s1">0</div><div class="stat-l">Départements</div></div>
-    <div class="stat"><div class="stat-n" id="s2">0</div><div class="stat-l">Forages PNADT</div></div>
-    <div class="stat"><div class="stat-n" id="s3">0</div><div class="stat-l">Ans de projection</div></div>
-  </div>
-</div>
-<script>
-// Particles
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
-let W,H,pts=[];
-function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
-resize();window.addEventListener('resize',resize);
-class P{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.4;this.vy=(Math.random()-.5)*.4;this.s=Math.random()*1.5+.5;this.o=Math.random()*.4+.1;this.col=Math.random()>.7?'#00ff88':'#00d4ff'}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W||this.y<0||this.y>H)this.reset()}draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.s,0,Math.PI*2);ctx.fillStyle=this.col;ctx.globalAlpha=this.o;ctx.fill();ctx.globalAlpha=1}}
-for(let i=0;i<100;i++)pts.push(new P());
-function draw(){ctx.clearRect(0,0,W,H);for(let i=0;i<pts.length;i++){for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle='#00d4ff';ctx.globalAlpha=(1-d/120)*.06;ctx.lineWidth=.5;ctx.stroke();ctx.globalAlpha=1}}pts[i].update();pts[i].draw()}requestAnimationFrame(draw)}draw();
-// Counters
-function count(id,target,suffix){let v=0;const s=target/60;const iv=setInterval(()=>{v+=s;if(v>=target){v=target;clearInterval(iv)}document.getElementById(id).textContent=Math.floor(v)+(suffix||'')},16)}
-setTimeout(()=>{count('s1',46);count('s2',4218);count('s3',30)},1500);
-// Enter
-function enter(){window.parent.postMessage({type:'streamlit:setComponentValue',value:true},'*')}
-</script>
-</body>
-</html>
-""", height=700, scrolling=False)
-
-    col1,col2,col3 = st.columns([1,2,1])
-    with col2:
-        if st.button("🚀 ENTRER DANS ORACLE AI", type="primary", use_container_width=True):
-            st.session_state.entered = True
-            st.rerun()
+# ===== LANDING PAGE ACCUEIL =====
+import streamlit.components.v1 as components_landing
+import os as _os
+_landing_path = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "landing.html")
+if not st.session_state.get("entered", False):
+    with open(_landing_path, "r", encoding="utf-8") as _f:
+        _landing_html = _f.read()
+    # Ajouter un bouton Entrer dans le dashboard
+    components_landing.html(_landing_html, height=5200, scrolling=True)
+    if st.button("🚀 ENTRER DANS LE DASHBOARD", type="primary", use_container_width=True):
+        st.session_state["entered"] = True
+        st.rerun()
     st.stop()
 # ===== FIN LANDING PAGE =====
 
