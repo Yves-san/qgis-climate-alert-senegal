@@ -2570,7 +2570,6 @@ if _location and _location.get('coords'):
 with st.sidebar:
     st.markdown("## 🌍 Navigation")
     page = st.radio("", [
-        "🏠 Accueil",
         "📊 Aperçu",
         "🌡️ Température",
         "🌧️ Précipitations",
@@ -2617,14 +2616,7 @@ def get_info(commune):
 
 colors_sc = {"SSP1-1.9":"#44ff88","SSP2-4.5":"#ffd700","SSP5-8.5":"#ff4444"}
 
-if page == "🏠 Accueil":
-    import streamlit.components.v1 as components
-    landing_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "landing.html")
-    with open(landing_path, "r", encoding="utf-8") as f:
-        landing_html = f.read()
-    components.html(landing_html, height=5000, scrolling=True)
-
-elif page == "📊 Aperçu":
+if page == "📊 Aperçu":
     region, sol, cal, conseil = get_info(selected_commune)
     st.markdown(f"# 🌍 Système d'Alerte Climatique — Sénégal 2025–2055")
     st.caption(f"Commune : **{selected_commune}** - Région : **{region}** - Scénario : **{selected_scenario}**")
