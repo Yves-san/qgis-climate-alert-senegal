@@ -79,19 +79,7 @@ st.set_page_config(
 )
 inject_animations()
 
-# ===== LANDING PAGE ACCUEIL =====
-import streamlit.components.v1 as components_landing
-import os as _os
-_landing_path = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "landing.html")
-if not st.session_state.get("entered", False):
-    with open(_landing_path, "r", encoding="utf-8") as _f:
-        _landing_html = _f.read()
-    # Ajouter un bouton Entrer dans le dashboard
-    components_landing.html(_landing_html, height=5200, scrolling=True)
-    if st.button("🚀 ENTRER DANS LE DASHBOARD", type="primary", use_container_width=True):
-        st.session_state["entered"] = True
-        st.rerun()
-    st.stop()
+
 # ===== FIN LANDING PAGE =====
 
 
