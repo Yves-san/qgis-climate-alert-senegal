@@ -2773,28 +2773,46 @@ elif page == "🌡️ Température":
     elif resolution == "📆 Mois par mois":
         if df_proj is not None:
             df_m = agreger_mensuel(df_proj)
-            st.markdown("### 📆 Températures mois par mois (2025-2055)")
-            st.caption("Passez la souris sur le graphique pour voir les valeurs exactes")
+            st.markdown("### 📆 Températures mois par mois")
+
+            # Slider pour choisir la période
+            annee_debut = st.slider("Choisissez une période de 5 ans", 2025, 2050, 2025, step=5)
+            annee_fin = min(annee_debut + 4, 2055)
+            df_filtre = df_m[df_m["year_month"].str[:4].astype(int).between(annee_debut, annee_fin)]
+
+            # Explication simple
+            st.info(f"📅 Vous voyez les températures de **{annee_debut}** à **{annee_fin}** à {selected_commune}. La ligne rouge pointillée à 38°C est le seuil dangereux pour travailler aux champs.")
+
             fig = go.Figure()
-            fig.add_trace(go.Scatter(x=df_m["year_month"],y=df_m["temp_max"],
-                name="Chaleur max (°C)",line=dict(color="#ff4444",width=1.5)))
-            fig.add_trace(go.Scatter(x=df_m["year_month"],y=df_m["temp_mean"],
-                name="Chaleur moyenne (°C)",line=dict(color="#ffd700",width=1.5)))
-            fig.add_trace(go.Scatter(x=df_m["year_month"],y=df_m["temp_min"],
-                name="Fraîcheur minimale (°C)",line=dict(color="#4db8ff",width=1.5)))
+            fig.add_trace(go.Scatter(x=df_filtre["year_month"],y=df_filtre["temp_max"],
+                name="🔴 Chaleur max",line=dict(color="#ff4444",width=2)))
+            fig.add_trace(go.Scatter(x=df_filtre["year_month"],y=df_filtre["temp_mean"],
+                name="🟡 Chaleur moyenne",line=dict(color="#ffd700",width=2)))
+            fig.add_trace(go.Scatter(x=df_filtre["year_month"],y=df_filtre["temp_min"],
+                name="🔵 Fraîcheur la nuit",line=dict(color="#4db8ff",width=2)))
             fig.add_hline(y=38,line_dash="dash",line_color="red",
-                annotation_text="⚠️ Seuil de chaleur dangereuse (38°C)")
+                annotation_text="⚠️ Au-dessus : dangereux pour travailler")
             fig.update_layout(
-                title=f"Évolution de la chaleur mois par mois · {selected_commune}",
+                title=f"Chaleur à {selected_commune} — {annee_debut} à {annee_fin}",
                 template="plotly_dark",**LAYOUT,
-                xaxis_title="Mois et Année",
+                xaxis_title="Mois",
                 yaxis_title="Température (°C)",
+                legend=dict(orientation="h", y=-0.2)
             )
             st.plotly_chart(fig,use_container_width=True, config={"displayModeBar": False, "staticPlot": True})
+
+            # Métriques simples
             c1,c2,c3 = st.columns(3)
-            c1.metric("🌙 Nuit la plus fraîche",f"{df_m['temp_min'].min():.0f}°C")
-            c2.metric("🌞 Chaleur moyenne",f"{df_m['temp_mean'].mean():.0f}°C")
-            c3.metric("🔥 Journée la plus chaude",f"{df_m['temp_max'].max():.0f}°C")
+            c1.metric("🌙 Nuit la plus fraîche",f"{df_filtre['temp_min'].min():.0f}°C")
+            c2.metric("🌞 Chaleur moyenne",f"{df_filtre['temp_mean'].mean():.0f}°C")
+            c3.metric("🔥 Journée la plus chaude",f"{df_filtre['temp_max'].max():.0f}°C")
+
+            # Conseil simple
+            mois_danger = len(df_filtre[df_filtre["temp_max"]>=38])
+            if mois_danger > 0:
+                st.warning(f"⚠️ Sur cette période, **{mois_danger} mois** dépassent 38°C. Évitez de travailler aux champs en journée ces mois-là.")
+            else:
+                st.success("✅ Sur cette période, les températures restent gérables pour les travaux agricoles.")
         else:
             st.warning("Données non disponibles.")
 
